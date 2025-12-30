@@ -63,7 +63,7 @@
         
         .input-group { display: flex; align-items: center; gap: 5px; }
         .weight-input { 
-            width: 60px; 
+            width: 70px; 
             border: 1px solid #ccc; 
             border-radius: 8px; 
             padding: 6px; 
@@ -123,10 +123,10 @@
         <h3 style="color:var(--chest);margin:0;">練胸內容</h3>
         <input type="date" class="date-input" onchange="syncDate(this)">
     </div>
-    <div class="exercise-item"><span>啞鈴臥推</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_1" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴下斜臥推</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_2" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴窄推</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_3" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴飛鳥</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_4" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴臥推</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_1" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴下斜臥推</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_2" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴窄推</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_3" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴飛鳥</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_4" placeholder="0"><span class="unit-text">kg</span></div></div>
     <button class="btn-record" onclick="saveToHistory('練胸日', this, '#FF3B30')">💾 儲存到日曆</button>
 </div>
 
@@ -135,10 +135,10 @@
         <h3 style="color:var(--shoulder);margin:0;">練肩內容</h3>
         <input type="date" class="date-input" onchange="syncDate(this)">
     </div>
-    <div class="exercise-item"><span>啞鈴肩推</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_1" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴正手划船</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_2" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴側平舉</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_3" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴前平舉</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_4" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴肩推</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_1" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴正手划船</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_2" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴側平舉</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_3" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴前平舉</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_4" placeholder="0"><span class="unit-text">kg</span></div></div>
     <button class="btn-record" onclick="saveToHistory('練肩日', this, '#FF9500')">💾 儲存到日曆</button>
 </div>
 
@@ -147,10 +147,10 @@
         <h3 style="color:var(--arm);margin:0;">練臂內容</h3>
         <input type="date" class="date-input" onchange="syncDate(this)">
     </div>
-    <div class="exercise-item"><span>啞鈴彎舉</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_1" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴垂式彎舉</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_2" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴俯後臂屈伸</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_3" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴頸後臂屈伸</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_4" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴彎舉</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_1" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴垂式彎舉</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_2" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴俯後臂屈伸</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_3" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴頸後臂屈伸</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_4" placeholder="0"><span class="unit-text">kg</span></div></div>
     <button class="btn-record" onclick="saveToHistory('練臂日', this, '#4CD964')">💾 儲存到日曆</button>
 </div>
 
@@ -174,6 +174,7 @@
     let countdown;
     let currentEventInfo = null;
     let setNum = 0; 
+    let tempValue = ""; // 用於暫存點擊前的數值
 
     window.onload = function() {
         const today = new Date().toLocaleDateString('sv-SE'); 
@@ -191,7 +192,8 @@
 
     function saveCurrentWeight(input) {
         const id = input.dataset.id;
-        const val = input.value === "" ? "0" : input.value; // 如果清空則視為 0
+        // 這裡暫時不要在輸入時過濾格式，否則會影響小數點輸入
+        const val = input.value === "" ? "0" : input.value; 
         let currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
         currentWeights[id] = val;
         localStorage.setItem('current_weights', JSON.stringify(currentWeights));
@@ -201,8 +203,25 @@
         const currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
         document.querySelectorAll('.weight-input').forEach(input => {
             const id = input.dataset.id;
-            // 載入時，若沒紀錄則顯示 0
             input.value = (currentWeights[id] !== undefined && currentWeights[id] !== "") ? currentWeights[id] : "0";
+            
+            // 核心功能：點擊後暫存並清空
+            input.addEventListener('focus', function() {
+                tempValue = this.value; // 記住現在的數字
+                this.value = ""; // 清空，讓你直接輸入新數字
+            });
+
+            // 核心功能：離開時判斷
+            input.addEventListener('blur', function() {
+                if (this.value === "" || isNaN(this.value)) {
+                    // 如果沒輸入新數字就點外面，恢復原本記住的數字
+                    this.value = tempValue;
+                } else {
+                    // 如果有輸入，自動過濾格式（如 020 -> 20, 01.5 -> 1.5）
+                    this.value = parseFloat(this.value).toString();
+                }
+                saveCurrentWeight(this);
+            });
         });
     }
 
@@ -311,7 +330,6 @@
         card.querySelectorAll('.exercise-item').forEach(item => {
             const name = item.querySelector('span').innerText;
             const weightInput = item.querySelector('.weight-input');
-            // 如果輸入框是空的，則紀錄為 0
             const weight = (weightInput.value === "" || weightInput.value === null) ? "0" : weightInput.value;
             details += "● " + name + ": " + weight + " kg\n";
         });
