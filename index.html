@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>健身紀錄助手 Pro</title>
+    <meta name="apple-mobile-web-app-title" content="健身助手">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon.png">
+    
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+<style>
+        :root { --primary: #007AFF; --chest: #FF3B30; --shoulder: #FF9500; --arm: #4CD964; --bg: #F2F2F7; --danger: #FF3B30; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 50px; }
+        
+        .timer-panel { 
+            position: sticky; 
+            top: 10px; 
+            background: rgba(255,255,255,0.95); 
+            backdrop-filter: blur(10px); 
+            padding: 15px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1); 
+            z-index: 1000; 
+            margin-bottom: 20px; 
+            border: 1px solid #ddd; 
+        }
+        .timer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+        #timer-display { 
+            font-size: 3.5rem; 
+            font-weight: 800; 
+            margin: 5px 0; 
+            color: #1c1c1e; 
+            line-height: 1.2;
+            text-align: left; 
+        }
+        #set-counter {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #34c759;
+            text-align: right;
+        }
+        .btn-group { display: flex; gap: 8px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+    
+        .tab-menu { display: flex; gap: 5px; margin-bottom: 10px; }
+        .tab-btn { flex: 1; padding: 12px 5px; border-radius: 12px 12px 0 0; border: none; font-size: 0.9rem; font-weight: bold; color: white; opacity: 0.4; transition: 0.3s; }
+        .tab-btn.active { opacity: 1; transform: translateY(-2px); }
+    
+        .card { background: white; border-radius: 0 0 18px 18px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none; }
+        .card.active { display: block; animation: fadeIn 0.3s; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
+        
+        .input-group { display: flex; align-items: center; gap: 5px; }
+        .weight-input { 
+            width: 60px; 
+            border: 1px solid #ccc; 
+            border-radius: 8px; 
+            padding: 6px; 
+            text-align: center; 
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            color: #007AFF; 
+        }
+        .unit-text { font-size: 0.9rem; color: #666; font-weight: bold; width: 20px; }
+    
+        .date-input { border: 1px solid #ddd; border-radius: 6px; padding: 6px; font-size: 1rem; font-weight: bold; background: #fff; }
+
+        .btn-record { background: #34c759; color: white; padding: 14px; font-size: 16px; border-radius: 12px; width: 100%; margin-top: 15px; border:none; font-weight:bold; }
+    
+        .calendar-card { background: white; border-radius: 18px; padding: 15px; margin-top: 30px; }
+        
+        #delete-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        #modal-details { text-align: left; background: #F2F2F7; padding: 12px; border-radius: 12px; font-size: 0.95rem; line-height: 1.6; margin: 15px 0; white-space: pre-wrap; color: #333; }
+        .modal-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .btn-del { background: var(--danger); color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; }
+        .btn-ok { background: #E5E5EA; color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; }
+    
+        .fc .fc-daygrid-day-frame { min-height: 40px !important; }
+        .fc .fc-daygrid-body { min-height: 0 !important; }
+        .fc .fc-scrollgrid-sync-table { height: auto !important; }
+        .fc .fc-daygrid-day-top { justify-content: center !important; flex-direction: row !important; }
+        .fc .fc-daygrid-day-number { padding: 2px 0 !important; font-size: 1.1rem; }
+        .fc-daygrid-event { margin-top: 1px !important; padding: 0 2px !important; font-size: 0.75rem !important; }
+        .fc .fc-col-header-cell { padding: 4px 0 !important; }
+    </style>
+</head>
+<body>
+
+<audio id="alarm-sound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock_beep.ogg" preload="auto"></audio>
+
+<div class="timer-panel">
+    <div class="timer-header">
+        <div id="timer-display">00:00</div>
+        <div id="set-counter"></div>
+    </div>
+    <div class="btn-group">
+        <button style="background:var(--primary);color:white" onclick="handleRestClick(120)">組間休息2分鐘</button>
+        <button style="background:#5856D6;color:white" onclick="handleSwitchClick(240)">換動作休息4分鐘</button>
+        <button style="background:#E5E5EA; flex: 0.4;" onclick="resetTimer()">↺</button>
+    </div>
+</div>
+
+<div class="tab-menu">
+    <button class="tab-btn active" style="background:var(--chest)" onclick="switchTab(0)">🔥 練胸日</button>
+    <button class="tab-btn" style="background:var(--shoulder)" onclick="switchTab(1)">⚡ 練肩日</button>
+    <button class="tab-btn" style="background:var(--arm)" onclick="switchTab(2)">💪 練臂日</button>
+</div>
+
+<div class="card active" id="card-chest" data-type="chest">
+    <div class="card-header">
+        <h3 style="color:var(--chest);margin:0;">練胸內容</h3>
+        <input type="date" class="date-input" onchange="syncDate(this)">
+    </div>
+    <div class="exercise-item"><span>啞鈴臥推</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_1" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴下斜臥推</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_2" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴窄推</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_3" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴飛鳥</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_4" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <button class="btn-record" onclick="saveToHistory('練胸日', this, '#FF3B30')">💾 儲存到日曆</button>
+</div>
+
+<div class="card" id="card-shoulder" data-type="shoulder">
+    <div class="card-header">
+        <h3 style="color:var(--shoulder);margin:0;">練肩內容</h3>
+        <input type="date" class="date-input" onchange="syncDate(this)">
+    </div>
+    <div class="exercise-item"><span>啞鈴肩推</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_1" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴正手划船</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_2" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴側平舉</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_3" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴前平舉</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_4" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <button class="btn-record" onclick="saveToHistory('練肩日', this, '#FF9500')">💾 儲存到日曆</button>
+</div>
+
+<div class="card" id="card-arm" data-type="arm">
+    <div class="card-header">
+        <h3 style="color:var(--arm);margin:0;">練臂內容</h3>
+        <input type="date" class="date-input" onchange="syncDate(this)">
+    </div>
+    <div class="exercise-item"><span>啞鈴彎舉</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_1" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴垂式彎舉</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_2" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴俯後臂屈伸</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_3" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴頸後臂屈伸</span> <div class="input-group"><input type="number" inputmode="decimal" pattern="[0-9]*" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_4" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <button class="btn-record" onclick="saveToHistory('練臂日', this, '#4CD964')">💾 儲存到日曆</button>
+</div>
+
+<div class="calendar-card"><div id="calendar"></div></div>
+
+<div id="delete-modal">
+    <div class="modal-content">
+        <h3 id="modal-title" style="margin:0; color:#1c1c1e;">訓練紀錄</h3>
+        <div id="modal-details"></div>
+        <div class="modal-btns">
+            <button class="btn-del" id="confirm-delete">刪除本筆紀錄</button>
+            <button class="btn-ok" onclick="closeModal()">關閉</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script>
+    let calendar;
+    let countdown;
+    let currentEventInfo = null;
+    let setNum = 0; 
+
+    window.onload = function() {
+        const today = new Date().toLocaleDateString('sv-SE'); 
+        document.querySelectorAll('.date-input').forEach(input => input.value = today);
+        initCalendar();
+        loadAllWeights();
+    };
+
+    function syncDate(sourceInput) {
+        const newDate = sourceInput.value;
+        document.querySelectorAll('.date-input').forEach(input => {
+            input.value = newDate;
+        });
+    }
+
+    function saveCurrentWeight(input) {
+        const id = input.dataset.id;
+        const val = input.value === "" ? "0" : input.value; // 如果清空則視為 0
+        let currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
+        currentWeights[id] = val;
+        localStorage.setItem('current_weights', JSON.stringify(currentWeights));
+    }
+
+    function loadAllWeights() {
+        const currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
+        document.querySelectorAll('.weight-input').forEach(input => {
+            const id = input.dataset.id;
+            // 載入時，若沒紀錄則顯示 0
+            input.value = (currentWeights[id] !== undefined && currentWeights[id] !== "") ? currentWeights[id] : "0";
+        });
+    }
+
+    function switchTab(index) {
+        document.querySelectorAll('.tab-btn').forEach((btn, i) => btn.classList.toggle('active', i === index));
+        document.querySelectorAll('.card').forEach((card, i) => card.classList.toggle('active', i === index));
+    }
+
+    function handleRestClick(seconds) {
+        setNum++; 
+        document.getElementById('set-counter').innerText = "第 " + setNum + " 組完成 ✅";
+        startTimer(seconds);
+    }
+
+    function handleSwitchClick(seconds) {
+        setNum = 0;
+        document.getElementById('set-counter').innerText = "";
+        startTimer(seconds);
+    }
+
+    function resetTimer() { 
+        clearInterval(countdown); 
+        const alarm = document.getElementById('alarm-sound');
+        alarm.pause();
+        alarm.currentTime = 0;
+        document.querySelector('#timer-display').innerText = "00:00"; 
+        setNum = 0;
+        document.getElementById('set-counter').innerText = "";
+    }
+
+    function startTimer(s) {
+        clearInterval(countdown);
+        const display = document.querySelector('#timer-display');
+        const alarm = document.getElementById('alarm-sound');
+        
+        alarm.muted = true;
+        alarm.play().then(() => {
+            alarm.pause();
+            alarm.muted = false;
+            alarm.currentTime = 0;
+        }).catch(e => console.log("等待互動"));
+        
+        let then = Date.now() + s * 1000;
+        
+        function updateDisplay() {
+            let left = Math.round((then - Date.now()) / 1000);
+            if (left <= 0) { 
+                clearInterval(countdown); 
+                display.innerText = "00:00";
+                alarm.play();
+                setTimeout(() => {
+                    alert("時間到！🏋️");
+                    alarm.pause();
+                    alarm.currentTime = 0;
+                }, 100); 
+                return; 
+            }
+            let m = Math.floor(left / 60);
+            let rs = left % 60;
+            display.innerText = (m < 10 ? '0' + m : m) + ":" + (rs < 10 ? '0' + rs : rs);
+        }
+        
+        updateDisplay();
+        countdown = setInterval(updateDisplay, 1000);
+    }
+
+    function initCalendar() {
+        const calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth', 
+            locale: 'zh-tw', 
+            height: 'auto', 
+            headerToolbar: { left: 'prev', center: 'title', right: 'next' },
+            dayCellContent: function(arg) { return arg.date.getDate(); },
+            events: JSON.parse(localStorage.getItem('gym_history') || "[]"),
+            eventClick: function(info) { 
+                currentEventInfo = info; 
+                const details = info.event.extendedProps.note || "無詳細內容";
+                const title = info.event.title + " (" + info.event.startStr + ")";
+                document.getElementById('modal-title').innerText = title;
+                document.getElementById('modal-details').innerText = details;
+                document.getElementById('delete-modal').style.display = 'flex'; 
+            }
+        });
+        calendar.render();
+    }
+
+    function closeModal() { document.getElementById('delete-modal').style.display = 'none'; currentEventInfo = null; }
+
+    document.getElementById('confirm-delete').onclick = function() {
+        if (currentEventInfo) {
+            currentEventInfo.event.remove();
+            let history = JSON.parse(localStorage.getItem('gym_history') || "[]");
+            history = history.filter(item => item.id !== currentEventInfo.event.id);
+            localStorage.setItem('gym_history', JSON.stringify(history));
+            closeModal();
+        }
+    };
+
+    function saveToHistory(type, btnElement, color) {
+        const card = btnElement.closest('.card');
+        const dateVal = card.querySelector('.date-input').value; 
+        if (!dateVal) { alert("請選擇日期"); return; }
+        
+        let details = "";
+        card.querySelectorAll('.exercise-item').forEach(item => {
+            const name = item.querySelector('span').innerText;
+            const weightInput = item.querySelector('.weight-input');
+            // 如果輸入框是空的，則紀錄為 0
+            const weight = (weightInput.value === "" || weightInput.value === null) ? "0" : weightInput.value;
+            details += "● " + name + ": " + weight + " kg\n";
+        });
+
+        let history = JSON.parse(localStorage.getItem('gym_history') || "[]");
+        const existingIndex = history.findIndex(item => item.start === dateVal && item.title === type);
+        
+        if (existingIndex > -1) {
+            history[existingIndex].extendedProps.note = details;
+            const oldEvent = calendar.getEvents().find(e => e.startStr === dateVal && e.title === type);
+            if (oldEvent) oldEvent.setExtendedProp('note', details);
+            alert("紀錄已更新！");
+        } else {
+            const uniqueId = "id_" + Date.now();
+            const newRecord = { 
+                id: uniqueId, 
+                title: type, 
+                start: dateVal, 
+                backgroundColor: color, 
+                borderColor: color, 
+                extendedProps: { note: details } 
+            };
+            history.push(newRecord);
+            calendar.addEvent(newRecord);
+            alert("已紀錄訓練部位與重量！");
+        }
+        localStorage.setItem('gym_history', JSON.stringify(history));
+    }
+</script>
+</body>
+</html>
+</html>
