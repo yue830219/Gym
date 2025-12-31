@@ -7,11 +7,10 @@
     <meta name="apple-mobile-web-app-title" content="健身助手">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="icon.png">
     
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
 <style>
-        :root { --primary: #007AFF; --chest: #FF3B30; --shoulder: #FF9500; --arm: #4CD964; --bg: #F2F2F7; --danger: #FF3B30; }
+        :root { --primary: #007AFF; --chest: #FF3B30; --shoulder: #FF9500; --arm: #4CD964; --leg: #5AC8FA; --bg: #F2F2F7; --danger: #FF3B30; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 50px; }
         
         .timer-panel { 
@@ -71,6 +70,7 @@
             font-size: 1.1rem; 
             font-weight: bold; 
             color: #007AFF; 
+            background: white;
         }
         .unit-text { font-size: 0.9rem; color: #666; font-weight: bold; width: 20px; }
     
@@ -80,8 +80,10 @@
     
         .calendar-card { background: white; border-radius: 18px; padding: 15px; margin-top: 30px; }
         
-        #delete-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        #delete-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: popIn 0.2s cubic-bezier(0.17, 0.89, 0.32, 1.28); }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
         #modal-details { text-align: left; background: #F2F2F7; padding: 12px; border-radius: 12px; font-size: 0.95rem; line-height: 1.6; margin: 15px 0; white-space: pre-wrap; color: #333; }
         .modal-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .btn-del { background: var(--danger); color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; }
@@ -98,7 +100,7 @@
 </head>
 <body>
 
-<audio id="alarm-sound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock_beep.ogg" preload="auto"></audio>
+ <audio id="alarm-sound" src="https://github.com/yue830219/Gym/raw/refs/heads/main/energetic-sports-442840.mp3" preload="auto"></audio>
 
 <div class="timer-panel">
     <div class="timer-header">
@@ -106,9 +108,9 @@
         <div id="set-counter"></div>
     </div>
     <div class="btn-group">
-        <button style="background:var(--primary);color:white" onclick="handleRestClick(120)">組間休息2分鐘</button>
-        <button style="background:#5856D6;color:white" onclick="handleSwitchClick(240)">換動作休息4分鐘</button>
-        <button style="background:#E5E5EA; flex: 0.4;" onclick="resetTimer()">↺</button>
+         <button style="background:var(--primary);color:white;font-size:0.8rem;" onclick="handleRestClick(120)">組間休息2分鐘</button>
+        <button style="background:#5856D6;color:white;font-size:0.8rem;" onclick="handleSwitchClick(240)">換動作休息4分鐘</button>
+        <button style="background:#E5E5EA; flex: 0.4;font-size:1.2rem;" onclick="resetTimer()">↺</button>
     </div>
 </div>
 
@@ -116,118 +118,268 @@
     <button class="tab-btn active" style="background:var(--chest)" onclick="switchTab(0)">🔥 練胸日</button>
     <button class="tab-btn" style="background:var(--shoulder)" onclick="switchTab(1)">⚡ 練肩日</button>
     <button class="tab-btn" style="background:var(--arm)" onclick="switchTab(2)">💪 練臂日</button>
+    <button class="tab-btn" style="background:var(--leg)" onclick="switchTab(3)">🏃 有氧日</button>
 </div>
 
 <div class="card active" id="card-chest" data-type="chest">
-    <div class="card-header">
-        <h3 style="color:var(--chest);margin:0;">練胸內容</h3>
-        <input type="date" class="date-input" onchange="syncDate(this)">
-    </div>
-    <div class="exercise-item"><span>啞鈴臥推</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_1" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴下斜臥推</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_2" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴窄推</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_3" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴飛鳥</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_4" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="card-header"><h3 style="color:var(--chest);margin:0;">練胸內容</h3><input type="date" class="date-input" onchange="syncDate(this)"></div>
+    <div class="exercise-item"><span>啞鈴臥推</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_1" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴下斜臥推</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_2" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴窄推</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_3" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴飛鳥</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_4" placeholder="0"><span class="unit-text">kg</span></div></div>
     <button class="btn-record" onclick="saveToHistory('練胸日', this, '#FF3B30')">💾 儲存到日曆</button>
 </div>
 
 <div class="card" id="card-shoulder" data-type="shoulder">
-    <div class="card-header">
-        <h3 style="color:var(--shoulder);margin:0;">練肩內容</h3>
-        <input type="date" class="date-input" onchange="syncDate(this)">
-    </div>
-    <div class="exercise-item"><span>啞鈴肩推</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_1" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴正手划船</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_2" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴側平舉</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_3" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴前平舉</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_4" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="card-header"><h3 style="color:var(--shoulder);margin:0;">練肩內容</h3><input type="date" class="date-input" onchange="syncDate(this)"></div>
+    <div class="exercise-item"><span>啞鈴肩推</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_1" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴正手划船</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_2" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴側平舉</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_3" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴前平舉</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_4" placeholder="0"><span class="unit-text">kg</span></div></div>
     <button class="btn-record" onclick="saveToHistory('練肩日', this, '#FF9500')">💾 儲存到日曆</button>
 </div>
 
 <div class="card" id="card-arm" data-type="arm">
-    <div class="card-header">
-        <h3 style="color:var(--arm);margin:0;">練臂內容</h3>
-        <input type="date" class="date-input" onchange="syncDate(this)">
-    </div>
-    <div class="exercise-item"><span>啞鈴彎舉</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_1" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴垂式彎舉</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_2" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴俯後臂屈伸</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_3" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <div class="exercise-item"><span>啞鈴頸後臂屈伸</span> <div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_4" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="card-header"><h3 style="color:var(--arm);margin:0;">練臂內容</h3><input type="date" class="date-input" onchange="syncDate(this)"></div>
+    <div class="exercise-item"><span>啞鈴彎舉</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_1" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴垂式彎舉</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_2" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴俯後臂屈伸</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_3" placeholder="0"><span class="unit-text">kg</span></div></div>
+    <div class="exercise-item"><span>啞鈴頸後臂屈伸</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_4" placeholder="0"><span class="unit-text">kg</span></div></div>
     <button class="btn-record" onclick="saveToHistory('練臂日', this, '#4CD964')">💾 儲存到日曆</button>
 </div>
+
+<div class="card" id="card-leg" data-type="leg">
+    <div class="card-header"><h3 style="color:var(--leg);margin:0;">跑步</h3><input type="date" class="date-input" onchange="syncDate(this)"></div>
+    
+    <div class="exercise-item">
+        <span>目前體重</span>
+        <div class="input-group">
+            <input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="body_weight" placeholder="0">
+            <span class="unit-text">kg</span>
+        </div>
+    </div>
+
+    <div class="exercise-item"><span>距離</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="leg_1" placeholder="0"><span class="unit-text">km</span></div></div>
+    
+    <div class="exercise-item">
+        <span>時間</span>
+        <div class="input-group">
+            <input type="number" inputmode="decimal" class="weight-input" style="width: 40px;" 
+                   id="input-hr" oninput="saveCurrentWeight(this)" data-id="leg_hr" placeholder="0">
+            <span class="unit-text" style="width: 15px;">時</span>
+            <input type="number" inputmode="decimal" class="weight-input" style="width: 40px;" 
+                   id="input-min" oninput="saveCurrentWeight(this)" data-id="leg_min" placeholder="0">
+            <span class="unit-text" style="width: 15px;">分</span>
+            <input type="number" inputmode="decimal" class="weight-input" style="width: 40px;" 
+                   id="input-sec" oninput="saveCurrentWeight(this)" data-id="leg_sec" placeholder="0">
+            <span class="unit-text" style="width: 15px;">秒</span>
+        </div>
+    </div>
+
+    <div class="exercise-item" style="background: #f0f9ff; border-radius: 12px; margin-top: 10px; padding: 12px; border-bottom: none;">
+        <div style="flex: 1; text-align: center;">
+            <div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">平均配速</div>
+            <div id="display-pace" style="font-weight: 800; color: var(--primary); font-size: 1.2rem;">--'--"</div>
+        </div>
+        <div style="width: 1px; height: 30px; background: #ddd; margin: 0 10px;"></div>
+        <div style="flex: 1; text-align: center;">
+            <div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">預估燃燒</div>
+            <div id="display-calories" style="font-weight: 800; color: #FF9500; font-size: 1.2rem;">0 kcal</div>
+        </div>
+    </div>
+    
+    <button class="btn-record" onclick="saveToHistory('有氧日', this, '#5AC8FA')">💾 儲存到日曆</button>
+</div>
+
 
 <div class="calendar-card"><div id="calendar"></div></div>
 
 <div id="delete-modal">
     <div class="modal-content">
-        <h3 id="modal-title" style="margin:0; color:#1c1c1e;">訓練紀錄</h3>
+        <h3 id="modal-title" style="margin:0; color:#1c1c1e;">提示</h3>
         <div id="modal-details"></div>
         <div class="modal-btns">
             <button class="btn-del" id="confirm-delete">刪除本筆紀錄</button>
-            <button class="btn-ok" onclick="closeModal()">關閉</button>
+            <button class="btn-ok" id="modal-close-btn" onclick="closeModal()">確定</button>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-
 <script>
     let calendar;
     let countdown;
     let currentEventInfo = null;
     let setNum = 0; 
-    let tempValue = ""; // 用於暫存點擊前的數值
+    let tempValue = "";
+
+function updateCardioStats() {
+    var weightInput = document.querySelector('[data-id="body_weight"]');
+    var distInput = document.querySelector('[data-id="leg_1"]');
+    var hrInput = document.getElementById('input-hr');
+    var minInput = document.getElementById('input-min');
+    var secInput = document.getElementById('input-sec');
+
+    if(!weightInput || !distInput) return;
+
+    var weight = parseFloat(weightInput.value) || 0;
+    var dist = parseFloat(distInput.value) || 0;
+    var hr = parseInt(hrInput.value) || 0;
+    var min = parseInt(minInput.value) || 0;
+    var sec = parseInt(secInput.value) || 0;
+
+    var totalSeconds = (hr * 3600) + (min * 60) + sec;
+    var totalHours = totalSeconds / 3600;
+
+    var paceDisplay = document.getElementById('display-pace');
+    var speedKph = 0;
+    
+    if (dist > 0 && totalSeconds > 0) {
+        var paceTotalSecPerKm = totalSeconds / dist;
+        var pMin = Math.floor(paceTotalSecPerKm / 60);
+        var pSec = Math.round(paceTotalSecPerKm % 60);
+        var displaySec = (pSec < 10) ? ("0" + pSec) : pSec;
+        paceDisplay.innerText = pMin + "'" + displaySec + '"';
+        speedKph = dist / totalHours;
+    } else {
+        paceDisplay.innerText = "--'--\"";
+    }
+
+    var kcalDisplay = document.getElementById('display-calories');
+    if (weight > 0 && dist > 0 && totalHours > 0) {
+        var met = 1.0; 
+        if (speedKph <= 0) met = 1.0;
+        else if (speedKph < 5) met = 3.5;
+        else if (speedKph < 7) met = 6.0;
+        else if (speedKph < 9) met = 8.3;
+        else if (speedKph < 11) met = 9.8;
+        else if (speedKph < 13) met = 11.5;
+        else met = 12.8;
+        var kcal = met * weight * totalHours;
+        kcalDisplay.innerText = Math.round(kcal) + " kcal";
+    } else {
+        if (weight > 0 && dist > 0) {
+            var fallbackKcal = weight * dist * 1.036;
+            kcalDisplay.innerText = Math.round(fallbackKcal) + " kcal";
+        } else {
+            kcalDisplay.innerText = "0 kcal";
+        }
+    }
+}
 
     window.onload = function() {
-        const today = new Date().toLocaleDateString('sv-SE'); 
-        document.querySelectorAll('.date-input').forEach(input => input.value = today);
+        var today = new Date().toLocaleDateString('sv-SE'); 
+        document.querySelectorAll('.date-input').forEach(function(input) {
+            input.value = today;
+        });
+
         initCalendar();
         loadAllWeights();
+        initAutoJump();
+        
+        var cardioIds = ['body_weight', 'leg_1', 'leg_hr', 'leg_min', 'leg_sec'];
+        cardioIds.forEach(function(id) {
+            var el = document.querySelector('[data-id="' + id + '"]');
+            if(el) {
+                el.addEventListener('input', updateCardioStats);
+                el.addEventListener('change', updateCardioStats);
+            }
+        });
+
+        updateCardioStats();
     };
 
+    function initAutoJump() {
+        var hrInput = document.getElementById('input-hr');
+        var minInput = document.getElementById('input-min');
+        var secInput = document.getElementById('input-sec');
+        if(hrInput && minInput && secInput) {
+            hrInput.addEventListener('input', function() { if (this.value.length >= 2) minInput.focus(); });
+            minInput.addEventListener('input', function() {
+                if (this.value.length >= 2) {
+                    var val = parseInt(this.value);
+                    if (val > 99) this.value = "99";
+                    secInput.focus();
+                }
+            });
+            secInput.addEventListener('input', function() {
+                if (this.value.length >= 2) {
+                    var val = parseInt(this.value);
+                    if (val > 59) this.value = "59";
+                    this.blur(); 
+                }
+            });
+        }
+    }
+
+    function showNotice(title, content, showDelete) {
+        var titleEl = document.getElementById('modal-title');
+        var detailsEl = document.getElementById('modal-details');
+        titleEl.innerText = title;
+        if (content && content.trim() !== "") {
+            detailsEl.innerText = content;
+            detailsEl.style.display = 'block';
+        } else {
+            detailsEl.style.display = 'none';
+        }
+        document.getElementById('confirm-delete').style.display = showDelete ? 'block' : 'none';
+        document.getElementById('modal-close-btn').innerText = showDelete ? '關閉' : '確定';
+        document.getElementById('delete-modal').style.display = 'flex';
+    }
+    
+function closeModal() {
+        // 停止鬧鐘音樂並歸零
+        var alarm = document.getElementById('alarm-sound');
+        if (alarm) {
+            alarm.pause();
+            alarm.currentTime = 0;
+        }
+        
+        // 關閉視窗
+        document.getElementById('delete-modal').style.display = 'none';
+        currentEventInfo = null;
+    }
+    
+
     function syncDate(sourceInput) {
-        const newDate = sourceInput.value;
-        document.querySelectorAll('.date-input').forEach(input => {
-            input.value = newDate;
-        });
+        var newDate = sourceInput.value;
+        document.querySelectorAll('.date-input').forEach(function(input) { input.value = newDate; });
     }
 
     function saveCurrentWeight(input) {
-        const id = input.dataset.id;
-        // 這裡暫時不要在輸入時過濾格式，否則會影響小數點輸入
-        const val = input.value === "" ? "0" : input.value; 
-        let currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
+        var id = input.dataset.id;
+        var val = input.value === "" ? "0" : input.value; 
+        var currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
         currentWeights[id] = val;
         localStorage.setItem('current_weights', JSON.stringify(currentWeights));
+        updateCardioStats();
     }
 
     function loadAllWeights() {
-        const currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
-        document.querySelectorAll('.weight-input').forEach(input => {
-            const id = input.dataset.id;
-            input.value = (currentWeights[id] !== undefined && currentWeights[id] !== "") ? currentWeights[id] : "0";
-            
-            // 核心功能：點擊後暫存並清空
-            input.addEventListener('focus', function() {
-                tempValue = this.value; // 記住現在的數字
-                this.value = ""; // 清空，讓你直接輸入新數字
-            });
-
-            // 核心功能：離開時判斷
+        var currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
+        document.querySelectorAll('.weight-input').forEach(function(input) {
+            var id = input.dataset.id;
+            if(!id) return;
+            if (id.startsWith('leg_') && id !== 'body_weight') {
+                input.value = "0";
+                currentWeights[id] = "0";
+            } else {
+                input.value = (currentWeights[id] !== undefined && currentWeights[id] !== "") ? currentWeights[id] : "0";
+            }
+            input.addEventListener('focus', function() { tempValue = this.value; this.value = ""; });
             input.addEventListener('blur', function() {
-                if (this.value === "" || isNaN(this.value)) {
-                    // 如果沒輸入新數字就點外面，恢復原本記住的數字
-                    this.value = tempValue;
-                } else {
-                    // 如果有輸入，自動過濾格式（如 020 -> 20, 01.5 -> 1.5）
-                    this.value = parseFloat(this.value).toString();
-                }
+                if (this.value === "" || isNaN(this.value)) { this.value = tempValue; } 
+                else { this.value = parseFloat(this.value).toString(); }
                 saveCurrentWeight(this);
             });
         });
+        localStorage.setItem('current_weights', JSON.stringify(currentWeights));
+        updateCardioStats();
     }
 
     function switchTab(index) {
-        document.querySelectorAll('.tab-btn').forEach((btn, i) => btn.classList.toggle('active', i === index));
-        document.querySelectorAll('.card').forEach((card, i) => card.classList.toggle('active', i === index));
+        document.querySelectorAll('.tab-btn').forEach(function(btn, i) { btn.classList.toggle('active', i === index); });
+        document.querySelectorAll('.card').forEach(function(card, i) { card.classList.toggle('active', i === index); });
     }
 
     function handleRestClick(seconds) {
@@ -244,7 +396,7 @@
 
     function resetTimer() { 
         clearInterval(countdown); 
-        const alarm = document.getElementById('alarm-sound');
+        var alarm = document.getElementById('alarm-sound');
         alarm.pause();
         alarm.currentTime = 0;
         document.querySelector('#timer-display').innerText = "00:00"; 
@@ -253,112 +405,127 @@
     }
 
     function startTimer(s) {
-        clearInterval(countdown);
-        const display = document.querySelector('#timer-display');
-        const alarm = document.getElementById('alarm-sound');
-        
-        alarm.muted = true;
-        alarm.play().then(() => {
-            alarm.pause();
-            alarm.muted = false;
-            alarm.currentTime = 0;
-        }).catch(e => console.log("等待互動"));
-        
-        let then = Date.now() + s * 1000;
-        
-        function updateDisplay() {
-            let left = Math.round((then - Date.now()) / 1000);
-            if (left <= 0) { 
-                clearInterval(countdown); 
-                display.innerText = "00:00";
-                alarm.play();
-                setTimeout(() => {
-                    alert("時間到！🏋️");
-                    alarm.pause();
-                    alarm.currentTime = 0;
-                }, 100); 
-                return; 
+            clearInterval(countdown);
+            var display = document.querySelector('#timer-display');
+            var alarm = document.getElementById('alarm-sound');
+            alarm.load(); 
+            var then = Date.now() + s * 1000;
+            function updateDisplay() {
+                var left = Math.round((then - Date.now()) / 1000);
+                if (left <= 0) { 
+                    clearInterval(countdown); 
+                    display.innerText = "00:00";
+                    
+                    // 倒數結束才播放
+                    alarm.play();
+                    showNotice("計時結束", "時間到！該開始下一組了 🏋️", false);
+                    return; 
+                }
+                var m = Math.floor(left / 60);
+                var rs = left % 60;
+                display.innerText = (m < 10 ? '0' + m : m) + ":" + (rs < 10 ? '0' + rs : rs);
             }
-            let m = Math.floor(left / 60);
-            let rs = left % 60;
-            display.innerText = (m < 10 ? '0' + m : m) + ":" + (rs < 10 ? '0' + rs : rs);
+            updateDisplay();
+            countdown = setInterval(updateDisplay, 1000);
         }
-        
-        updateDisplay();
-        countdown = setInterval(updateDisplay, 1000);
-    }
 
     function initCalendar() {
-        const calendarEl = document.getElementById('calendar');
+        var calendarEl = document.getElementById('calendar');
         calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth', 
             locale: 'zh-tw', 
             height: 'auto', 
             headerToolbar: { left: 'prev', center: 'title', right: 'next' },
             dayCellContent: function(arg) { return arg.date.getDate(); },
+            // 重要：設定排序規則為 order 屬性升序
+            eventOrder: "order",
             events: JSON.parse(localStorage.getItem('gym_history') || "[]"),
             eventClick: function(info) { 
                 currentEventInfo = info; 
-                const details = info.event.extendedProps.note || "無詳細內容";
-                const title = info.event.title + " (" + info.event.startStr + ")";
-                document.getElementById('modal-title').innerText = title;
-                document.getElementById('modal-details').innerText = details;
-                document.getElementById('delete-modal').style.display = 'flex'; 
+                var details = info.event.extendedProps.note || "無詳細內容";
+                var title = info.event.title + " (" + info.event.startStr + ")";
+                showNotice(title, details, true); 
             }
         });
         calendar.render();
     }
 
-    function closeModal() { document.getElementById('delete-modal').style.display = 'none'; currentEventInfo = null; }
-
     document.getElementById('confirm-delete').onclick = function() {
         if (currentEventInfo) {
             currentEventInfo.event.remove();
-            let history = JSON.parse(localStorage.getItem('gym_history') || "[]");
-            history = history.filter(item => item.id !== currentEventInfo.event.id);
+            var history = JSON.parse(localStorage.getItem('gym_history') || "[]");
+            history = history.filter(function(item) { return item.id !== currentEventInfo.event.id; });
             localStorage.setItem('gym_history', JSON.stringify(history));
             closeModal();
         }
     };
 
     function saveToHistory(type, btnElement, color) {
-        const card = btnElement.closest('.card');
-        const dateVal = card.querySelector('.date-input').value; 
-        if (!dateVal) { alert("請選擇日期"); return; }
+        var card = btnElement.closest('.card');
+        var dateVal = card.querySelector('.date-input').value; 
+        if (!dateVal) { showNotice("警告", "請選擇日期", false); return; }
         
-        let details = "";
-        card.querySelectorAll('.exercise-item').forEach(item => {
-            const name = item.querySelector('span').innerText;
-            const weightInput = item.querySelector('.weight-input');
-            const weight = (weightInput.value === "" || weightInput.value === null) ? "0" : weightInput.value;
-            details += "● " + name + ": " + weight + " kg\n";
-        });
+        // 定義顯示順序權重：胸=1, 肩=2, 臂=3, 有氧=4
+        var orderWeight = 99;
+        if(type === '練胸日') orderWeight = 1;
+        else if(type === '練肩日') orderWeight = 2;
+        else if(type === '練臂日') orderWeight = 3;
+        else if(type === '有氧日') orderWeight = 4;
 
-        let history = JSON.parse(localStorage.getItem('gym_history') || "[]");
-        const existingIndex = history.findIndex(item => item.start === dateVal && item.title === type);
-        
+        var details = "";
+        if (type === '有氧日') {
+            var weight = card.querySelector('[data-id="body_weight"]').value || "0";
+            var dist = card.querySelector('[data-id="leg_1"]').value || "0";
+            var hr = parseInt(card.querySelector('[data-id="leg_hr"]').value) || 0;
+            var min = parseInt(card.querySelector('[data-id="leg_min"]').value) || 0;
+            var sec = parseInt(card.querySelector('[data-id="leg_sec"]').value) || 0;
+            var pace = document.getElementById('display-pace').innerText;
+            var kcal = document.getElementById('display-calories').innerText;
+            details += "● 距離: " + dist + " km\n";
+            var timeStr = (hr > 0 ? hr + " 時 " + (min < 10 ? '0' + min : min) : min) + " 分 " + (sec < 10 ? '0' + sec : sec) + " 秒";
+            details += "● 時間: " + timeStr + "\n";
+            details += "● 配速: " + pace + "\n";
+            details += "● 消耗: " + kcal + "\n";
+        } else {
+            card.querySelectorAll('.exercise-item').forEach(function(item) {
+                var nameSpan = item.querySelector('span');
+                var weightInput = item.querySelector('.weight-input');
+                if (nameSpan && weightInput) {
+                    var name = nameSpan.innerText;
+                    var unit = item.querySelector('.unit-text').innerText; 
+                    var weight = weightInput.value === "" ? "0" : weightInput.value;
+                    details += "● " + name + ": " + weight + " " + unit + "\n";
+                }
+            });
+        }
+        var history = JSON.parse(localStorage.getItem('gym_history') || "[]");
+        var existingIndex = history.findIndex(function(item) { return item.start === dateVal && item.title === type; });
         if (existingIndex > -1) {
             history[existingIndex].extendedProps.note = details;
-            const oldEvent = calendar.getEvents().find(e => e.startStr === dateVal && e.title === type);
+            // 更新時也要確保 order 被寫入
+            history[existingIndex].order = orderWeight;
+            var oldEvent = calendar.getEvents().find(function(e) { return e.startStr === dateVal && e.title === type; });
             if (oldEvent) oldEvent.setExtendedProp('note', details);
-            alert("紀錄已更新！");
+            showNotice("訓練紀錄已更新", "", false);
         } else {
-            const uniqueId = "id_" + Date.now();
-            const newRecord = { 
+            var uniqueId = "id_" + Date.now();
+            var newRecord = { 
                 id: uniqueId, 
                 title: type, 
                 start: dateVal, 
                 backgroundColor: color, 
                 borderColor: color, 
+                order: orderWeight, // 加入排序欄位
                 extendedProps: { note: details } 
             };
             history.push(newRecord);
             calendar.addEvent(newRecord);
-            alert("已紀錄訓練部位與重量！");
+            showNotice("訓練紀錄已儲存", "", false);
         }
         localStorage.setItem('gym_history', JSON.stringify(history));
     }
 </script>
 </body>
 </html>
+
 </html>
