@@ -1,0 +1,20 @@
+{
+  "short_name": "健身助手",
+  "name": "健身紀錄助手 Pro",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/yue830219/Gym/main/Strength.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/yue830219/Gym/main/Strength.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#007AFF",
+  "background_color": "#F2F2F7"
+}
