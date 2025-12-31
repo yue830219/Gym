@@ -121,10 +121,10 @@
 </div>
 
 <div class="tab-menu">
-    <button class="tab-btn active" style="background:var(--chest)" onclick="switchTab(0)">🔥 練胸日</button>
-    <button class="tab-btn" style="background:var(--shoulder)" onclick="switchTab(1)">⚡ 練肩日</button>
-    <button class="tab-btn" style="background:var(--arm)" onclick="switchTab(2)">💪 練臂日</button>
-    <button class="tab-btn" style="background:var(--leg)" onclick="switchTab(3)">🏃 有氧日</button>
+    <button class="tab-btn active" style="background:var(--chest)" onclick="switchTab(0)">🔥 練胸</button>
+    <button class="tab-btn" style="background:var(--shoulder)" onclick="switchTab(1)">⚡ 練肩</button>
+    <button class="tab-btn" style="background:var(--arm)" onclick="switchTab(2)">💪 練臂</button>
+    <button class="tab-btn" style="background:var(--leg)" onclick="switchTab(3)">🏃 有氧</button>
 </div>
 
 <div class="card active" id="card-chest" data-type="chest">
@@ -133,7 +133,7 @@
     <div class="exercise-item"><span>啞鈴下斜臥推</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_2" placeholder="0"><span class="unit-text">kg</span></div></div>
     <div class="exercise-item"><span>啞鈴窄推</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_3" placeholder="0"><span class="unit-text">kg</span></div></div>
     <div class="exercise-item"><span>啞鈴飛鳥</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_4" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <button class="btn-record" onclick="saveToHistory('練胸日', this, '#FF3B30')">💾 儲存到日曆</button>
+    <button class="btn-record" onclick="saveToHistory('練胸', this, '#FF3B30')">💾 儲存到日曆</button>
 </div>
 
 <div class="card" id="card-shoulder" data-type="shoulder">
@@ -142,7 +142,7 @@
     <div class="exercise-item"><span>啞鈴正手划船</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_2" placeholder="0"><span class="unit-text">kg</span></div></div>
     <div class="exercise-item"><span>啞鈴側平舉</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_3" placeholder="0"><span class="unit-text">kg</span></div></div>
     <div class="exercise-item"><span>啞鈴前平舉</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_4" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <button class="btn-record" onclick="saveToHistory('練肩日', this, '#FF9500')">💾 儲存到日曆</button>
+    <button class="btn-record" onclick="saveToHistory('練肩', this, '#FF9500')">💾 儲存到日曆</button>
 </div>
 
 <div class="card" id="card-arm" data-type="arm">
@@ -151,7 +151,7 @@
     <div class="exercise-item"><span>啞鈴垂式彎舉</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_2" placeholder="0"><span class="unit-text">kg</span></div></div>
     <div class="exercise-item"><span>啞鈴俯後臂屈伸</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_3" placeholder="0"><span class="unit-text">kg</span></div></div>
     <div class="exercise-item"><span>啞鈴頸後臂屈伸</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_4" placeholder="0"><span class="unit-text">kg</span></div></div>
-    <button class="btn-record" onclick="saveToHistory('練臂日', this, '#4CD964')">💾 儲存到日曆</button>
+    <button class="btn-record" onclick="saveToHistory('練臂', this, '#4CD964')">💾 儲存到日曆</button>
 </div>
 
 <div class="card" id="card-leg" data-type="leg">
@@ -194,7 +194,7 @@
         </div>
     </div>
     
-    <button class="btn-record" onclick="saveToHistory('有氧日', this, '#5AC8FA')">💾 儲存到日曆</button>
+    <button class="btn-record" onclick="saveToHistory('有氧', this, '#5AC8FA')">💾 儲存到日曆</button>
 </div>
 
 
@@ -473,13 +473,13 @@ function closeModal() {
         
         // 定義顯示順序權重：胸=1, 肩=2, 臂=3, 有氧=4
         var orderWeight = 99;
-        if(type === '練胸日') orderWeight = 1;
-        else if(type === '練肩日') orderWeight = 2;
-        else if(type === '練臂日') orderWeight = 3;
-        else if(type === '有氧日') orderWeight = 4;
+        if(type === '練胸') orderWeight = 1;
+        else if(type === '練肩') orderWeight = 2;
+        else if(type === '練臂') orderWeight = 3;
+        else if(type === '有氧') orderWeight = 4;
 
         var details = "";
-        if (type === '有氧日') {
+        if (type === '有氧') {
             var weight = card.querySelector('[data-id="body_weight"]').value || "0";
             var dist = card.querySelector('[data-id="leg_1"]').value || "0";
             var hr = parseInt(card.querySelector('[data-id="leg_hr"]').value) || 0;
