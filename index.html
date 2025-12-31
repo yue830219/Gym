@@ -94,6 +94,18 @@
         .modal-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .btn-del { background: var(--danger); color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; }
         .btn-ok { background: #E5E5EA; color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; }
+        /* 讓日曆事件文字置中 */
+        .fc-event-title {
+            text-align: center;
+            width: 100%;
+            display: block;
+            font-weight: bold;
+        }
+    
+    /* 額外優化：讓事件容器撐滿並垂直置中 */
+    .fc-daygrid-event {
+        justify-content: center !important;
+    }
     
         .fc .fc-daygrid-day-frame { min-height: 40px !important; }
         .fc .fc-daygrid-body { min-height: 0 !important; }
