@@ -4,7 +4,6 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007AFF">
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/yue830219/Gym/main/Strength.png">
     <link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/yue830219/Gym/main/Strength.png">
     <meta charset="UTF-8">
@@ -370,13 +369,15 @@ function updateCardioStats() {
         });
 
         updateCardioStats();
+        
+        let alarm = document.getElementById('alarm-sound');
+        
+        document.body.addEventListener('click', function unlockAudio() {
+            alarm.play().then(() => alarm.pause());
+            document.body.removeEventListener('click', unlockAudio);
+        });
     };
-let alarm = document.getElementById('alarm-sound');
 
-document.body.addEventListener('click', function unlockAudio() {
-    alarm.play().then(() => alarm.pause());
-    document.body.removeEventListener('click', unlockAudio);
-});
     function initAutoJump() {
         var hrInput = document.getElementById('input-hr');
         var minInput = document.getElementById('input-min');
@@ -625,6 +626,3 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 </body>
-</html>
-
-</html>
