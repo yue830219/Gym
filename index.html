@@ -209,7 +209,6 @@
     <button class="btn-record" onclick="saveToHistory('有氧', this, '#5AC8FA')">💾 儲存到日曆</button>
 </div>
 
-
 <div class="calendar-card"><div id="calendar"></div></div>
 
 <div id="delete-modal">
@@ -223,14 +222,80 @@
     </div>
 </div>
 
+<div style="display:flex; gap:10px; margin:20px 0;">
+    <button class="btn-record" style="background:#007AFF;" onclick="exportHistory()">
+        📤 匯出訓練紀錄
+    </button>
+
+    <button class="btn-record" style="background:#5856D6;" onclick="triggerImport()">
+        📥 匯入訓練紀錄
+    </button>
+
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importHistory(event)">
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
 <script>
     let calendar;
     let countdown;
     let currentEventInfo = null;
     let setNum = 0; 
     let tempValue = "";
+function exportHistory() {
+    var history = localStorage.getItem('gym_history');
+    if (!history || history === "[]") {
+        showNotice("沒有資料", "目前沒有任何訓練紀錄可以匯出", false);
+        return;
+    }
 
+    var blob = new Blob([history], { type: "application/json;charset=utf-8;" });
+    var url = URL.createObjectURL(blob);
+
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "gym_history_backup_" + new Date().toISOString().slice(0,10) + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showNotice("匯出完成", "訓練紀錄已下載成 JSON 檔", false);
+}
+function triggerImport() {
+    document.getElementById('import-file').value = "";
+    document.getElementById('import-file').click();
+}
+function importHistory(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            var importedData = JSON.parse(e.target.result);
+
+            if (!Array.isArray(importedData)) {
+                throw new Error("格式錯誤");
+            }
+
+            // 覆蓋 localStorage
+            localStorage.setItem('gym_history', JSON.stringify(importedData));
+
+            // 重新載入日曆
+            calendar.removeAllEvents();
+            importedData.forEach(function(ev) {
+                calendar.addEvent(ev);
+            });
+
+            showNotice("匯入成功", "訓練紀錄已成功還原 🎉", false);
+        } catch (err) {
+            showNotice("匯入失敗", "檔案格式錯誤或不是有效的紀錄檔", false);
+        }
+    };
+
+    reader.readAsText(file);
+}
 function updateCardioStats() {
     var weightInput = document.querySelector('[data-id="body_weight"]');
     var distInput = document.querySelector('[data-id="leg_1"]');
