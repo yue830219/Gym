@@ -371,7 +371,12 @@ function updateCardioStats() {
 
         updateCardioStats();
     };
+let alarm = document.getElementById('alarm-sound');
 
+document.body.addEventListener('click', function unlockAudio() {
+    alarm.play().then(() => alarm.pause());
+    document.body.removeEventListener('click', unlockAudio);
+});
     function initAutoJump() {
         var hrInput = document.getElementById('input-hr');
         var minInput = document.getElementById('input-min');
@@ -487,30 +492,36 @@ function closeModal() {
         document.getElementById('set-counter').innerText = "";
     }
 
-    function startTimer(s) {
-            clearInterval(countdown);
-            var display = document.querySelector('#timer-display');
-            var alarm = document.getElementById('alarm-sound');
-            alarm.load(); 
-            var then = Date.now() + s * 1000;
-            function updateDisplay() {
-                var left = Math.round((then - Date.now()) / 1000);
-                if (left <= 0) { 
-                    clearInterval(countdown); 
-                    display.innerText = "00:00";
-                    
-                    // 倒數結束才播放
-                    alarm.play();
-                    showNotice("計時結束", "時間到！該開始下一組了 🏋️", false);
-                    return; 
-                }
-                var m = Math.floor(left / 60);
-                var rs = left % 60;
-                display.innerText = (m < 10 ? '0' + m : m) + ":" + (rs < 10 ? '0' + rs : rs);
-            }
-            updateDisplay();
-            countdown = setInterval(updateDisplay, 1000);
+function startTimer(s) {
+    clearInterval(countdown);
+    var display = document.querySelector('#timer-display');
+    var alarm = document.getElementById('alarm-sound');
+
+    var then = Date.now() + s * 1000;
+
+    function updateDisplay() {
+        var left = Math.round((then - Date.now()) / 1000);
+        if (left <= 0) { 
+            clearInterval(countdown); 
+            display.innerText = "00:00";
+
+            // 倒數結束才播放
+            alarm.play().catch(err => {
+                console.log("音效播放被阻擋，需要先點擊頁面:", err);
+            });
+
+            showNotice("計時結束", "時間到！該開始下一組了 🏋️", false);
+            return; 
         }
+
+        var m = Math.floor(left / 60);
+        var rs = left % 60;
+        display.innerText = (m < 10 ? '0' + m : m) + ":" + (rs < 10 ? '0' + rs : rs);
+    }
+
+    updateDisplay();
+    countdown = setInterval(updateDisplay, 1000);
+}
 
     function initCalendar() {
         var calendarEl = document.getElementById('calendar');
