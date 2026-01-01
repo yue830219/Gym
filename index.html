@@ -4,6 +4,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007AFF">
     <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/yue830219/Gym/main/Strength.png">
     <link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/yue830219/Gym/main/Strength.png">
     <meta charset="UTF-8">
@@ -117,7 +118,7 @@
 </head>
 <body>
 
- <audio id="alarm-sound" src="./energetic-sports-442840.mp3" preload="auto"></audio>
+ <audio id="alarm-sound" src="https://github.com/yue830219/Gym/raw/refs/heads/main/energetic-sports-442840.mp3" preload="auto"></audio>
 
 <div class="timer-panel">
     <div class="timer-header">
@@ -208,6 +209,7 @@
     <button class="btn-record" onclick="saveToHistory('有氧', this, '#5AC8FA')">💾 儲存到日曆</button>
 </div>
 
+
 <div class="calendar-card"><div id="calendar"></div></div>
 
 <div id="delete-modal">
@@ -220,7 +222,6 @@
         </div>
     </div>
 </div>
-
 <div style="display:flex; gap:10px; margin:20px 0;">
     <button class="btn-record" style="background:#007AFF;" onclick="exportHistory()">
         📤 匯出訓練紀錄
@@ -232,16 +233,38 @@
 
     <input type="file" id="import-file" accept=".json" style="display:none" onchange="importHistory(event)">
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-
 <script>
     let calendar;
     let countdown;
     let currentEventInfo = null;
     let setNum = 0; 
     let tempValue = "";
-function exportHistory() {
+
+    window.onload = function() {
+        var today = new Date().toLocaleDateString('sv-SE'); 
+        document.querySelectorAll('.date-input').forEach(function(input) {
+            input.value = today;
+        });
+
+        initCalendar();
+        loadAllWeights();
+        initAutoJump();
+        
+        var cardioIds = ['body_weight', 'leg_1', 'leg_hr', 'leg_min', 'leg_sec'];
+        cardioIds.forEach(function(id) {
+            var el = document.querySelector('[data-id="' + id + '"]');
+            if(el) {
+                el.addEventListener('input', updateCardioStats);
+                el.addEventListener('change', updateCardioStats);
+            }
+        });
+
+        updateCardioStats();
+    };
+
+
+    function exportHistory() {
     var history = localStorage.getItem('gym_history');
     if (!history || history === "[]") {
         showNotice("沒有資料", "目前沒有任何訓練紀錄可以匯出", false);
@@ -261,11 +284,8 @@ function exportHistory() {
 
     showNotice("匯出完成", "訓練紀錄已下載成 JSON 檔", false);
 }
-function triggerImport() {
-    document.getElementById('import-file').value = "";
-    document.getElementById('import-file').click();
-}
-function importHistory(event) {
+
+    function importHistory(event) {
     var file = event.target.files[0];
     if (!file) return;
 
@@ -295,7 +315,13 @@ function importHistory(event) {
 
     reader.readAsText(file);
 }
-function updateCardioStats() {
+
+    function triggerImport() {
+    document.getElementById('import-file').value = "";
+    document.getElementById('import-file').click();
+}
+
+    function updateCardioStats() {
     var weightInput = document.querySelector('[data-id="body_weight"]');
     var distInput = document.querySelector('[data-id="leg_1"]');
     var hrInput = document.getElementById('input-hr');
@@ -349,35 +375,6 @@ function updateCardioStats() {
     }
 }
 
-    window.onload = function() {
-        var today = new Date().toLocaleDateString('sv-SE'); 
-        document.querySelectorAll('.date-input').forEach(function(input) {
-            input.value = today;
-        });
-
-        initCalendar();
-        loadAllWeights();
-        initAutoJump();
-        
-        var cardioIds = ['body_weight', 'leg_1', 'leg_hr', 'leg_min', 'leg_sec'];
-        cardioIds.forEach(function(id) {
-            var el = document.querySelector('[data-id="' + id + '"]');
-            if(el) {
-                el.addEventListener('input', updateCardioStats);
-                el.addEventListener('change', updateCardioStats);
-            }
-        });
-
-        updateCardioStats();
-        
-        let alarm = document.getElementById('alarm-sound');
-        
-        document.body.addEventListener('click', function unlockAudio() {
-            alarm.play().then(() => alarm.pause());
-            document.body.removeEventListener('click', unlockAudio);
-        });
-    };
-
     function initAutoJump() {
         var hrInput = document.getElementById('input-hr');
         var minInput = document.getElementById('input-min');
@@ -416,7 +413,7 @@ function updateCardioStats() {
         document.getElementById('delete-modal').style.display = 'flex';
     }
     
-function closeModal() {
+    function closeModal() {
         // 停止鬧鐘音樂並歸零
         var alarm = document.getElementById('alarm-sound');
         if (alarm) {
@@ -493,36 +490,30 @@ function closeModal() {
         document.getElementById('set-counter').innerText = "";
     }
 
-function startTimer(s) {
-    clearInterval(countdown);
-    var display = document.querySelector('#timer-display');
-    var alarm = document.getElementById('alarm-sound');
-
-    var then = Date.now() + s * 1000;
-
-    function updateDisplay() {
-        var left = Math.round((then - Date.now()) / 1000);
-        if (left <= 0) { 
-            clearInterval(countdown); 
-            display.innerText = "00:00";
-
-            // 倒數結束才播放
-            alarm.play().catch(err => {
-                console.log("音效播放被阻擋，需要先點擊頁面:", err);
-            });
-
-            showNotice("計時結束", "時間到！該開始下一組了 🏋️", false);
-            return; 
+    function startTimer(s) {
+            clearInterval(countdown);
+            var display = document.querySelector('#timer-display');
+            var alarm = document.getElementById('alarm-sound');
+            alarm.load(); 
+            var then = Date.now() + s * 1000;
+            function updateDisplay() {
+                var left = Math.round((then - Date.now()) / 1000);
+                if (left <= 0) { 
+                    clearInterval(countdown); 
+                    display.innerText = "00:00";
+                    
+                    // 倒數結束才播放
+                    alarm.play();
+                    showNotice("計時結束", "時間到！該開始下一組了 🏋️", false);
+                    return; 
+                }
+                var m = Math.floor(left / 60);
+                var rs = left % 60;
+                display.innerText = (m < 10 ? '0' + m : m) + ":" + (rs < 10 ? '0' + rs : rs);
+            }
+            updateDisplay();
+            countdown = setInterval(updateDisplay, 1000);
         }
-
-        var m = Math.floor(left / 60);
-        var rs = left % 60;
-        display.innerText = (m < 10 ? '0' + m : m) + ":" + (rs < 10 ? '0' + rs : rs);
-    }
-
-    updateDisplay();
-    countdown = setInterval(updateDisplay, 1000);
-}
 
     function initCalendar() {
         var calendarEl = document.getElementById('calendar');
@@ -619,10 +610,11 @@ function startTimer(s) {
         }
         localStorage.setItem('gym_history', JSON.stringify(history));
     }
-</script>
-<script>
+
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
+
 </script>
 </body>
+</html>
