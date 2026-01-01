@@ -116,9 +116,10 @@
         .fc .fc-col-header-cell { padding: 4px 0 !important; }
     </style>
 </head>
+<button onclick="playSound()">播放</button>
 <body>
 
- <audio id="alarm-sound" src="https://github.com/yue830219/Gym/raw/refs/heads/main/energetic-sports-442840.mp3" preload="auto"></audio>
+ <audio id="alarm-sound" src="./energetic-sports-442840.mp3" preload="auto"></audio>
 
 <div class="timer-panel">
     <div class="timer-header">
@@ -126,7 +127,7 @@
         <div id="set-counter"></div>
     </div>
     <div class="btn-group">
-         <button style="background:var(--primary);color:white;font-size:0.8rem;" onclick="handleRestClick(120)">組數間隔2min</button>
+         <button style="background:var(--primary);color:white;font-size:0.8rem;" onclick="handleRestClick(5)">組數間隔2min</button>
         <button style="background:#5856D6;color:white;font-size:0.8rem;" onclick="handleSwitchClick(240)">動作間隔4min</button>
         <button style="background:#E5E5EA; flex: 0.4;font-size:1.2rem;" onclick="resetTimer()">↺</button>
     </div>
@@ -263,6 +264,10 @@
         updateCardioStats();
     };
 
+function playSound() {
+  const audio = document.getElementById("alarm-sound");
+  audio.play();
+}
 
     function exportHistory() {
     var history = localStorage.getItem('gym_history');
@@ -617,4 +622,3 @@ if ("serviceWorker" in navigator) {
 
 </script>
 </body>
-</html>
