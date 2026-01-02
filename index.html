@@ -614,6 +614,10 @@
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
+const alarm = document.getElementById('alarm-sound');
+alarm.onerror = function() {
+    alert("音樂載入失敗！錯誤代碼：" + alarm.error.code + "，路徑：" + alarm.src);
+};
 
 </script>
 </body>
