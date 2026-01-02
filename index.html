@@ -19,9 +19,112 @@
         :root { --primary: #007AFF; --chest: #FF3B30; --shoulder: #FF9500; --arm: #4CD964; --leg: #5AC8FA; --bg: #F2F2F7; --danger: #FF3B30; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 50px; }
         
+/* 頂部導覽列：Logo 與 三條線 */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            padding: 5px 0px;
+            justify-content: space-between;
+            background: var(--bg);
+        }
+        
+        .menu-icon {
+            font-size: 40px;
+            cursor: pointer;
+            width: 45px;
+            text-align: center;
+            margin-left: -10px;
+            margin-top: -15px;
+            color: #333;
+            user-select: none;
+        }
+        
+        /* 3. 修正文字 Logo 的對齊 */
+        .logo-container {
+            flex-grow: 1;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-top: -5px;
+            color: #007AFF;
+            line-height: 1;           /* 關鍵：設定為 1 避免多餘的文字行高撐開高度 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-container img {
+            height: 35px;
+            border-radius: 5px;
+        }
+        
+        /* 側邊選單：完全隱藏在左側、移除圓弧 */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -220px; /* 初始完全隱藏 */
+            width: 200px; /* 寬度減少 */
+            height: 100%;
+            background: white;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+            z-index: 3000;
+            transition: transform 0.3s ease;
+            padding: 20px 0;
+            visibility: hidden; /* 防止未展開時誤觸 */
+        }
+        
+        /* 展開狀態 */
+        .sidebar.active {
+            transform: translateX(220px);
+            visibility: visible;
+        }
+        
+        /* 選單標題 */
+        .sidebar-header {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #007AFF;
+            padding: 15px 20px 25px 20px;
+            border-bottom: 1px solid #f2f2f7;
+            margin-bottom: 10px;
+        }
+        
+        /* 選項：增加垂直距離與點擊感 */
+        .sidebar-item {
+            padding: 22px 25px; /* 上下 22px 讓項目間距變大 */
+            font-size: 1.05rem;
+            color: #1c1c1e;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+            -webkit-tap-highlight-color: transparent; /* 移除行動端點擊灰框 */
+        }
+        
+        .sidebar-item:active {
+            background: #f2f2f7;
+            color: #007AFF;
+        }
+        
+        /* 遮罩 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(2px);
+            display: none;
+            z-index: 2500;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
         .timer-panel { 
-            position: sticky; 
-            top: 10px; 
             background: rgba(255,255,255,0.95); 
             backdrop-filter: blur(10px); 
             padding: 15px; 
@@ -54,11 +157,28 @@
         .btn-group { display: flex; gap: 8px; }
         button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
     
-        .tab-menu { display: flex; gap: 5px; margin-bottom: 10px; }
-        .tab-btn { flex: 1; padding: 12px 5px; border-radius: 12px 12px 0 0; border: none; font-size: 0.9rem; font-weight: bold; color: white; opacity: 0.4; transition: 0.3s; }
+        .tab-menu { display: flex; gap: 5px; margin-bottom: 0px; }
+        .tab-btn { 
+            flex: 1; 
+            padding: 12px 5px; 
+            border-radius: 12px 12px 0 0;
+            border: none; 
+            font-size: 0.9rem; 
+            font-weight: bold; 
+            color: white; 
+            opacity: 0.4; 
+            transition: 0.3s;
+            margin-bottom: -1px;}
         .tab-btn.active { opacity: 1; transform: translateY(-2px); }
     
-        .card { background: white; border-radius: 0 0 18px 18px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none; }
+        .card { 
+            background: white; 
+            border-radius: 0 0 18px 18px; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            display: none;}
+            
         .card.active { display: block; animation: fadeIn 0.3s; }
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -83,8 +203,14 @@
         .date-input { border: 1px solid #ddd; border-radius: 6px; padding: 6px; font-size: 1rem; font-weight: bold; background: #fff; }
 
         .btn-record { background: #34c759; color: white; padding: 14px; font-size: 16px; border-radius: 12px; width: 100%; margin-top: 15px; border:none; font-weight:bold; }
-    
-        .calendar-card { background: white; border-radius: 18px; padding: 15px; margin-top: 30px; }
+
+         .calendar-card { 
+             display: none;
+         }
+
+         #calendar {
+             margin-top: 10px;
+         }
         
         #delete-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: popIn 0.2s cubic-bezier(0.17, 0.89, 0.32, 1.28); }
@@ -120,14 +246,41 @@
 
  <audio id="alarm-sound" src="https://github.com/yue830219/Gym/raw/refs/heads/main/music.mp3" preload="auto"></audio>
 
+<div class="top-bar">
+        <div class="menu-icon" onclick="toggleSidebar()">☰</div>
+        <div class="logo-container">
+            健身助手 Pro
+        </div>
+        <div style="width: 45px;"></div> </div>
+
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+<div class="sidebar" id="sidebar">
+    
+    <div class="sidebar-header" onclick="handleMenuClick('add')" style="cursor: pointer;">
+        健身助手 Pro
+    </div>
+    
+    <div class="sidebar-item" onclick="handleMenuClick('add')">
+        <span>🏠</span> 主畫面
+    </div>
+    
+    <div class="sidebar-item" onclick="handleMenuClick('calendar')">
+        <span>📅</span> 訓練日曆
+    </div>
+    
+    <div class="sidebar-item" onclick="handleMenuClick('settings')">
+        <span>⚙️</span> 系統設定
+    </div>
+</div>
+
 <div class="timer-panel">
     <div class="timer-header">
         <div id="timer-display">00:00</div>
         <div id="set-counter"></div>
     </div>
     <div class="btn-group">
-         <button style="background:var(--primary);color:white;font-size:0.8rem;" onclick="handleRestClick(120)">組數間隔2min</button>
-        <button style="background:#5856D6;color:white;font-size:0.8rem;" onclick="handleSwitchClick(240)">動作間隔4min</button>
+        <button style="background:var(--primary);color:white;font-size:0.8rem;" id="btn-rest-timer" onclick="startRestTimer()">組間間隔</button>
+        <button style="background:#5856D6;color:white;font-size:0.8rem;" id="btn-switch-timer" onclick="startSwitchTimer()">動作間隔</button>
         <button style="background:#E5E5EA; flex: 0.4;font-size:1.2rem;" onclick="resetTimer()">↺</button>
     </div>
 </div>
@@ -210,7 +363,61 @@
 </div>
 
 
-<div class="calendar-card"><div id="calendar"></div></div>
+<div class="card" id="card-calendar">
+    <div class="card-header">
+        <h3 style="color:var(--primary); margin:0;">訓練日曆</h3>
+    </div>
+    <div id="calendar"></div>
+</div>
+
+<div class="card" id="card-settings">
+    <div class="card-header">
+        <h3 style="color:var(--primary); margin:0;">系統設定</h3>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:15px; margin-top:10px;">
+        
+        <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
+            <h4 style="margin:0 0 10px 0; color:#333;">自定義計時器 (分鐘)</h4>
+            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
+                <span style="font-size:0.9rem; flex:1; text-align:right;">組間間隔：</span>
+                <input type="number" id="cfg-rest-min" class="weight-input" style="width:40px;" 
+                       onfocus="tempTimerVal=this.value; this.value='';" 
+                       onblur="if(this.value===''){this.value=tempTimerVal;}" 
+                       placeholder="2">
+                <span class="unit-text">分</span>
+            </div>
+            
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span style="font-size:0.9rem; flex:1; text-align:right;">動作間隔：</span>
+                <input type="number" id="cfg-switch-min" class="weight-input" style="width:40px;" 
+                       onfocus="tempTimerVal=this.value; this.value='';" 
+                       onblur="if(this.value===''){this.value=tempTimerVal;}" 
+                       placeholder="4">
+                <span class="unit-text">分</span>
+            </div>
+            
+            <button class="btn-record" style="background:var(--primary); padding:8px; margin-top:10px; font-size:14px;" onclick="saveTimerSettings()">
+                ✅ 儲存計時設定
+            </button>
+        </div>
+
+<div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="btn-record" style="background:#007AFF; flex: 1; padding: 10px; font-size: 14px; margin-top: 0;" onclick="exportHistory()">
+                📤 匯出紀錄
+            </button>
+        
+            <button class="btn-record" style="background:#5856D6; flex: 1; padding: 10px; font-size: 14px; margin-top: 0;" onclick="triggerImport()">
+                📥 匯入紀錄
+            </button>
+        </div>
+        
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importHistory(event)">
+        <p style="font-size: 0.85rem; color: #666; text-align: center;">
+            建議定期匯出備份，避免數據遺失。
+        </p>
+    </div>
+</div>
+
 
 <div id="delete-modal">
     <div class="modal-content">
@@ -222,17 +429,7 @@
         </div>
     </div>
 </div>
-<div style="display:flex; gap:10px; margin:20px 0;">
-    <button class="btn-record" style="background:#007AFF;" onclick="exportHistory()">
-        📤 匯出訓練紀錄
-    </button>
 
-    <button class="btn-record" style="background:#5856D6;" onclick="triggerImport()">
-        📥 匯入訓練紀錄
-    </button>
-
-    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importHistory(event)">
-</div>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
     let calendar;
@@ -261,6 +458,7 @@
         });
 
         updateCardioStats();
+        initTimerSettings();
     };
 
 
@@ -463,10 +661,6 @@
         updateCardioStats();
     }
 
-    function switchTab(index) {
-        document.querySelectorAll('.tab-btn').forEach(function(btn, i) { btn.classList.toggle('active', i === index); });
-        document.querySelectorAll('.card').forEach(function(card, i) { card.classList.toggle('active', i === index); });
-    }
 
     function handleRestClick(seconds) {
         setNum++; 
@@ -611,9 +805,148 @@
         localStorage.setItem('gym_history', JSON.stringify(history));
     }
 
+// 控制選單開關
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    
+    if (sidebar.classList.contains('active')) {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+    } else {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+    }
+}
+
+// 處理選單點擊動作
+function handleMenuClick(action) {
+    toggleSidebar(); // 關閉選單
+    
+    const timerPanel = document.querySelector('.timer-panel');
+    const tabMenu = document.querySelector('.tab-menu');
+    const allCards = document.querySelectorAll('.card');
+    const calendarCard = document.getElementById('card-calendar');
+    const settingsCard = document.getElementById('card-settings');
+
+    // 隱藏所有卡片
+    allCards.forEach(card => card.classList.remove('active'));
+
+    if (action === 'settings') {
+        // --- 進入設定模式 ---
+        timerPanel.style.display = 'none';
+        tabMenu.style.display = 'none';
+        settingsCard.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } else if (action === 'calendar') {
+        // --- 進入日曆模式 ---
+        timerPanel.style.display = 'none';
+        tabMenu.style.display = 'none';
+        calendarCard.classList.add('active');
+        setTimeout(() => { calendar.render(); }, 100);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } else if (action === 'add') {
+        // --- 回到新增紀錄模式 ---
+        timerPanel.style.display = 'block';
+        tabMenu.style.display = 'flex';
+        switchTab(0); // 回到第一個訓練分頁
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+// 修改原有的 switchTab，確保它會把計時器顯示回來（以防萬一）
+function switchTab(index) {
+    // 確保計時器和分頁選單是顯示的
+    document.querySelector('.timer-panel').style.display = 'block';
+    document.querySelector('.tab-menu').style.display = 'flex';
+
+    // 隱藏包含日曆在內的所有 card
+    document.querySelectorAll('.card').forEach(function(card) { 
+        card.classList.remove('active'); 
+    });
+    
+    // 顯示對應的 card (練胸/肩/臂/有氧)
+    const targetCards = document.querySelectorAll('.card');
+    if(targetCards[index]) {
+        targetCards[index].classList.add('active');
+    }
+    
+    // 處理分頁按鈕顏色
+    document.querySelectorAll('.tab-btn').forEach(function(btn, i) { 
+        btn.classList.toggle('active', i === index); 
+    });
+}
+
+function initTimerSettings() {
+    // 1. 從本地儲存取得數值，如果沒有就給預設值 "2" 與 "4"
+    let restMin = localStorage.getItem('cfg_rest_min');
+    let switchMin = localStorage.getItem('cfg_switch_min');
+    
+    // 防呆：如果抓到空值或是 null，強制設為預設值並存回去
+    if (!restMin || restMin === "") {
+        restMin = "2";
+        localStorage.setItem('cfg_rest_min', "2");
+    }
+    if (!switchMin || switchMin === "") {
+        switchMin = "4";
+        localStorage.setItem('cfg_switch_min', "4");
+    }
+    
+    // 2. 更新「設定頁面」的輸入框數值
+    const inputRest = document.getElementById('cfg-rest-min');
+    const inputSwitch = document.getElementById('cfg-switch-min');
+    if (inputRest) inputRest.value = restMin;
+    if (inputSwitch) inputSwitch.value = switchMin;
+    
+    // 3. 更新「主畫面按鈕」的文字顯示
+    const btnRest = document.getElementById('btn-rest-timer');
+    const btnSwitch = document.getElementById('btn-switch-timer');
+    
+    if (btnRest) {
+        btnRest.innerText = "組間間隔" + restMin + "min";
+    }
+    if (btnSwitch) {
+        btnSwitch.innerText = "動作間隔" + switchMin + "min";
+    }
+}
+
+function saveTimerSettings() {
+    // 1. 強制抓取畫面上輸入框的最新數值
+    var restValue = document.getElementById('cfg-rest-min').value;
+    var swValue = document.getElementById('cfg-switch-min').value;
+    
+    // 2. 如果是空的就給預設值，避免存入空字串
+    if (!restValue) restValue = "2";
+    if (!swValue) swValue = "4";
+
+    // 3. 儲存到本地空間
+    localStorage.setItem('cfg_rest_min', restValue);
+    localStorage.setItem('cfg_switch_min', swValue);
+    
+    // 4. 更新主畫面按鈕文字
+    initTimerSettings();
+    
+    // 5. 修正提示文字：使用 + 號連接字串確保相容性
+    var msg = "計時器已改為 " + restValue + " 分鐘與 " + swValue + " 分鐘";
+    showNotice("設定已儲存", msg, false);
+}
+
+function startRestTimer() {
+    const mins = parseFloat(localStorage.getItem('cfg_rest_min')) || 2;
+    handleRestClick(mins * 60);
+}
+
+function startSwitchTimer() {
+    const mins = parseFloat(localStorage.getItem('cfg_switch_min')) || 4;
+    handleSwitchClick(mins * 60);
+}
+
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
+
 </script>
 </body>
 </html>
