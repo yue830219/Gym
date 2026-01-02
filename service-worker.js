@@ -4,7 +4,9 @@ const FILES_TO_CACHE = [
   "./index.html",
   "./manifest.json",
   "./Strength.png",
-  "./music.mp3"
+  "https://github.com/yue830219/Gym/raw/refs/heads/main/music.mp3",
+  "https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css",
+  "https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"
 ];
 
 self.addEventListener("install", event => {
