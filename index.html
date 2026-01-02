@@ -118,7 +118,7 @@
 </head>
 <body>
 
- <audio id="alarm-sound" src="music.mp3" preload="auto"></audio>
+ <audio id="alarm-sound" src="https://github.com/yue830219/Gym/raw/refs/heads/main/music.mp3" preload="auto"></audio>
 
 <div class="timer-panel">
     <div class="timer-header">
@@ -614,11 +614,6 @@
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
-const alarm = document.getElementById('alarm-sound');
-alarm.onerror = function() {
-    alert("音樂載入失敗！錯誤代碼：" + alarm.error.code + "，路徑：" + alarm.src);
-};
-
 </script>
 </body>
 </html>
