@@ -688,16 +688,26 @@
             clearInterval(countdown);
             var display = document.querySelector('#timer-display');
             var alarm = document.getElementById('alarm-sound');
-            alarm.load(); 
+            
+            // 【關鍵改動】不要 load()，但「觸碰」一下音訊，解鎖 iOS 限制
+            // 播放 0.001 秒後立刻暫停，使用者聽不到，但系統會判定已允許播放
+            alarm.play().then(() => {
+                alarm.pause();
+                alarm.currentTime = 0;
+            }).catch(e => console.log("等待手動解鎖"));
+        
             var then = Date.now() + s * 1000;
+            
             function updateDisplay() {
                 var left = Math.round((then - Date.now()) / 1000);
                 if (left <= 0) { 
                     clearInterval(countdown); 
                     display.innerText = "00:00";
                     
-                    // 倒數結束才播放
-                    alarm.play();
+                    // 倒數結束才真正「呼叫」並播放
+                    alarm.currentTime = 0; 
+                    alarm.play(); 
+                    
                     showNotice("計時結束", "時間到！該開始下一組了 🏋️", false);
                     return; 
                 }
@@ -708,6 +718,7 @@
             updateDisplay();
             countdown = setInterval(updateDisplay, 1000);
         }
+        
 
     function initCalendar() {
         var calendarEl = document.getElementById('calendar');
