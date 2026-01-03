@@ -461,7 +461,25 @@
         initTimerSettings();
     };
 
-
+    let audioUnlocked = false;
+    
+    function unlockAudio() {
+        if (audioUnlocked) return;
+    
+        const alarm = document.getElementById('alarm-sound');
+        if (!alarm) return;
+    
+        alarm.volume = 0;
+        alarm.play().then(() => {
+            alarm.pause();
+            alarm.currentTime = 0;
+            alarm.volume = 1;
+            audioUnlocked = true;
+        }).catch(() => {
+            // iOS 尚未允許，等下次點擊再解鎖
+        });
+    }
+    
     function exportHistory() {
     var history = localStorage.getItem('gym_history');
     if (!history || history === "[]") {
@@ -688,7 +706,8 @@
                     clearInterval(countdown);
                     var display = document.querySelector('#timer-display');
                     var alarm = document.getElementById('alarm-sound');
-                    alarm.load(); 
+                    alarm.currentTime = 0;
+                    alarm.play(); 
                     var then = Date.now() + s * 1000;
                     function updateDisplay() {
                         var left = Math.round((then - Date.now()) / 1000);
@@ -942,11 +961,13 @@ function saveTimerSettings() {
 }
 
 function startRestTimer() {
+    unlockAudio();
     const mins = parseFloat(localStorage.getItem('cfg_rest_min')) || 2;
     handleRestClick(mins * 60);
 }
 
 function startSwitchTimer() {
+    unlockAudio();
     const mins = parseFloat(localStorage.getItem('cfg_switch_min')) || 4;
     handleSwitchClick(mins * 60);
 }
