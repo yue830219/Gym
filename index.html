@@ -461,25 +461,7 @@
         initTimerSettings();
     };
 
-    let audioUnlocked = false;
-    
-    function unlockAudio() {
-        if (audioUnlocked) return;
-    
-        const alarm = document.getElementById('alarm-sound');
-        if (!alarm) return;
-    
-        alarm.volume = 0;
-        alarm.play().then(() => {
-            alarm.pause();
-            alarm.currentTime = 0;
-            alarm.volume = 1;
-            audioUnlocked = true;
-        }).catch(() => {
-            // iOS 尚未允許，等下次點擊再解鎖
-        });
-    }
-    
+
     function exportHistory() {
     var history = localStorage.getItem('gym_history');
     if (!history || history === "[]") {
@@ -703,39 +685,30 @@
     }
 
     function startTimer(s) {
-                    clearInterval(countdown);
-                    var display = document.querySelector('#timer-display');
-                    var alarm = document.getElementById('alarm-sound');
-                    alarm.currentTime = 0;
-                    alarm.play(); 
-                    var then = Date.now() + s * 1000;
-                    function updateDisplay() {
-                        var left = Math.round((then - Date.now()) / 1000);
-                        if (left <= 0) { 
-                            clearInterval(countdown); 
-                            display.innerText = "00:00";
-                            
-                            // 倒數結束才播放
-                            alarm.play();
-                            showNotice("計時結束", "時間到！該開始下一組了 🏋️", false);
-                            return; 
-                        }
-                        var m = Math.floor(left / 60);
-                        var rs = left % 60;
-                        display.innerText = (m < 10 ? '0' + m : m) + ":" + (rs < 10 ? '0' + rs : rs);
-                    }
-                    updateDisplay();
-                    countdown = setInterval(updateDisplay, 1000);
+            clearInterval(countdown);
+            var display = document.querySelector('#timer-display');
+            var alarm = document.getElementById('alarm-sound');
+            alarm.load(); 
+            var then = Date.now() + s * 1000;
+            function updateDisplay() {
+                var left = Math.round((then - Date.now()) / 1000);
+                if (left <= 0) { 
+                    clearInterval(countdown); 
+                    display.innerText = "00:00";
+                    
+                    // 倒數結束才播放
+                    alarm.play();
+                    showNotice("計時結束", "時間到！該開始下一組了 🏋️", false);
+                    return; 
                 }
-    
-    function stopVibrationAlert() {
-        if (vibrationInterval) {
-            clearInterval(vibrationInterval);
-            vibrationInterval = null;
+                var m = Math.floor(left / 60);
+                var rs = left % 60;
+                display.innerText = (m < 10 ? '0' + m : m) + ":" + (rs < 10 ? '0' + rs : rs);
+            }
+            updateDisplay();
+            countdown = setInterval(updateDisplay, 1000);
         }
-        navigator.vibrate(0); // 強制停止
-    }
-    
+
     function initCalendar() {
         var calendarEl = document.getElementById('calendar');
         calendar = new FullCalendar.Calendar(calendarEl, {
@@ -961,13 +934,11 @@ function saveTimerSettings() {
 }
 
 function startRestTimer() {
-    unlockAudio();
     const mins = parseFloat(localStorage.getItem('cfg_rest_min')) || 2;
     handleRestClick(mins * 60);
 }
 
 function startSwitchTimer() {
-    unlockAudio();
     const mins = parseFloat(localStorage.getItem('cfg_switch_min')) || 4;
     handleSwitchClick(mins * 60);
 }
