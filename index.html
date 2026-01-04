@@ -16,7 +16,7 @@
         :root { --primary: #007AFF; --chest: #FF3B30; --shoulder: #FF9500; --arm: #4CD964; --leg: #5AC8FA; --bg: #F2F2F7; --danger: #FF3B30; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 50px; }
         .top-bar { display: flex; align-items: center; padding: 5px 0px; justify-content: space-between; background: var(--bg); }
-        .menu-icon { font-size: 40px; cursor: pointer; width: 45px; text-align: center; margin-left: -10px; margin-top: -15px; color: #333; user-select: none; }
+        .menu-icon { font-size: 40px; cursor: pointer; width: 45px; text-align: center; margin-left: -7px; margin-top: -15px; color: #333; user-select: none; }
         .logo-container { flex-grow: 1; text-align: center; font-size: 1.25rem; font-weight: 800; margin-top: -5px; color: #007AFF; line-height: 1; display: flex; align-items: center; justify-content: center; }
         .logo-container img { height: 35px; border-radius: 5px; }
         .sidebar { position: fixed; top: 0; left: -220px; width: 200px; height: 100%; background: white; box-shadow: 2px 0 12px rgba(0,0,0,0.15); z-index: 3000; transition: transform 0.3s ease; padding: 20px 0; visibility: hidden; }
@@ -89,6 +89,7 @@
         <div class="sidebar-item" onclick="handleMenuClick('calendar')"><span>📅</span> 訓練日曆</div>
         <div class="sidebar-item" onclick="handleMenuClick('settings')"><span>⚙️</span> 系統設定</div>
     </div>
+    <h3 style="color:var(--primary); margin: 0 0 10px 10px; font-size: 1.17em;">計時器</h3>
     <div class="timer-panel">
         <div class="timer-header">
             <div id="timer-display">00:00</div>
@@ -100,6 +101,7 @@
             <button style="background:#E5E5EA; flex: 0.4;font-size:1.2rem;" onclick="resetTimer()">↺</button>
         </div>
     </div>
+    <h3 style="color:var(--primary); margin: 0 0 10px 10px; font-size: 1.17em;">紀錄訓練</h3>
     <div class="tab-menu">
         <button class="tab-btn active" style="background:var(--chest)" onclick="switchTab(0)">🔥 練胸</button>
         <button class="tab-btn" style="background:var(--shoulder)" onclick="switchTab(1)">⚡ 練肩</button>
