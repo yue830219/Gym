@@ -240,11 +240,80 @@
         .fc .fc-daygrid-day-number { padding: 2px 0 !important; font-size: 1.1rem; }
         .fc-daygrid-event { margin-top: 1px !important; padding: 0 2px !important; font-size: 0.75rem !important; }
         .fc .fc-col-header-cell { padding: 4px 0 !important; }
+        /* iOS 風格撥動開關 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 30px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: #ccc;
+            transition: 0.25s;
+            border-radius: 30px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 2px;
+            top: 2px;
+            background-color: white;
+            transition: 0.25s;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+        }
+        
+        /* 開啟狀態 */
+        .switch input:checked + .slider {
+            background-color: #34C759; /* iOS 綠 */
+        }
+        
+        .switch input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        /* 全螢幕閃爍背景 */
+        .flash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1500; /* 低於彈窗的 2000，但高於其他內容 */
+            display: none;
+            pointer-events: none; /* 確保不影響點擊彈窗按鈕 */
+        }
+        
+        .flash-active {
+            display: block;
+            animation: alarm-flash 0.7s infinite;
+        }
+        
+        @keyframes alarm-flash {
+            0% { background-color: rgba(255, 0, 0); }   /* 紅色 */
+            50% { background-color: rgba(255, 255, 255); } /* 白色 */
+            100% { background-color: rgba(255, 0, 0); }
+        }
+        
     </style>
 </head>
 <body>
 
  <audio id="alarm-sound" src="https://github.com/yue830219/Gym/raw/refs/heads/main/music.mp3" preload="auto"></audio>
+ 
+<div id="flash-screen" class="flash-overlay"></div>
 
 <div class="top-bar">
         <div class="menu-icon" onclick="toggleSidebar()">☰</div>
@@ -400,6 +469,27 @@
                 ✅ 儲存計時設定
             </button>
         </div>
+        
+        <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee; margin-top:15px;">
+            <h4 style="margin:0 0 10px 0; color:#333;">提醒方式設定</h4>
+            
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 15px;">
+                <span style="font-size:1rem; font-weight:bold;">計時結束播放鈴聲</span>
+                <label class="switch">
+                    <input type="checkbox" id="cfg-sound-enable" onchange="saveSoundSetting()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:1rem; font-weight:bold;">計時結束畫面閃爍</span>
+                <label class="switch">
+                    <input type="checkbox" id="cfg-flash-enable" onchange="saveFlashSetting()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        
 
 <div style="display: flex; gap: 10px; margin-top: 10px;">
             <button class="btn-record" style="background:#007AFF; flex: 1; padding: 10px; font-size: 14px; margin-top: 0;" onclick="exportHistory()">
@@ -447,6 +537,8 @@
         initCalendar();
         loadAllWeights();
         initAutoJump();
+        initSoundSetting();
+        initFlashSetting();
         
         var cardioIds = ['body_weight', 'leg_1', 'leg_hr', 'leg_min', 'leg_sec'];
         cardioIds.forEach(function(id) {
@@ -618,7 +710,7 @@
             alarm.pause();
             alarm.currentTime = 0;
         }
-        
+        document.getElementById('flash-screen').classList.remove('flash-active');
         // 關閉視窗
         document.getElementById('delete-modal').style.display = 'none';
         currentEventInfo = null;
@@ -697,7 +789,16 @@
                     display.innerText = "00:00";
                     
                     // 倒數結束才播放
-                    alarm.play();
+                    const soundEnabled = localStorage.getItem('cfg_sound_enable') === "true";
+                    
+                    if (soundEnabled) {
+                        alarm.play();
+                    }
+                    const flashEnabled = localStorage.getItem('cfg_flash_enable') === "true";
+                    if (flashEnabled) {
+                        document.getElementById('flash-screen').classList.add('flash-active');
+                    }
+                    
                     showNotice("計時結束", "時間到！該開始下一組了 🏋️", false);
                     return; 
                 }
@@ -942,6 +1043,44 @@ function startSwitchTimer() {
     const mins = parseFloat(localStorage.getItem('cfg_switch_min')) || 4;
     handleSwitchClick(mins * 60);
 }
+
+function initSoundSetting() {
+    let soundEnabled = localStorage.getItem('cfg_sound_enable');
+
+    // 預設為開啟
+    if (soundEnabled === null) {
+        soundEnabled = "true";
+        localStorage.setItem('cfg_sound_enable', "true");
+    }
+
+    const checkbox = document.getElementById('cfg-sound-enable');
+    if (checkbox) {
+        checkbox.checked = (soundEnabled === "true");
+    }
+}
+
+function saveSoundSetting() {
+    const checkbox = document.getElementById('cfg-sound-enable');
+    const enabled = checkbox.checked;
+
+    localStorage.setItem('cfg_sound_enable', enabled ? "true" : "false");
+}
+
+function initFlashSetting() {
+    let flashEnabled = localStorage.getItem('cfg_flash_enable');
+    if (flashEnabled === null) {
+        flashEnabled = "true"; // 預設開啟
+        localStorage.setItem('cfg_flash_enable', "true");
+    }
+    const checkbox = document.getElementById('cfg-flash-enable');
+    if (checkbox) checkbox.checked = (flashEnabled === "true");
+}
+
+function saveFlashSetting() {
+    const checkbox = document.getElementById('cfg-flash-enable');
+    localStorage.setItem('cfg_flash_enable', checkbox.checked ? "true" : "false");
+}
+
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
