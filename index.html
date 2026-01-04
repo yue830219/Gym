@@ -89,7 +89,9 @@
         <div class="sidebar-item" onclick="handleMenuClick('calendar')"><span>📅</span> 訓練日曆</div>
         <div class="sidebar-item" onclick="handleMenuClick('settings')"><span>⚙️</span> 系統設定</div>
     </div>
-    <h3 style="color:var(--primary); margin: 0 0 10px 10px; font-size: 1.17em;">計時器</h3>
+    <div id="timer-title" style="margin: 0 0 10px 0;">
+    <h3 style="color:var(--primary); margin:0;">計時器</h3>
+    </div>
     <div class="timer-panel">
         <div class="timer-header">
             <div id="timer-display">00:00</div>
@@ -101,7 +103,9 @@
             <button style="background:#E5E5EA; flex: 0.4;font-size:1.2rem;" onclick="resetTimer()">↺</button>
         </div>
     </div>
-    <h3 style="color:var(--primary); margin: 0 0 10px 10px; font-size: 1.17em;">紀錄訓練</h3>
+    <div id="main-title" style="margin: 0 0 10px 0;"> 
+    <h3 style="color:var(--primary); margin:0;">紀錄訓練</h3>
+    </div>
     <div class="tab-menu">
         <button class="tab-btn active" style="background:var(--chest)" onclick="switchTab(0)">🔥 練胸</button>
         <button class="tab-btn" style="background:var(--shoulder)" onclick="switchTab(1)">⚡ 練肩</button>
@@ -334,14 +338,22 @@
         }
         function handleMenuClick(action) {
             toggleSidebar(); const timerPanel = document.querySelector('.timer-panel'); const tabMenu = document.querySelector('.tab-menu');
+                const mainTitle = document.getElementById('main-title');
+                const timerTitle = document.getElementById('timer-title');
             document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
-            if (action === 'settings') { timerPanel.style.display = 'none'; tabMenu.style.display = 'none'; document.getElementById('card-settings').classList.add('active'); } 
-            else if (action === 'calendar') { timerPanel.style.display = 'none'; tabMenu.style.display = 'none'; document.getElementById('card-calendar').classList.add('active'); setTimeout(() => { calendar.render(); }, 100); } 
-            else if (action === 'add') { timerPanel.style.display = 'block'; tabMenu.style.display = 'flex'; switchTab(0); }
+            if (action === 'settings') { timerPanel.style.display = 'none'; tabMenu.style.display = 'none';mainTitle.style.display = 'none';
+                timerTitle.style.display = 'none';
+            document.getElementById('card-settings').classList.add('active'); } 
+            else if (action === 'calendar') { timerPanel.style.display = 'none'; tabMenu.style.display = 'none';mainTitle.style.display = 'none';
+                timerTitle.style.display = 'none';
+            document.getElementById('card-calendar').classList.add('active'); setTimeout(() => { calendar.render(); }, 100); } 
+            else if (action === 'add') { timerPanel.style.display = 'block'; tabMenu.style.display = 'flex';mainTitle.style.display = 'none';
+                timerTitle.style.display = 'none'; switchTab(0); }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         function switchTab(index) {
-            document.querySelector('.timer-panel').style.display = 'block'; document.querySelector('.tab-menu').style.display = 'flex';
+            document.querySelector('.timer-panel').style.display = 'block'; document.querySelector('.tab-menu').style.display = 'flex';document.getElementById('main-title').style.display = 'block';
+                document.getElementById('timer-title').style.display = 'block';
             document.querySelectorAll('.card').forEach(function(card) { card.classList.remove('active'); });
             const targetCards = document.querySelectorAll('.card'); if(targetCards[index]) targetCards[index].classList.add('active');
             document.querySelectorAll('.tab-btn').forEach(function(btn, i) { btn.classList.toggle('active', i === index); });
