@@ -1028,10 +1028,6 @@ function saveTimerSettings() {
     
     // 4. 更新主畫面按鈕文字
     initTimerSettings();
-    
-    // 5. 修正提示文字：使用 + 號連接字串確保相容性
-    var msg = "計時器已改為 " + restValue + " 分鐘與 " + swValue + " 分鐘";
-    showNotice("設定已儲存", msg, false);
 }
 
 function startRestTimer() {
