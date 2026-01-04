@@ -365,7 +365,7 @@
             const inputRest = document.getElementById('cfg-rest-min'); const inputSwitch = document.getElementById('cfg-switch-min');
             if (inputRest) inputRest.value = restMin; if (inputSwitch) inputSwitch.value = switchMin;
             const btnRest = document.getElementById('btn-rest-timer'); const btnSwitch = document.getElementById('btn-switch-timer');
-            if (btnRest) btnRest.innerText = "組間間隔\n" + restMin + "min"; if (btnSwitch) btnSwitch.innerText = "動作間隔\n" + switchMin + "min";
+            if (btnRest) btnRest.innerText = "組間間隔\n" + restMin + " 分鐘"; if (btnSwitch) btnSwitch.innerText = "動作間隔\n" + switchMin + " 分鐘";
         }
         function saveTimerSettings() {
             var restValue = document.getElementById('cfg-rest-min').value || "2"; var swValue = document.getElementById('cfg-switch-min').value || "4";
