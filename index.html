@@ -13,7 +13,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
     <style>
-        :root { --primary: #007AFF; --chest: #FF3B30; --shoulder: #FF9500; --arm: #4CD964; --leg: #5AC8FA; --bg: #F2F2F7; --danger: #FF3B30; }
+        :root { --primary: #007AFF; --chest: #FF3B30; --shoulder: #FF9500; --arm: #4CD964; --leg: #5AC8FA; --abs: #AF52DE; --bg: #F2F2F7; --danger: #FF3B30; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 50px; }
         .top-bar { display: flex; align-items: center; padding: 5px 0px; justify-content: space-between; background: var(--bg); }
         .menu-icon { font-size: 40px; cursor: pointer; width: 45px; text-align: center; margin-left: -7px; margin-top: -15px; color: #333; user-select: none; }
@@ -110,7 +110,8 @@
         <button class="tab-btn active" style="background:var(--chest)" onclick="switchTab(0)">🔥 練胸</button>
         <button class="tab-btn" style="background:var(--shoulder)" onclick="switchTab(1)">⚡ 練肩</button>
         <button class="tab-btn" style="background:var(--arm)" onclick="switchTab(2)">💪 練臂</button>
-        <button class="tab-btn" style="background:var(--leg)" onclick="switchTab(3)">🏃 有氧</button>
+        <button class="tab-btn" style="background:var(--abs)" onclick="switchTab(3)">🍫 練腹</button>
+        <button class="tab-btn" style="background:var(--leg)" onclick="switchTab(4)">🏃 有氧</button>
     </div>
     <div class="card active" id="card-chest" data-type="chest">
         <div class="card-header"><h3 style="color:var(--chest);margin:0;">練胸內容</h3><input type="date" class="date-input" onchange="syncDate(this)"></div>
@@ -136,6 +137,41 @@
         <div class="exercise-item"><span>啞鈴頸後臂屈伸</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_4" placeholder="0"><span class="unit-text">kg</span></div></div>
         <button class="btn-record" onclick="saveToHistory('練臂', this, '#4CD964')">💾 儲存到日曆</button>
     </div>
+    <div class="card" id="card-abs" data-type="abs">
+    <div class="card-header">
+        <h3 style="color:var(--abs);margin:0;">練腹內容</h3>
+        <input type="date" class="date-input" onchange="syncDate(this)">
+    </div>
+    <div class="exercise-item">
+        <span>強力跨越</span>
+        <div class="input-group">
+            <input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="abs_1" placeholder="0">
+            <span class="unit-text">下</span>
+        </div>
+    </div>
+    <div class="exercise-item">
+        <span>仰臥捲腹</span>
+        <div class="input-group">
+            <input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="abs_2" placeholder="0">
+            <span class="unit-text">下</span>
+        </div>
+    </div>
+    <div class="exercise-item">
+        <span>單槓螺旋式</span>
+        <div class="input-group">
+            <input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="abs_3" placeholder="0">
+            <span class="unit-text">下</span>
+        </div>
+    </div>
+    <div class="exercise-item">
+        <span>俯撐登山跑</span>
+        <div class="input-group">
+            <input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="abs_4" placeholder="0">
+            <span class="unit-text">秒</span>
+        </div>
+    </div>
+    <button class="btn-record" onclick="saveToHistory('練腹', this, '#AF52DE')">💾 儲存到日曆</button>
+</div>
     <div class="card" id="card-leg" data-type="leg">
         <div class="card-header"><h3 style="color:var(--leg);margin:0;">跑步</h3><input type="date" class="date-input" onchange="syncDate(this)"></div>
         <div class="exercise-item"><span>目前體重</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="body_weight" placeholder="0"><span class="unit-text">kg</span></div></div>
@@ -307,7 +343,7 @@
         function saveToHistory(type, btnElement, color) {
             var card = btnElement.closest('.card'); var dateVal = card.querySelector('.date-input').value;
             if (!dateVal) { showNotice("警告", "請選擇日期", false); return; }
-            var orderWeight = (type === '練胸') ? 1 : (type === '練肩') ? 2 : (type === '練臂') ? 3 : (type === '有氧') ? 4 : 99;
+            var orderWeight = (type === '練胸') ? 1 : (type === '練肩') ? 2 : (type === '練臂') ? 3 : (type === '練腹') ? 4 : (type === '有氧') ? 5 : 99;
             var details = "";
             if (type === '有氧') {
                 var dist = card.querySelector('[data-id="leg_1"]').value || "0";
