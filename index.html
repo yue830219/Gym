@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007AFF">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="./Strength.png">
+    <link rel="icon" type="image/jpeg" href="./Strength.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>健身助手 Pro</title>
+    <meta name="apple-mobile-web-app-title" content="健身助手">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+    <style>
+        :root { --primary: #007AFF; --chest: #FF3B30; --shoulder: #FF9500; --arm: #4CD964; --leg: #5AC8FA; --abs: #AF52DE; --bg: #F2F2F7; --danger: #FF3B30; --leg-strength: #008080; --hiit: #5856D6; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 50px; }
+        .top-bar { display: flex; align-items: center; padding: 5px 0px; justify-content: space-between; background: var(--bg); }
+        .menu-icon { font-size: 40px; cursor: pointer; width: 45px; text-align: center; margin-left: -7px; margin-top: -15px; color: #333; user-select: none; }
+        .logo-container { flex-grow: 1; text-align: center; font-size: 1.25rem; font-weight: 800; margin-top: -5px; color: #007AFF; line-height: 1; display: flex; align-items: center; justify-content: center; }
+        .logo-container img { height: 35px; border-radius: 5px; }
+        .sidebar { position: fixed; top: 0; left: -220px; width: 200px; height: 100%; background: white; box-shadow: 2px 0 12px rgba(0,0,0,0.15); z-index: 3000; transition: transform 0.3s ease; padding: 20px 0; visibility: hidden; }
+        .sidebar.active { transform: translateX(220px); visibility: visible; }
+        .sidebar-header { font-size: 1.25rem; font-weight: 800; color: #007AFF; padding: 15px 20px 25px 20px; border-bottom: 1px solid #f2f2f7; margin-bottom: 10px; }
+        .sidebar-item { padding: 22px 25px; font-size: 1.05rem; color: #1c1c1e; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: background 0.2s; -webkit-tap-highlight-color: transparent; }
+        .sidebar-item:active { background: #f2f2f7; color: #007AFF; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); display: none; z-index: 2500; }
+        .overlay.active { display: block; }
+        .timer-panel { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 15px; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); z-index: 1000; margin-bottom: 20px; border: 1px solid #ddd; }
+        .timer-header { display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
+        #timer-display { font-size: 3.5rem; font-weight: 800; margin: 5px 0; color: #1c1c1e; line-height: 1.2; text-align: left; }
+        #set-counter { font-size: 1.2rem; font-weight: bold; color: #34c759; text-align: right; }
+        .btn-group { display: flex; gap: 8px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .tab-menu {display: flex; flex-wrap: wrap; /* 允許換行 */gap: 2px; margin-bottom: 0px; }
+        .tab-btn { flex: 1 1 17%; min-width: 70px;padding: 12px 5px; border-radius: 12px; /* 改為全圓角比較美觀 */border: none; font-size: 0.9rem; font-weight: bold; color: white; opacity: 0.4; transition: 0.3s; margin-bottom: 5px; /* 增加行與行之間的間距 */}
+        .tab-btn.active { opacity: 1; transform: translateY(-2px); }
+        .card { background: white; border-radius: 0 0 18px 18px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none;}
+        .card.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
+        .input-group { display: flex; align-items: center; gap: 5px; }
+        .weight-input { width: 70px; border: 1px solid #ccc; border-radius: 8px; padding: 6px; text-align: center; font-size: 1.1rem; font-weight: bold; color: #007AFF; background: white; }
+        .unit-text { font-size: 0.9rem; color: #666; font-weight: bold; width: 20px; }
+        .date-input { border: 1px solid #ddd; border-radius: 6px; padding: 6px; font-size: 1rem; font-weight: bold; background: #fff; }
+        .btn-record { background: #34c759; color: white; padding: 14px; font-size: 16px; border-radius: 12px; width: 100%; margin-top: 15px; border:none; font-weight:bold; }
+        .calendar-card { display: none; }
+        #calendar { margin-top: 10px; }
+        #delete-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: popIn 0.2s cubic-bezier(0.17, 0.89, 0.32, 1.28); }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        #modal-details { text-align: left; background: #F2F2F7; padding: 12px; border-radius: 12px; font-size: 0.95rem; line-height: 1.6; margin: 15px 0; white-space: pre-wrap; color: #333; }
+        .modal-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .btn-del { background: var(--danger); color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; }
+        .btn-ok { background: #E5E5EA; color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; }
+        .fc-event-title { text-align: center; width: 100%; display: block; font-weight: bold; }
+        .fc-daygrid-event { justify-content: center !important; }
+        .fc .fc-daygrid-day-frame { min-height: 40px !important; }
+        .fc .fc-daygrid-body { min-height: 0 !important; }
+        .fc .fc-scrollgrid-sync-table { height: auto !important; }
+        .fc .fc-daygrid-day-top { justify-content: center !important; flex-direction: row !important; }
+        .fc .fc-daygrid-day-number { padding: 2px 0 !important; font-size: 1.1rem; }
+        .fc-daygrid-event { margin-top: 1px !important; padding: 0 2px !important; font-size: 0.75rem !important; }
+        .fc .fc-col-header-cell { padding: 4px 0 !important; }
+        .switch { position: relative; display: inline-block; width: 52px; height: 30px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: 0.25s; border-radius: 30px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 2px; top: 2px; background-color: white; transition: 0.25s; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.25); }
+        .switch input:checked + .slider { background-color: #34C759; }
+        .switch input:checked + .slider:before { transform: translateX(22px); }
+        .flash-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1500; display: none; pointer-events: none; }
+        .flash-active { display: block; animation: alarm-flash 0.7s infinite; }
+        @keyframes alarm-flash { 0% { background-color: rgba(255, 0, 0); } 50% { background-color: rgba(255, 255, 255); } 100% { background-color: rgba(255, 0, 0); } }
+    </style>
+</head>
+<body>
+    <audio id="alarm-sound" src="https://github.com/yue830219/Gym/raw/refs/heads/main/music.mp3" preload="auto"></audio>
+    <div id="flash-screen" class="flash-overlay"></div>
+    <div class="top-bar">
+        <div class="menu-icon" onclick="toggleSidebar()">☰</div>
+        <div class="logo-container">健身助手 Pro</div>
+        <div style="width: 45px;"></div>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header" onclick="handleMenuClick('add')" style="cursor: pointer;">健身助手 Pro</div>
+        <div class="sidebar-item" onclick="handleMenuClick('add')"><span>🏠</span> 主畫面</div>
+        <div class="sidebar-item" onclick="handleMenuClick('calendar')"><span>📅</span> 訓練日曆</div>
+        <div class="sidebar-item" onclick="handleMenuClick('settings')"><span>⚙️</span> 系統設定</div>
+    </div>
+    <div id="timer-title" style="margin: 0 0 10px 0;">
+    <h3 style="color:var(--primary); margin:0;">計時器</h3>
+    </div>
+    <div class="timer-panel">
+        <div class="timer-header">
+            <div id="timer-display">00:00</div>
+            <div id="set-counter"></div>
+        </div>
+        <div class="btn-group">
+            <button style="background:var(--primary);color:white;font-size:0.8rem;" id="btn-rest-timer" onclick="startRestTimer()">組間間隔</button>
+            <button style="background:#5856D6;color:white;font-size:0.8rem;" id="btn-switch-timer" onclick="startSwitchTimer()">動作間隔</button>
+            <button style="background:#E5E5EA; flex: 0.4;font-size:1.2rem;" onclick="resetTimer()">↺</button>
+        </div>
+    </div>
+    <div id="main-title" style="margin: 0 0 10px 0;"> 
+    <h3 style="color:var(--primary); margin:0;">紀錄訓練</h3>
+    </div>
+        <div class="tab-menu">
+        <button class="tab-btn active" style="background:var(--chest)" onclick="switchTab(0)">🔥 練胸</button>
+        <button class="tab-btn" style="background:var(--shoulder)" onclick="switchTab(1)">⚡ 練肩</button>
+        <button class="tab-btn" style="background:var(--arm)" onclick="switchTab(2)">💪 練臂</button>
+        <button class="tab-btn" style="background:var(--abs)" onclick="switchTab(3)">🍫 練腹</button>
+        <button class="tab-btn" style="background:var(--leg-strength)" onclick="switchTab(4)">🦵 練腿</button>
+        <button class="tab-btn" style="background:var(--leg)" onclick="switchTab(5)">🏃 有氧</button>
+        <button class="tab-btn" style="background:var(--hiit)" onclick="switchTab(6)">⏱️ HIIT</button>
+    </div>
+
+    <div class="card active" id="card-chest" data-type="chest">
+        <div class="card-header"><h3 style="color:var(--chest);margin:0;">練胸內容</h3><input type="date" class="date-input" onchange="syncDate(this)"></div>
+        <div class="exercise-item"><span>啞鈴臥推</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_1" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>啞鈴下斜臥推</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_2" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>啞鈴窄推</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_3" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>啞鈴飛鳥</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="chest_4" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <button class="btn-record" onclick="saveToHistory('練胸', this, '#FF3B30')">💾 儲存到日曆</button>
+    </div>
+    <div class="card" id="card-shoulder" data-type="shoulder">
+        <div class="card-header"><h3 style="color:var(--shoulder);margin:0;">練肩內容</h3><input type="date" class="date-input" onchange="syncDate(this)"></div>
+        <div class="exercise-item"><span>啞鈴肩推</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_1" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>啞鈴正手划船</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_2" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>啞鈴側平舉</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_3" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>啞鈴前平舉</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="sh_4" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <button class="btn-record" onclick="saveToHistory('練肩', this, '#FF9500')">💾 儲存到日曆</button>
+    </div>
+    <div class="card" id="card-arm" data-type="arm">
+        <div class="card-header"><h3 style="color:var(--arm);margin:0;">練臂內容</h3><input type="date" class="date-input" onchange="syncDate(this)"></div>
+        <div class="exercise-item"><span>啞鈴彎舉</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_1" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>啞鈴垂式彎舉</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_2" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>啞鈴俯後臂屈伸</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_3" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>啞鈴頸後臂屈伸</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="arm_4" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <button class="btn-record" onclick="saveToHistory('練臂', this, '#4CD964')">💾 儲存到日曆</button>
+    </div>
+    <div class="card" id="card-abs" data-type="abs">
+    <div class="card-header">
+        <h3 style="color:var(--abs);margin:0;">練腹內容</h3>
+        <input type="date" class="date-input" onchange="syncDate(this)">
+    </div>
+    <div class="exercise-item">
+        <span>強力跨越</span>
+        <div class="input-group">
+            <input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="abs_1" placeholder="0">
+            <span class="unit-text">下</span>
+        </div>
+    </div>
+    <div class="exercise-item">
+        <span>仰臥捲腹</span>
+        <div class="input-group">
+            <input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="abs_2" placeholder="0">
+            <span class="unit-text">下</span>
+        </div>
+    </div>
+    <div class="exercise-item">
+        <span>單槓螺旋式</span>
+        <div class="input-group">
+            <input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="abs_3" placeholder="0">
+            <span class="unit-text">下</span>
+        </div>
+    </div>
+    <div class="exercise-item">
+        <span>俯撐登山跑</span>
+        <div class="input-group">
+            <input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="abs_4" placeholder="0">
+            <span class="unit-text">秒</span>
+        </div>
+    </div>
+    <button class="btn-record" onclick="saveToHistory('練腹', this, '#AF52DE')">💾 儲存到日曆</button>
+</div>
+    <div class="card" id="card-leg-strength" data-type="leg-strength">
+        <div class="card-header"><h3 style="color:#008080;margin:0;">練腿內容</h3><input type="date" class="date-input" onchange="syncDate(this)"></div>
+        <div class="exercise-item"><span>啞鈴深蹲</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="leg_str_1" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>分腿蹲</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="leg_str_2" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>啞鈴硬舉</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="leg_str_3" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <button class="btn-record" onclick="saveToHistory('練腿', this, '#008080')">💾 儲存到日曆</button>
+    </div>
+    <div class="card" id="card-leg" data-type="leg">
+        <div class="card-header"><h3 style="color:var(--leg);margin:0;">跑步</h3><input type="date" class="date-input" onchange="syncDate(this)"></div>
+        <div class="exercise-item"><span>目前體重</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="body_weight" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>距離</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="leg_1" placeholder="0"><span class="unit-text">km</span></div></div>
+        <div class="exercise-item"><span>時間</span><div class="input-group"><input type="number" inputmode="decimal" class="weight-input" style="width: 40px;" id="input-hr" oninput="saveCurrentWeight(this)" data-id="leg_hr" placeholder="0"><span class="unit-text" style="width: 15px;">時</span><input type="number" inputmode="decimal" class="weight-input" style="width: 40px;" id="input-min" oninput="saveCurrentWeight(this)" data-id="leg_min" placeholder="0"><span class="unit-text" style="width: 15px;">分</span><input type="number" inputmode="decimal" class="weight-input" style="width: 40px;" id="input-sec" oninput="saveCurrentWeight(this)" data-id="leg_sec" placeholder="0"><span class="unit-text" style="width: 15px;">秒</span></div></div>
+        <div class="exercise-item" style="background: #f0f9ff; border-radius: 12px; margin-top: 10px; padding: 12px; border-bottom: none;">
+            <div style="flex: 1; text-align: center;"><div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">平均配速</div><div id="display-pace" style="font-weight: 800; color: var(--primary); font-size: 1.2rem;">--'--"</div></div>
+            <div style="width: 1px; height: 30px; background: #ddd; margin: 0 10px;"></div>
+            <div style="flex: 1; text-align: center;"><div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">預估燃燒</div><div id="display-calories" style="font-weight: 800; color: #FF9500; font-size: 1.2rem;">0 kcal</div></div>
+        </div>
+        <button class="btn-record" onclick="saveToHistory('有氧', this, '#5AC8FA')">💾 儲存到日曆</button>
+    </div>
+        <div class="card" id="card-hiit" data-type="hiit">
+        <div class="card-header"><h3 style="color:#5856D6;margin:0;">HIIT 訓練</h3><input type="date" class="date-input" onchange="syncDate(this)"></div>
+        <div class="exercise-item"><span>目前體重</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="hiit_weight" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>訓練時間</span>
+            <div class="input-group">
+                <input type="number" inputmode="decimal" class="weight-input" style="width: 45px;" id="hiit-min" oninput="saveCurrentWeight(this)" data-id="hiit_min" placeholder="0"><span class="unit-text">分</span>
+                <input type="number" inputmode="decimal" class="weight-input" style="width: 45px;" id="hiit-sec" oninput="saveCurrentWeight(this)" data-id="hiit_sec" placeholder="0"><span class="unit-text">秒</span>
+            </div>
+        </div>
+        <div class="exercise-item" style="background: #f5f3ff; border-radius: 12px; margin-top: 10px; padding: 12px; border-bottom: none;">
+            <div style="flex: 1; text-align: center;"><div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">預估燃燒</div><div id="display-hiit-calories" style="font-weight: 800; color: #5856D6; font-size: 1.2rem;">0 kcal</div></div>
+        </div>
+        <button class="btn-record" onclick="saveToHistory('HIIT', this, '#5856D6')">💾 儲存到日曆</button>
+    </div>
+    <div class="card" id="card-calendar"><div class="card-header"><h3 style="color:var(--primary); margin:0;">訓練日曆</h3></div><div id="calendar"></div></div>
+    <div class="card" id="card-settings">
+        <div class="card-header"><h3 style="color:var(--primary); margin:0;">系統設定</h3></div>
+        <div style="display:flex; flex-direction:column; gap:15px; margin-top:10px;">
+            <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
+                <h4 style="margin:0 0 10px 0; color:#333;">自定義計時器 (分鐘)</h4>
+                <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;"><span style="font-size:0.9rem; flex:1; text-align:right;">組間間隔：</span><input type="number" id="cfg-rest-min" class="weight-input" style="width:40px;" onfocus="tempTimerVal=this.value; this.value='';" onblur="if(this.value===''){this.value=tempTimerVal;}" placeholder="2"><span class="unit-text">分</span></div>
+                <div style="display:flex; gap:10px; align-items:center;"><span style="font-size:0.9rem; flex:1; text-align:right;">動作間隔：</span><input type="number" id="cfg-switch-min" class="weight-input" style="width:40px;" onfocus="tempTimerVal=this.value; this.value='';" onblur="if(this.value===''){this.value=tempTimerVal;}" placeholder="4"><span class="unit-text">分</span></div>
+                <button class="btn-record" style="background:var(--primary); padding:8px; margin-top:10px; font-size:14px;" onclick="saveTimerSettings()">✅ 儲存計時設定</button>
+            </div>
+            <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee; margin-top:15px;">
+                <h4 style="margin:0 0 10px 0; color:#333;">提醒方式設定</h4>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 15px;"><span style="font-size:1rem; font-weight:bold;">計時結束播放鈴聲</span><label class="switch"><input type="checkbox" id="cfg-sound-enable" onchange="saveSoundSetting()"><span class="slider"></span></label></div>
+                <div style="display:flex; align-items:center; justify-content:space-between;"><span style="font-size:1rem; font-weight:bold;">計時結束畫面閃爍</span><label class="switch"><input type="checkbox" id="cfg-flash-enable" onchange="saveFlashSetting()"><span class="slider"></span></label></div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 10px;"><button class="btn-record" style="background:#007AFF; flex: 1; padding: 10px; font-size: 14px; margin-top: 0;" onclick="exportHistory()">📤 匯出紀錄</button><button class="btn-record" style="background:#5856D6; flex: 1; padding: 10px; font-size: 14px; margin-top: 0;" onclick="triggerImport()">📥 匯入紀錄</button></div>
+            <input type="file" id="import-file" accept=".json" style="display:none" onchange="importHistory(event)">
+            <p style="font-size: 0.85rem; color: #666; text-align: center;">建議定期匯出備份，避免數據遺失。</p>
+        </div>
+    </div>
+    <div id="delete-modal"><div class="modal-content"><h3 id="modal-title" style="margin:0; color:#1c1c1e;">提示</h3><div id="modal-details"></div><div class="modal-btns"><button class="btn-del" id="confirm-delete">刪除本筆紀錄</button><button class="btn-ok" id="modal-close-btn" onclick="closeModal()">確定</button></div></div></div>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script>
+        let calendar; let countdown; let currentEventInfo = null; let setNum = 0; let tempValue = "";
+        window.onload = function() {
+            var today = new Date().toLocaleDateString('sv-SE');
+            document.querySelectorAll('.date-input').forEach(function(input) { input.value = today; });
+            initCalendar(); loadAllWeights(); initAutoJump(); initSoundSetting(); initFlashSetting();
+            var hiitIds = ['hiit_weight', 'hiit_min', 'hiit_sec'];
+            hiitIds.forEach(function(id) {
+                var el = document.querySelector('[data-id="' + id + '"]');
+                if(el) { el.addEventListener('input', updateHiitStats); }
+            });
+            var hiitIds = ['hiit_weight', 'hiit_hr', 'hiit_min', 'hiit_sec'];
+            var cardioIds = ['body_weight', 'leg_1', 'leg_hr', 'leg_min', 'leg_sec'];
+            cardioIds.forEach(function(id) {
+                var el = document.querySelector('[data-id="' + id + '"]');
+                if(el) { el.addEventListener('input', updateCardioStats); el.addEventListener('change', updateCardioStats); }
+            });
+            updateCardioStats(); initTimerSettings();
+        };
+        function updateHiitStats() {
+            var w = parseFloat(document.querySelector('[data-id="hiit_weight"]').value) || 0;
+            var m = parseInt(document.getElementById('hiit-min').value) || 0;
+            var s = parseInt(document.getElementById('hiit-sec').value) || 0;
+            var totalHours = (m * 60 + s) / 3600;
+            var kcal = Math.round(10.0 * w * totalHours);
+            document.getElementById('display-hiit-calories').innerText = kcal + " kcal";
+        }
+        function exportHistory() {
+            var history = localStorage.getItem('gym_history');
+            if (!history || history === "[]") { showNotice("沒有資料", "目前沒有任何訓練紀錄可以匯出", false); return; }
+            var blob = new Blob([history], { type: "application/json;charset=utf-8;" });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement("a"); a.href = url; a.download = "gym_history_backup_" + new Date().toISOString().slice(0,10) + ".json";
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+            showNotice("匯出完成", "訓練紀錄已下載成 JSON 檔", false);
+        }
+        function importHistory(event) {
+            var file = event.target.files[0]; if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var importedData = JSON.parse(e.target.result);
+                    if (!Array.isArray(importedData)) { throw new Error("格式錯誤"); }
+                    localStorage.setItem('gym_history', JSON.stringify(importedData));
+                    calendar.removeAllEvents(); importedData.forEach(function(ev) { calendar.addEvent(ev); });
+                    showNotice("匯入成功", "訓練紀錄已成功還原 🎉", false);
+                } catch (err) { showNotice("匯入失敗", "檔案格式錯誤或不是有效的紀錄檔", false); }
+            };
+            reader.readAsText(file);
+        }
+        function triggerImport() { document.getElementById('import-file').value = ""; document.getElementById('import-file').click(); }
+        function updateCardioStats() {
+            var weightInput = document.querySelector('[data-id="body_weight"]');
+            var distInput = document.querySelector('[data-id="leg_1"]');
+            var hrInput = document.getElementById('input-hr'); var minInput = document.getElementById('input-min'); var secInput = document.getElementById('input-sec');
+            if(!weightInput || !distInput) return;
+            var weight = parseFloat(weightInput.value) || 0; var dist = parseFloat(distInput.value) || 0;
+            var hr = parseInt(hrInput.value) || 0; var min = parseInt(minInput.value) || 0; var sec = parseInt(secInput.value) || 0;
+            var totalSeconds = (hr * 3600) + (min * 60) + sec; var totalHours = totalSeconds / 3600;
+            var paceDisplay = document.getElementById('display-pace'); var speedKph = 0;
+            if (dist > 0 && totalSeconds > 0) {
+                var paceTotalSecPerKm = totalSeconds / dist;
+                var pMin = Math.floor(paceTotalSecPerKm / 60); var pSec = Math.round(paceTotalSecPerKm % 60);
+                paceDisplay.innerText = pMin + "'" + (pSec < 10 ? "0" + pSec : pSec) + '"';
+                speedKph = dist / totalHours;
+            } else { paceDisplay.innerText = "--'--\""; }
+            var kcalDisplay = document.getElementById('display-calories');
+            if (weight > 0 && dist > 0 && totalHours > 0) {
+                var met = 1.0; 
+                if (speedKph <= 0) met = 1.0; else if (speedKph < 5) met = 3.5; else if (speedKph < 7) met = 6.0; else if (speedKph < 9) met = 8.3; else if (speedKph < 11) met = 9.8; else if (speedKph < 13) met = 11.5; else met = 12.8;
+                kcalDisplay.innerText = Math.round(met * weight * totalHours) + " kcal";
+            } else { kcalDisplay.innerText = (weight > 0 && dist > 0) ? Math.round(weight * dist * 1.036) + " kcal" : "0 kcal"; }
+        }
+        function initAutoJump() {
+            var hrInput = document.getElementById('input-hr'); var minInput = document.getElementById('input-min'); var secInput = document.getElementById('input-sec');
+            if(hrInput && minInput && secInput) {
+                hrInput.addEventListener('input', function() { if (this.value.length >= 2) minInput.focus(); });
+                minInput.addEventListener('input', function() { if (this.value.length >= 2) { if (parseInt(this.value) > 99) this.value = "99"; secInput.focus(); } });
+                secInput.addEventListener('input', function() { if (this.value.length >= 2) { if (parseInt(this.value) > 59) this.value = "59"; this.blur(); } });
+            }
+        }
+        function showNotice(title, content, showDelete) {
+            document.getElementById('modal-title').innerText = title;
+            var detailsEl = document.getElementById('modal-details');
+            if (content && content.trim() !== "") { detailsEl.innerText = content; detailsEl.style.display = 'block'; } else { detailsEl.style.display = 'none'; }
+            document.getElementById('confirm-delete').style.display = showDelete ? 'block' : 'none';
+            document.getElementById('modal-close-btn').innerText = showDelete ? '關閉' : '確定';
+            document.getElementById('delete-modal').style.display = 'flex';
+        }
+        function closeModal() {
+            var alarm = document.getElementById('alarm-sound'); if (alarm) { alarm.pause(); alarm.currentTime = 0; }
+            document.getElementById('flash-screen').classList.remove('flash-active');
+            document.getElementById('delete-modal').style.display = 'none'; currentEventInfo = null;
+        }
+        function syncDate(sourceInput) { var newDate = sourceInput.value; document.querySelectorAll('.date-input').forEach(function(input) { input.value = newDate; }); }
+        function saveCurrentWeight(input) {
+            var id = input.dataset.id; var val = input.value === "" ? "0" : input.value;
+            var currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
+            currentWeights[id] = val; localStorage.setItem('current_weights', JSON.stringify(currentWeights)); updateCardioStats();
+        }
+        function loadAllWeights() {
+            var currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
+            document.querySelectorAll('.weight-input').forEach(function(input) {
+                var id = input.dataset.id; if(!id) return;
+                if (id.includes('_min') || id.includes('_sec') || id.includes('_hr') || id.startsWith('leg_str')) { input.value = "0"; currentWeights[id] = "0"; } 
+                else { input.value = (currentWeights[id] !== undefined && currentWeights[id] !== "") ? currentWeights[id] : "0"; }
+                input.addEventListener('focus', function() { tempValue = this.value; this.value = ""; });
+                input.addEventListener('blur', function() { if (this.value === "" || isNaN(this.value)) { this.value = tempValue; } else { this.value = parseFloat(this.value).toString(); } saveCurrentWeight(this); });
+            });
+            localStorage.setItem('current_weights', JSON.stringify(currentWeights)); updateCardioStats();
+        }
+        function handleRestClick(seconds) { setNum++; document.getElementById('set-counter').innerText = "第 " + setNum + " 組完成 "; startTimer(seconds); }
+        function handleSwitchClick(seconds) { setNum = 0; document.getElementById('set-counter').innerText = ""; startTimer(seconds); }
+        function resetTimer() { clearInterval(countdown); var alarm = document.getElementById('alarm-sound'); alarm.pause(); alarm.currentTime = 0; document.querySelector('#timer-display').innerText = "00:00"; setNum = 0; document.getElementById('set-counter').innerText = ""; }
+        function startTimer(s) {
+            clearInterval(countdown); var display = document.querySelector('#timer-display'); var alarm = document.getElementById('alarm-sound'); alarm.load();
+            var then = Date.now() + s * 1000;
+            function updateDisplay() {
+                var left = Math.round((then - Date.now()) / 1000);
+                if (left <= 0) {
+                    clearInterval(countdown); display.innerText = "00:00";
+                    if (localStorage.getItem('cfg_sound_enable') === "true") { alarm.play(); }
+                    if (localStorage.getItem('cfg_flash_enable') === "true") { document.getElementById('flash-screen').classList.add('flash-active'); }
+                    showNotice("計時結束", "時間到！該開始下一組了 🏋️", false); return;
+                }
+                var m = Math.floor(left / 60); var rs = left % 60;
+                display.innerText = (m < 10 ? '0' + m : m) + ":" + (rs < 10 ? '0' + rs : rs);
+            }
+            updateDisplay(); countdown = setInterval(updateDisplay, 1000);
+        }
+        function initCalendar() {
+            var calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth', locale: 'zh-tw', height: 'auto',
+                headerToolbar: { left: 'prev', center: 'title', right: 'next' },
+                dayCellContent: function(arg) { return arg.date.getDate(); },
+                eventOrder: "order", events: JSON.parse(localStorage.getItem('gym_history') || "[]"),
+                eventClick: function(info) { currentEventInfo = info; showNotice(info.event.title + " (" + info.event.startStr + ")", info.event.extendedProps.note || "無詳細內容", true); }
+            });
+            calendar.render();
+        }
+        document.getElementById('confirm-delete').onclick = function() {
+            if (currentEventInfo) {
+                currentEventInfo.event.remove();
+                var history = JSON.parse(localStorage.getItem('gym_history') || "[]").filter(function(item) { return item.id !== currentEventInfo.event.id; });
+                localStorage.setItem('gym_history', JSON.stringify(history)); closeModal();
+            }
+        };
+        function saveToHistory(type, btnElement, color) {
+            var card = btnElement.closest('.card'); var dateVal = card.querySelector('.date-input').value;
+            if (!dateVal) { showNotice("警告", "請選擇日期", false); return; }
+            var orderWeight = (type === '練胸') ? 1 : (type === '練肩') ? 2 : (type === '練臂') ? 3 : (type === '練腹') ? 4 : (type === '練腿') ? 5 : (type === '有氧') ? 6 : (type === 'HIIT') ? 7 : 99;
+            var details = "";
+            if (type === '有氧') {
+                var dist = card.querySelector('[data-id="leg_1"]').value || "0";
+                var hr = parseInt(card.querySelector('[data-id="leg_hr"]').value) || 0; var min = parseInt(card.querySelector('[data-id="leg_min"]').value) || 0; var sec = parseInt(card.querySelector('[data-id="leg_sec"]').value) || 0;
+                details += "● 距離: " + dist + " km\n● 時間: " + (hr > 0 ? hr + " 時 " + (min < 10 ? '0' + min : min) : min) + " 分 " + (sec < 10 ? '0' + sec : sec) + " 秒\n● 配速: " + document.getElementById('display-pace').innerText + "\n● 消耗: " + document.getElementById('display-calories').innerText + "\n";
+            } else if (type === 'HIIT') {
+                    var m = document.getElementById('hiit-min').value || "0";
+                    var s = document.getElementById('hiit-sec').value || "0";
+                    details += "● 時間: " + m + " 分 " + s + " 秒\n● 消耗: " + document.getElementById('display-hiit-calories').innerText + "\n";
+            } else {
+                card.querySelectorAll('.exercise-item').forEach(function(item) {
+                    var name = item.querySelector('span').innerText; var weight = item.querySelector('.weight-input').value || "0"; var unit = item.querySelector('.unit-text').innerText;
+                    details += "● " + name + ": " + weight + " " + unit + "\n";
+                });
+            }
+            var history = JSON.parse(localStorage.getItem('gym_history') || "[]");
+            var existingIndex = history.findIndex(function(item) { return item.start === dateVal && item.title === type; });
+            if (existingIndex > -1) {
+                history[existingIndex].extendedProps.note = details; history[existingIndex].order = orderWeight;
+                var oldEvent = calendar.getEvents().find(function(e) { return e.startStr === dateVal && e.title === type; });
+                if (oldEvent) oldEvent.setExtendedProp('note', details); showNotice("訓練紀錄已更新", "", false);
+            } else {
+                var newRecord = { id: "id_" + Date.now(), title: type, start: dateVal, backgroundColor: color, borderColor: color, order: orderWeight, extendedProps: { note: details } };
+                history.push(newRecord); calendar.addEvent(newRecord); showNotice("訓練紀錄已儲存", "", false);
+            }
+            localStorage.setItem('gym_history', JSON.stringify(history));
+        }
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('overlay');
+            if (sidebar.classList.contains('active')) { sidebar.classList.remove('active'); overlay.classList.remove('active'); } 
+            else { sidebar.classList.add('active'); overlay.classList.add('active'); }
+        }
+        function handleMenuClick(action) {
+            toggleSidebar(); const timerPanel = document.querySelector('.timer-panel'); const tabMenu = document.querySelector('.tab-menu');
+                const mainTitle = document.getElementById('main-title');
+                const timerTitle = document.getElementById('timer-title');
+            document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+            if (action === 'settings') { timerPanel.style.display = 'none'; tabMenu.style.display = 'none';mainTitle.style.display = 'none';
+                timerTitle.style.display = 'none';
+            document.getElementById('card-settings').classList.add('active'); } 
+            else if (action === 'calendar') { timerPanel.style.display = 'none'; tabMenu.style.display = 'none';mainTitle.style.display = 'none';
+                timerTitle.style.display = 'none';
+            document.getElementById('card-calendar').classList.add('active'); setTimeout(() => { calendar.render(); }, 100); } 
+            else if (action === 'add') { timerPanel.style.display = 'block'; tabMenu.style.display = 'flex';mainTitle.style.display = 'none';
+                timerTitle.style.display = 'none'; switchTab(0); }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function switchTab(index) {
+            document.querySelector('.timer-panel').style.display = 'block'; document.querySelector('.tab-menu').style.display = 'flex';document.getElementById('main-title').style.display = 'block';
+                document.getElementById('timer-title').style.display = 'block';
+            document.querySelectorAll('.card').forEach(function(card) { card.classList.remove('active'); });
+            const targetCards = document.querySelectorAll('.card'); if(targetCards[index]) targetCards[index].classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(function(btn, i) { btn.classList.toggle('active', i === index); });
+        }
+        function initTimerSettings() {
+            let restMin = localStorage.getItem('cfg_rest_min') || "2"; let switchMin = localStorage.getItem('cfg_switch_min') || "4";
+            if (!localStorage.getItem('cfg_rest_min')) localStorage.setItem('cfg_rest_min', "2");
+            if (!localStorage.getItem('cfg_switch_min')) localStorage.setItem('cfg_switch_min', "4");
+            const inputRest = document.getElementById('cfg-rest-min'); const inputSwitch = document.getElementById('cfg-switch-min');
+            if (inputRest) inputRest.value = restMin; if (inputSwitch) inputSwitch.value = switchMin;
+            const btnRest = document.getElementById('btn-rest-timer'); const btnSwitch = document.getElementById('btn-switch-timer');
+            if (btnRest) btnRest.innerText = "組間間隔\n" + restMin + " 分鐘"; if (btnSwitch) btnSwitch.innerText = "動作間隔\n" + switchMin + " 分鐘";
+        }
+        function saveTimerSettings() {
+            var restValue = document.getElementById('cfg-rest-min').value || "2"; var swValue = document.getElementById('cfg-switch-min').value || "4";
+            localStorage.setItem('cfg_rest_min', restValue); localStorage.setItem('cfg_switch_min', swValue); initTimerSettings();
+        }
+        function startRestTimer() { handleRestClick((parseFloat(localStorage.getItem('cfg_rest_min')) || 2) * 60); }
+        function startSwitchTimer() { handleSwitchClick((parseFloat(localStorage.getItem('cfg_switch_min')) || 4) * 60); }
+        function initSoundSetting() {
+            let soundEnabled = localStorage.getItem('cfg_sound_enable'); if (soundEnabled === null) { soundEnabled = "true"; localStorage.setItem('cfg_sound_enable', "true"); }
+            const checkbox = document.getElementById('cfg-sound-enable'); if (checkbox) checkbox.checked = (soundEnabled === "true");
+        }
+        function saveSoundSetting() { localStorage.setItem('cfg_sound_enable', document.getElementById('cfg-sound-enable').checked ? "true" : "false"); }
+        function initFlashSetting() {
+            let flashEnabled = localStorage.getItem('cfg_flash_enable'); if (flashEnabled === null) { flashEnabled = "true"; localStorage.setItem('cfg_flash_enable', "true"); }
+            const checkbox = document.getElementById('cfg-flash-enable'); if (checkbox) checkbox.checked = (flashEnabled === "true");
+        }
+        function saveFlashSetting() { localStorage.setItem('cfg_flash_enable', document.getElementById('cfg-flash-enable').checked ? "true" : "false"); }
+        if ("serviceWorker" in navigator) { navigator.serviceWorker.register("service-worker.js"); }
+    </script>
+</body>
+</html>
