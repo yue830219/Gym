@@ -334,7 +334,7 @@
             var currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
             document.querySelectorAll('.weight-input').forEach(function(input) {
                 var id = input.dataset.id; if(!id) return;
-                if (id.includes('_min') || id.includes('_sec') || id.includes('_hr') || id.startsWith('leg_str')) { input.value = "0"; currentWeights[id] = "0"; } 
+                if (id.includes('_min') || id.includes('_sec') || id.includes('_hr') || id === 'leg_1') { input.value = "0"; currentWeights[id] = "0"; } 
                 else { input.value = (currentWeights[id] !== undefined && currentWeights[id] !== "") ? currentWeights[id] : "0"; }
                 input.addEventListener('focus', function() { tempValue = this.value; this.value = ""; });
                 input.addEventListener('blur', function() { if (this.value === "" || isNaN(this.value)) { this.value = tempValue; } else { this.value = parseFloat(this.value).toString(); } saveCurrentWeight(this); });
