@@ -1454,13 +1454,18 @@
 
         // 關閉 Modal 提示視窗，並確保強制停止正在大響的計時鬧鈴與閃動圖層，釋放導覽鎖定
         function closeModal() {
-            isNoticeOpen = false; // 🌟 關鍵：卡片關閉時，將狀態設定回 false
+            isNoticeOpen = false; // 卡片關閉時，將狀態設定回 false
             
-            var alarm = document.getElementById('alarm-sound'); if (alarm) { alarm.pause(); alarm.currentTime = 0; }
+            var alarm = document.getElementById('alarm-sound');
+            if (alarm) { alarm.pause();
+                alarm.currentTime = 0; }
+            
             document.getElementById('flash-screen').classList.remove('flash-active');
-            document.getElementById('delete-modal').style.display = 'none'; currentEventInfo = null;
-            // ... 底下原本的程式碼保持不變 ...
+            document.getElementById('delete-modal').style.display = 'none';
+            currentEventInfo = null;
             
+            // 修正重點：確實移除鎖定樣式與遮罩
+            document.getElementById('tour-mask').style.display = 'none'; // 隱藏導覽黑底
             document.getElementById('delete-modal').style.zIndex = "2000";
             document.body.classList.remove('tour-locked');
             document.body.style.overflow = '';
