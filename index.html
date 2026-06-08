@@ -2,21 +2,17 @@
 <html lang="zh-TW">
 <head>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#007AFF">
-    <meta name="mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="./Strength.png">
-    <link rel="icon" type="image/jpeg" href="./Strength.png">
-    <meta charset="UTF-8">
+    <meta name="theme-color" content="#007AFF"> <meta name="mobile-web-app-capable" content="yes"> <link rel="apple-touch-icon" href="./Strength.png"> <link rel="icon" type="image/jpeg" href="./Strength.png"> <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>健身助手 Pro</title>
     <meta name="apple-mobile-web-app-title" content="健身助手">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
 
     <style>
-        /* --- 2.1 動作名稱與編輯模式樣式 --- */
-        /* 預設的動作名稱樣式（不可編輯時） */
+        /* ==========================================================================
+           2.1 動作名稱與編輯模式樣式
+           ========================================================================== */
+        /* 可編輯的動作名稱基礎樣式 */
         .exercise-name {
             min-width: 60px;
             display: inline-block;
@@ -25,60 +21,75 @@
             border-bottom: 1px solid transparent;
             transition: all 0.2s;
         }
-        /* 底部按鈕橫向排列的外框 */
+        
+        /* 卡片底部的管理按鈕區塊 (包含新增、取消、儲存) */
         .bottom-manage-bar {
             display: flex;
             align-items: center;
             justify-content: flex-start;
             gap: 10px;
-            margin: 15px 0 !important;
+            margin: 15px 0;
         }
 
-        /* 當卡片進入編輯模式 (.editing-mode) 時的動作名稱樣式 */
+        /* 進入編輯模式時，動作名稱外觀變更為虛線提示可輸入 */
         .editing-mode .exercise-name {
-            border-bottom: 1px dashed #007AFF; /* 藍色虛線提示可編輯 */
+            border-bottom: 1px dashed #007AFF;
             cursor: text;
         }
 
-        /* 預設隱藏刪除、新增動作、取消、儲存按鈕 */
-        .btn-delete-exercise, .btn-add-exercise,.btn-bottom-save, .btn-bottom-cancel {
-            display: none !important; 
+        /* 預設隱藏所有管理按鈕 */
+        .btn-delete-exercise, .btn-add-exercise, .btn-bottom-save, .btn-bottom-cancel {
+            display: none; 
         }
         
-        /* 2. 進入編輯模式時隱藏✏️ */
+        /* 進入編輯模式時，隱藏右上角的鉛筆圖示 */
         .editing-mode .card-header .btn-manage-toggle {
             display: none !important;
         }
 
-        /* 進入編輯模式時顯示刪除、確認按鈕 */
-        .editing-mode .btn-delete-exercise, .editing-mode .btn-bottom-save, .editing-mode .btn-bottom-cancel {
-            display: inline-block !important;
-        }
+        /* 進入編輯模式時，顯示對應的管理按鈕 */
+        .editing-mode .btn-delete-exercise { display: inline-block; }
+        .editing-mode .btn-bottom-save { display: inline-block; }
+        .editing-mode .btn-bottom-cancel { display: inline-block; }
+        .editing-mode .btn-add-exercise { display: inline-block; }
 
-        /* 進入編輯模式時的新增按鈕樣式 */
-        .editing-mode .btn-add-exercise {
-            display: inline-block !important;
+        /* 「新增動作」按鈕樣式 */
+        .btn-add-exercise {
             font-size: 0.9rem;         
             padding: 8px 16px;         
-            width: auto !important;           
-            margin: 0 !important;
+            width: auto;           
             background: #E5F0FF;       
             color: #007AFF;            
             border-radius: 8px;
+            border: none;
+            font-weight: bold;
         }
         
-        /* 進入編輯模式時的取消按鈕樣式 */
-        .editing-mode .btn-bottom-cancel {
-            background: #E5E5EA !important;
-            color: #333333 !important;
+        /* 「取消編輯」按鈕樣式 */
+        .btn-bottom-cancel {
+            background: #E5E5EA;
+            color: #333333;
             font-size: 0.9rem;
             padding: 8px 16px;
-            width: auto !important;
-            margin: 0 !important;
+            width: auto;
             border-radius: 8px;
+            border: none;
+            font-weight: bold;
         }
 
-        /* 當重量欄位被禁用時的防呆視覺樣式 */
+        /* 「儲存變更」按鈕樣式 */
+        .btn-bottom-save {
+            background: #E5F9E7;
+            color: #34C759;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            width: auto;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+        }
+
+        /* 重量輸入欄位被禁用時（編輯模式中游標鎖定）的樣式 */
         .weight-input:disabled {
             background-color: #E5E5EA !important;
             color: #8E8E93 !important;
@@ -86,39 +97,26 @@
             cursor: not-allowed;
         }
         
-        /* 進入編輯模式時的儲存按鈕樣式 */
-        .editing-mode .btn-bottom-save {
-            background: #E5F9E7 !important;
-            color: #34C759;
-            font-size: 0.9rem;
-            padding: 8px 16px;
-            width: auto !important;
-            margin: 0 !important;
-            border-radius: 8px;
-        }
-        
-        /* 頂部管理/編輯模式切換按鈕 (✏️) */
+        /* 右上角切換編輯模式的鉛筆按鈕樣式 */
         .btn-manage-toggle {
             color: #545456;
             background: transparent; 
             border: none;
-            padding: 0px 2px;       
+            padding: 0 2px;       
             border-radius: 6px;
             font-size: 1.4rem;     
             font-weight: bold;
             cursor: pointer;
-            margin-left: 10px;      
-            margin-right: auto;      
+            margin-left: 30px;      
+            margin-right: 30px;      
             flex-shrink: 0;         
             width: auto;
             text-align: center;
             display: inline-block;
-            margin-left: 30px;
-            margin-right: 30px;
             transition: all 0.2s;
         }
 
-        /* 動作刪除按鈕 (×) 微調 */
+        /* 刪除動作按鈕的紅叉叉 (×) 樣式 */
         .btn-delete-exercise {
             background: none;
             border: none;
@@ -131,17 +129,16 @@
             vertical-align: middle;
         }
         
-        /* 編輯的動作名稱為空時，自動顯示背景提示詞 */
+        /* 當動作名稱被清空時，利用偽元素顯示預設文字提示 */
         .exercise-name:empty::before {
             content: attr(data-placeholder);
             color: #BFBFC3;
-            /* iOS 淺灰色 */
             font-style: normal;
             pointer-events: none;
             display: inline-block;
         }
         
-        /* 平時鎖定時的單位樣式*/
+        /* 非編輯模式下，隱藏單位的下拉選單箭頭，偽裝成一般文字 */
         .unit-select:disabled {
             color: #666 !important;
             opacity: 1 !important;
@@ -153,7 +150,7 @@
             appearance: none;
         }
 
-        /* 編輯模式時的單位樣式*/
+        /* 進入編輯模式時，單位選單顯示虛線，提示可以點擊切換 */
         .editing-mode .unit-select {
             border-bottom: 1px dashed #007AFF !important;
             color: #007AFF !important;
@@ -167,8 +164,10 @@
             appearance: none !important;
         }
 
-        /* --- 2.2 全域變數、版面與側邊欄樣式 --- */
-        /* 定義主題顏色變數 */
+        /* ==========================================================================
+           2.2 全域變數、版面與側邊欄樣式
+           ========================================================================== */
+        /* 定義專案專屬的色碼變數（iOS 風格色彩） */
         :root { 
             --primary: #007AFF; --chest: #FF3B30; --shoulder: #FF9500; --arm: #4CD964; 
             --leg: #5AC8FA; --abs: #AF52DE; --bg: #F2F2F7; --danger: #FF3B30; 
@@ -177,39 +176,44 @@
         
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 50px; }
         
-        /* 頂部導覽列 */
+        /* 上方導覽列 */
         .top-bar { display: flex; align-items: center; padding: 5px 0px; justify-content: space-between; background: var(--bg); }
         .menu-icon { font-size: 40px; cursor: pointer; width: 45px; text-align: center; margin-left: -7px; margin-top: -15px; color: #333; user-select: none; }
         .logo-container { flex-grow: 1; text-align: center; font-size: 1.25rem; font-weight: 800; margin-top: -5px; color: #007AFF; line-height: 1; display: flex; align-items: center; justify-content: center; }
-        .logo-container img { height: 35px; border-radius: 5px; }
         
-        /* 側邊選單欄 */
+        /* 側邊欄抽屜面板 */
         .sidebar { position: fixed; top: 0; left: -220px; width: 200px; height: 100%; background: white; box-shadow: 2px 0 12px rgba(0,0,0,0.15); z-index: 3000; transition: transform 0.3s ease; padding: 20px 0; visibility: hidden; }
-        .sidebar.active { transform: translateX(220px); visibility: visible; }
+        .sidebar.active { transform: translateX(220px); visibility: visible; } /* 展開時向右滑出 */
         .sidebar-header { font-size: 1.25rem; font-weight: 800; color: #007AFF; padding: 15px 20px 25px 20px; border-bottom: 1px solid #f2f2f7; margin-bottom: 10px; }
         .sidebar-item { padding: 22px 25px; font-size: 1.05rem; color: #1c1c1e; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: background 0.2s; -webkit-tap-highlight-color: transparent; }
         .sidebar-item:active { background: #f2f2f7; color: #007AFF; }
         
-        /* 側邊欄開啟時的背景遮罩 */
+        /* 背景半透明遮罩（側邊欄或導覽觸發時使用） */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); display: none; z-index: 2500; }
         .overlay.active { display: block; }
 
-        /* --- 2.3 計時器面板與標籤分頁樣式 --- */
+        /* ==========================================================================
+           2.3 計時器面板與標籤分頁樣式
+           ========================================================================== */
+        /* 組間/動作間隔休息計時器控制面板 */
         .timer-panel { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 15px; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); z-index: 1000; margin-bottom: 20px; border: 1px solid #ddd; }
         .timer-header { display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
         #timer-display { font-size: 3.5rem; font-weight: 800; margin: 5px 0; color: #1c1c1e; line-height: 1.2; text-align: left; }
         #set-counter { font-size: 1.2rem; font-weight: bold; color: #34c759; text-align: right; }
         .btn-group { display: flex; gap: 8px; }
-        button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-group button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         
-        /* 訓練分類標籤按鈕列 */
+        /* 主畫面訓練部位分頁選單 */
         .tab-menu { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 0px; }
-        .tab-btn { flex: 1 1 17%; min-width: 70px; padding: 12px 5px; border-radius: 12px; border: none; font-size: 0.9rem; font-weight: bold; color: white; opacity: 0.4; transition: 0.3s; margin-bottom: 5px; }
-        .tab-btn.active { opacity: 1; transform: translateY(-2px); }
+        .tab-btn { flex: 1 1 17%; min-width: 70px; padding: 12px 5px; border-radius: 12px; border: none; font-size: 0.9rem; font-weight: bold; color: white; opacity: 0.4; transition: 0.3s; margin-bottom: 5px; cursor: pointer; }
+        .tab-btn.active { opacity: 1; transform: translateY(-2px); } /* 被選中的分頁會完全顯示並稍微往上浮動 */
 
-        /* --- 2.4 卡片與輸入欄位樣式 --- */
-        .card { background: white; border-radius: 0 0 18px 18px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none; }
-        .card.active { display: block; animation: fadeIn 0.3s; }
+        /* ==========================================================================
+           2.4 卡片與輸入欄位樣式
+           ========================================================================== */
+        /* 各訓練主題的卡片基礎樣式 */
+        .card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none; }
+        .card.active { display: block; animation: fadeIn 0.3s; } /* 只有啟動狀態的卡片才會顯示 */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
@@ -217,66 +221,72 @@
         .weight-input { width: 70px; border: 1px solid #ccc; border-radius: 8px; padding: 6px; text-align: center; font-size: 1.1rem; font-weight: bold; color: #007AFF; background: white; }
         .unit-text { font-size: 0.9rem; color: #666; font-weight: bold; width: 20px; }
         .date-input { border: 1px solid #ddd; border-radius: 6px; padding: 6px; font-size: 1rem; font-weight: bold; background: #fff; }
-        .btn-record { background: #34c759; color: white; padding: 14px; font-size: 16px; border-radius: 12px; width: 100%; margin-top: 15px; border: none; font-weight: bold; }
+        /* 「儲存到日曆」大按鈕 */
+        .btn-record { background: #34c759; color: white; padding: 14px; font-size: 16px; border-radius: 12px; width: 100%; margin-top: 15px; border: none; font-weight: bold; cursor: pointer; }
         
-        /* 訓練日曆專用樣式 */
+        /* 訓練日曆專用卡片樣式表 */
         .calendar-card { display: none; }
         #calendar { margin-top: 10px; }
         
-        /* --- 2.5 提示/刪除彈出視窗樣式 (Modal) --- */
+        /* ==========================================================================
+           2.5 提示/刪除彈出視窗樣式 (Modal)
+           ========================================================================== */
         #delete-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: popIn 0.2s cubic-bezier(0.17, 0.89, 0.32, 1.28); }
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         #modal-details { text-align: left; background: #F2F2F7; padding: 12px; border-radius: 12px; font-size: 0.95rem; line-height: 1.6; margin: 15px 0; white-space: pre-wrap; color: #333; }
         .modal-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-        .btn-del { background: var(--danger); color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; }
-        .btn-ok { background: #E5E5EA; color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; }
+        .btn-del { background: var(--danger); color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .btn-ok { background: #E5E5EA; color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; }
         
-        /* --- 2.6 FullCalendar 套件外觀微調 --- */
+        /* ==========================================================================
+           2.6 FullCalendar 套件外觀微調
+           ========================================================================== */
         .fc-event-title { text-align: center; width: 100%; display: block; font-weight: bold; }
         .fc-daygrid-event { justify-content: center !important; }
         .fc .fc-daygrid-day-frame { min-height: 40px !important; }
-        .fc .fc-daygrid-body { min-height: 0 !important; }
-        .fc .fc-scrollgrid-sync-table { height: auto !important; }
-        .fc .fc-daygrid-day-top { justify-content: center !important; flex-direction: row !important; }
-        .fc .fc-daygrid-day-number { padding: 2px 0 !important; font-size: 1.1rem; }
         .fc-daygrid-event { margin-top: 1px !important; padding: 0 2px !important; font-size: 0.75rem !important; }
-        .fc .fc-col-header-cell { padding: 4px 0 !important; }
         
-        /* --- 2.7 開關按鈕 (Switch) 與計時結束閃爍特效 --- */
+        /* ==========================================================================
+           2.7 開關按鈕 (Switch) 與計時結束閃爍特效
+           ========================================================================== */
+        /* iOS 風格的滑塊開關 */
         .switch { position: relative; display: inline-block; width: 52px; height: 30px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: 0.25s; border-radius: 30px; }
         .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 2px; top: 2px; background-color: white; transition: 0.25s; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.25); }
-        .switch input:checked + .slider { background-color: #34C759; }
+        .switch input:checked + .slider { background-color: #34C759; } /* 開啟時變綠色 */
         .switch input:checked + .slider:before { transform: translateX(22px); }
         
-        /* 全螢幕紅色閃爍（計時結束提示） */
+        /* 計時結束時的紅色全螢幕閃爍動畫背景疊加層 */
         .flash-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1500; display: none; pointer-events: none; }
         .flash-active { display: block; animation: alarm-flash 0.7s infinite; }
         @keyframes alarm-flash { 0% { background-color: rgba(255, 0, 0, 0.4); } 50% { background-color: rgba(255, 255, 255, 0); } 100% { background-color: rgba(255, 0, 0, 0.4); } }
 
-        /* --- 2.8 圖像聚光燈式導覽樣式 (Spotlight Tour) --- */
+        /* ==========================================================================
+           2.8 圖像聚光燈式導覽樣式 (Spotlight Tour)
+           ========================================================================== */
+        /* 新手導覽的黑色半透明鏤空背景層 */
         #tour-mask {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.75);
-            z-index: 99998; /* 高於一般面板，確保確實遮罩 */
+            z-index: 99998; 
             display: none;
             pointer-events: auto;
-            clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%);
+            clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%); /* 預設全黑遮罩 */
             transition: clip-path 0.25s ease-in-out;
         }
 
-        /* 【新增】讓導覽遮罩變成全透明，但依然維持全螢幕物理阻擋點擊與滑動的功能 */
         #tour-mask.transparent-mask {
             background: rgba(0, 0, 0, 0) !important;
-            clip-path: none !important; /* 取消挖洞高亮，回復完整的滿版全螢幕物理阻擋牆 */
+            clip-path: none !important; 
         }
 
+        /* 導覽說明的彈出對話框 */
         #tour-dialog {
             position: fixed;
-            z-index: 99999; /* 最高層級，絕對不會被壓到下方 */
+            z-index: 99999; 
             background: white;
             padding: 20px;
             border-radius: 16px;
@@ -300,53 +310,28 @@
             color: #8e8e93;
             font-weight: bold;
         }
-        .tour-title {
-            font-size: 1.15rem;
-            font-weight: 800;
-            color: #007AFF;
-            margin: 0;
-        }
-        .tour-body {
-            font-size: 0.95rem;
-            color: #1c1c1e;
-            line-height: 1.6;
-        }
-        .tour-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 5px;
-        }
-        .tour-btn {
-            padding: 10px 18px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            border: none;
-            cursor: pointer;
-        }
+        .tour-title { font-size: 1.15rem; font-weight: 800; color: #007AFF; margin: 0; }
+        .tour-body { font-size: 0.95rem; color: #1c1c1e; line-height: 1.6; }
+        .tour-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 5px; }
+        .tour-btn { padding: 10px 18px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; border: none; cursor: pointer; }
         .tour-btn-skip { background: #E5E5EA; color: #3a3a3c; }
         .tour-btn-next { background: #007AFF; color: white; }
         
-        /* 鎖定網頁背景滾動與手勢 */
+        /* 導覽進行中鎖定網頁滾動 */
         body.tour-locked {
             overflow: hidden !important;
             height: 100vh !important;
             touch-action: none !important;
-            /* 核心：停用行動裝置的所有滑動與手勢 */
         }        
-        
     </style>
 </head>
 <body>
     <audio id="alarm-sound" src="https://github.com/yue830219/Gym/raw/refs/heads/main/music.mp3" preload="auto"></audio>
     <div id="flash-screen" class="flash-overlay"></div>
 
-    <div id="tour-mask" style="display: none;"></div>
-    <div id="tour-dialog" style="display: none;">
-        <div class="tour-header">
-            <span id="tour-step-idx">1/5</span>
-        </div>
+    <div id="tour-mask"></div>
+    <div id="tour-dialog">
+        <div class="tour-header"><span id="tour-step-idx">1/5</span></div>
         <h3 class="tour-title" id="tour-title">標題</h3>
         <div class="tour-body" id="tour-body">內容</div>
         <div class="tour-footer">
@@ -358,21 +343,18 @@
     <div class="top-bar">
         <div class="menu-icon" onclick="toggleSidebar()">☰</div>
         <div class="logo-container">健身助手 Pro</div>
-        <div style="width: 45px;"></div>
-    </div>
+        <div style="width: 45px;"></div> </div>
     
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header" onclick="handleMenuClick('add')" style="cursor: pointer;">健身助手 Pro</div>
+        <div class="sidebar-header" onclick="handleMenuClick('add')">健身助手 Pro</div>
         <div class="sidebar-item" onclick="handleMenuClick('add')"><span>🏠</span> 主畫面</div>
         <div class="sidebar-item" onclick="handleMenuClick('calendar')"><span>📅</span> 訓練日曆</div>
         <div class="sidebar-item" onclick="handleMenuClick('converter')"><span>⚖️</span> 單位換算</div>
         <div class="sidebar-item" onclick="handleMenuClick('settings')"><span>⚙️</span> 系統設定</div>
     </div>
 
-    <div id="timer-title" style="margin: 0 0 10px 0;">
-        <h3 style="color:var(--primary); margin:0;">計時器</h3>
-    </div>
+    <div id="timer-title" style="margin: 0 0 10px 0;"><h3 style="color:var(--primary); margin:0;">計時器</h3></div>
     <div class="timer-panel">
         <div class="timer-header">
             <div id="timer-display">00:00</div>
@@ -385,9 +367,7 @@
         </div>
     </div>
 
-    <div id="main-title" style="margin: 0 0 10px 0;"> 
-        <h3 style="color:var(--primary); margin:0;">紀錄訓練</h3>
-    </div>
+    <div id="main-title" style="margin: 0 0 10px 0;"><h3 style="color:var(--primary); margin:0;">紀錄訓練</h3></div>
     <div class="tab-menu">
         <button class="tab-btn active" style="background:var(--chest)" onclick="switchTab(0)">🔥 練胸</button>
         <button class="tab-btn" style="background:var(--shoulder)" onclick="switchTab(1)">⚡ 練肩</button>
@@ -404,15 +384,11 @@
             <button class="btn-manage-toggle" onclick="toggleManageMode(this)">✏️</button>
             <input type="date" class="date-input" onchange="syncDate(this)">
         </div>
-        <div class="exercise-list"></div>
-            <div class="bottom-manage-bar">
-                <button class="btn-add-exercise" onclick="addExercise(this, 'chest')">➕ 新增動作</button>
-                
-                <div class="bottom-action-buttons">
-                    <button class="btn-manage-toggle btn-bottom-cancel" onclick="cancelAllEditing()">✖️ 取消</button>
-                    <button class="btn-manage-toggle btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
-                </div>
-            </div>
+        <div class="exercise-list"></div> <div class="bottom-manage-bar">
+            <button class="btn-add-exercise" onclick="addExercise(this, 'chest')">➕ 新增動作</button>
+            <button class="btn-bottom-cancel" onclick="cancelAllEditing()">✖️ 取消</button>
+            <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
+        </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>
         <button class="btn-record" onclick="saveToHistory('練胸', this, '#FF3B30')">💾 儲存到日曆</button>
     </div>
@@ -424,14 +400,11 @@
             <input type="date" class="date-input" onchange="syncDate(this)">
         </div>
         <div class="exercise-list"></div>
-            <div class="bottom-manage-bar">
-                <button class="btn-add-exercise" onclick="addExercise(this, 'shoulder')">➕ 新增動作</button>
-                
-                <div class="bottom-action-buttons">
-                    <button class="btn-manage-toggle btn-bottom-cancel" onclick="cancelAllEditing()">✖️ 取消</button>
-                    <button class="btn-manage-toggle btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
-                </div>
-            </div>
+        <div class="bottom-manage-bar">
+            <button class="btn-add-exercise" onclick="addExercise(this, 'shoulder')">➕ 新增動作</button>
+            <button class="btn-bottom-cancel" onclick="cancelAllEditing()">✖️ 取消</button>
+            <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
+        </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>        
         <button class="btn-record" onclick="saveToHistory('練肩', this, '#FF9500')">💾 儲存到日曆</button>
     </div>
@@ -443,14 +416,11 @@
             <input type="date" class="date-input" onchange="syncDate(this)">
         </div>
         <div class="exercise-list"></div>
-            <div class="bottom-manage-bar">
-                <button class="btn-add-exercise" onclick="addExercise(this, 'arm')">➕ 新增動作</button>
-                
-                <div class="bottom-action-buttons">
-                    <button class="btn-manage-toggle btn-bottom-cancel" onclick="cancelAllEditing()">✖️ 取消</button>
-                    <button class="btn-manage-toggle btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
-                </div>
-            </div>
+        <div class="bottom-manage-bar">
+            <button class="btn-add-exercise" onclick="addExercise(this, 'arm')">➕ 新增動作</button>
+            <button class="btn-bottom-cancel" onclick="cancelAllEditing()">✖️ 取消</button>
+            <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
+        </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>        
         <button class="btn-record" onclick="saveToHistory('練臂', this, '#4CD964')">💾 儲存到日曆</button>
     </div>
@@ -462,14 +432,11 @@
             <input type="date" class="date-input" onchange="syncDate(this)">
         </div>
         <div class="exercise-list"></div>
-            <div class="bottom-manage-bar">
-                <button class="btn-add-exercise" onclick="addExercise(this, 'abs')">➕ 新增動作</button>
-                
-                <div class="bottom-action-buttons">
-                    <button class="btn-manage-toggle btn-bottom-cancel" onclick="cancelAllEditing()">✖️ 取消</button>
-                    <button class="btn-manage-toggle btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
-                </div>
-            </div>
+        <div class="bottom-manage-bar">
+            <button class="btn-add-exercise" onclick="addExercise(this, 'abs')">➕ 新增動作</button>
+            <button class="btn-bottom-cancel" onclick="cancelAllEditing()">✖️ 取消</button>
+            <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
+        </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>    
         <button class="btn-record" onclick="saveToHistory('練腹', this, '#AF52DE')">💾 儲存到日曆</button>
     </div>
@@ -481,14 +448,11 @@
             <input type="date" class="date-input" onchange="syncDate(this)">
         </div>
         <div class="exercise-list"></div>
-            <div class="bottom-manage-bar">
-                <button class="btn-add-exercise" onclick="addExercise(this, 'leg-strength')">➕ 新增動作</button>
-                
-                <div class="bottom-action-buttons">
-                    <button class="btn-manage-toggle btn-bottom-cancel" onclick="cancelAllEditing()">✖️ 取消</button>
-                    <button class="btn-manage-toggle btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
-                </div>
-            </div>
+        <div class="bottom-manage-bar">
+            <button class="btn-add-exercise" onclick="addExercise(this, 'leg-strength')">➕ 新增動作</button>
+            <button class="btn-bottom-cancel" onclick="cancelAllEditing()">✖️ 取消</button>
+            <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
+        </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>        
         <button class="btn-record" onclick="saveToHistory('練腿', this, '#008080')">💾 儲存到日曆</button>
     </div>
@@ -579,7 +543,10 @@
     
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script>
-        // --- 4.1 全域預設動作清單資料庫 (LocalStorage 無資料時初始化用) ---
+        /* ==========================================================================
+           1. 全域變數定義與預設動作庫
+           ========================================================================== */
+        // 當 localStorage 內沒有使用者變更紀錄時，程式所使用的預設動作佈局資料
         const defaultExercises = {
             chest: [
                 { id: "chest_1", name: "啞鈴臥推", unit: "kg" },
@@ -612,17 +579,17 @@
             ]
         };
 
-        // 全域核心變數
-        let calendar;            // FullCalendar 實例
-        let countdown;           // 計時器定時器物件
-        let currentEventInfo = null; // 儲存當前點選的日曆事件
-        let setNum = 0;          // 目前完成組數
-        let tempValue = "";      // 輸入框暫存值
+        let calendar;            // 存放 FullCalendar 的實例
+        let countdown;           // 存放 setInterval 的計時指標
+        let currentEventInfo = null; // 點擊日曆事件時，暫存該事件的控制指標
+        let setNum = 0;          // 追蹤當前組數
+        let tempValue = "";      // 重量欄位聚焦時，暫存舊數據用
+        let tempTimerVal = "";   // 計時設定欄位聚焦時，暫存舊數據用
 
-        // --- 4.13 圖像聚光燈式（Spotlight）五步驟導覽邏輯 ---
-        let currentTourStep = 0;
-        let isTourActive = false; 
+        let currentTourStep = 0; // 當前新手導覽的進度索引
+        let isTourActive = false; // 是否正在進行新手導覽
         
+        // 新手功能亮點引導的文案與網頁目標 DOM 節點設定
         const tourSteps = [
             {
                 target: '.timer-panel', 
@@ -651,85 +618,72 @@
             }
         ];
 
+        /* ==========================================================================
+           2. 新手引導功能 (Tour)
+           ========================================================================== */
+        // 判斷使用者是否為首次開啟系統
         function checkFirstTimeUser() {
             if (!localStorage.getItem('has_seen_tour_v2')) {
-                setTimeout(startTour, 1000); // 稍微延遲，等主畫面完全就緒後彈出
+                setTimeout(startTour, 1000); // 延遲 1 秒後自動啟動引導教學
             }
         }
 
-        // 輔助函式：用來強制阻止行動裝置的預設滑動行為
+        // 導覽進行中阻止使用者用手指在螢幕上亂滾動
         function preventTourScroll(e) {
-            // 【修訂】只要 body 仍處於鎖定狀態（導覽中或提示窗開啟中），就全盤阻斷網頁背景滑動
             if (document.body.classList.contains('tour-locked')) {
                 e.preventDefault();
             }
         }
 
+        // 啟動新手導覽教學
         function startTour() {
             currentTourStep = 0;
             isTourActive = true;
-            
-            // 1. 鎖定網頁背景（禁止滾動與手勢）
-            document.body.classList.add('tour-locked');
-            // 2. 針對手機板（iOS/Android）強制綁定主畫面阻斷事件
+            document.body.classList.add('tour-locked'); // 鎖定網頁滾動
             document.addEventListener('touchmove', preventTourScroll, { passive: false });
-            
             document.getElementById('tour-mask').style.display = 'block';
             document.getElementById('tour-dialog').style.display = 'flex';
             highlightStep();
         }
 
+        // 關閉新手導覽教學
         function closeTour() {
             isTourActive = false;
-            
-            // 【核心優化】導覽對話方塊隱藏，但「不解除」body 鎖定，遮罩改以全透明模式存在繼續守護背景防穿透
             document.getElementById('tour-dialog').style.display = 'none';
-            
             const mask = document.getElementById('tour-mask');
-            mask.classList.add('transparent-mask'); // 切換成無色透明滿版，防止使用者點擊或滾動背景卡片
-            
-            localStorage.setItem('has_seen_tour_v2', 'true');
-            
-            // 呼叫彈出「導覽結束！」提示視窗
-            if (typeof showNotice === "function") {
-                showNotice("🎉 導覽結束！", "開始記錄今天的訓練吧！", false);
-                // 強制提高提示窗層級，令其凌駕於透明牆之上，確保「確定」按鈕點得到
-                document.getElementById('delete-modal').style.zIndex = "99999";
-            }
+            mask.classList.add('transparent-mask'); 
+            localStorage.setItem('has_seen_tour_v2', 'true'); // 在瀏覽器標記已看過教學
+            showNotice("🎉 導覽結束！", "開始記錄今天的訓練吧！", false);
+            document.getElementById('delete-modal').style.zIndex = "99999";
         }
 
+        // 計算聚光燈裁剪位置，並讓畫面平滑滾動到目標物件
         function highlightStep() {
             if (!isTourActive) return;
             const step = tourSteps[currentTourStep];
             const mask = document.getElementById('tour-mask');
             const dialog = document.getElementById('tour-dialog');
-            
             let element = document.querySelector(step.target);
             
-            // 針對輸入備註欄位的外層進行優化包覆
+            // 例外處理：若是備註欄，則聚光燈照向其父節點
             if (step.target === '.card.active .card-note' && element) {
                 element = element.parentElement;
             }
-
-            // 安全防呆：若找不到該元件，則以當前作用中的卡片為主，防止程式當掉
             if (!element) {
                 element = document.querySelector('.card.active');
             }
 
             if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
-                // 給予足夠的捲動時間後再計算座標
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' }); // 網頁畫面平滑滾動至亮點區塊
                 setTimeout(() => {
                     const rect = element.getBoundingClientRect();
-                    const padding = 8; 
-                    
+                    const padding = 8; // 預留亮點邊框間距
                     const top = rect.top - padding;
                     const left = rect.left - padding;
                     const bottom = rect.bottom + padding;
                     const right = rect.right + padding;
 
-                    // 重新挖出透明的高亮聚焦框
+                    // 利用 CSS clip-path 的多邊形公式，鏤空目標元素，做出聚焦聚光燈特效
                     mask.style.clipPath = `polygon(
                         0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%,
                         ${left}px ${top}px, 
@@ -739,30 +693,26 @@
                         ${left}px ${top}px
                     )`;
 
-                    // 填入對話框內容
+                    // 置換對話盒文案
                     document.getElementById('tour-step-idx').innerText = `${currentTourStep + 1} / ${tourSteps.length}`;
                     document.getElementById('tour-title').innerText = step.title;
                     document.getElementById('tour-body').innerText = step.desc;
 
-                    // 計算對話框最佳擺放高度位置
+                    // 動態計算對話盒的最佳顯示位置，防止超出螢幕邊界
                     let dialogTop = bottom + 12;
                     if (dialogTop + 240 > window.innerHeight) {
                         dialogTop = top - 240; 
                     }
                     if (dialogTop < 10) dialogTop = 10; 
-
                     let dialogLeft = (window.innerWidth / 2) - 140; 
                     
                     dialog.style.top = `${dialogTop}px`;
                     dialog.style.left = `${dialogLeft}px`;
-
-                    const nextBtn = document.getElementById('tour-next-btn');
-                    nextBtn.innerText = "下一步";
-                    nextBtn.style.background = "#007AFF";
                 }, 400); 
             }
         }
 
+        // 前往引導教學的下一個步驟
         function nextTourStep() {
             if (currentTourStep < tourSteps.length - 1) {
                 currentTourStep++;
@@ -772,45 +722,40 @@
             }
         }
 
+        // 監聽螢幕寬度改變，即時修正聚光燈座標
         window.addEventListener('resize', () => {
             if (isTourActive) highlightStep();
         });
 
-        // --- 4.2 網頁載入初始化作業 ---
+        /* ==========================================================================
+           3. 系統初始化與事件綁定 (window.onload)
+           ========================================================================== */
         window.onload = function() {
-            // 初始化日期選擇器為今日
+            // 初始化所有卡片的日期選擇器為「今天」
             var today = new Date().toLocaleDateString('sv-SE');
             document.querySelectorAll('.date-input').forEach(function(input) { input.value = today; });
-            
-             //強制將所有卡片的備註欄位清空
-            document.querySelectorAll('.card-note').forEach(function(noteInput) {
-                noteInput.value = ""; });
+            document.querySelectorAll('.card-note').forEach(function(noteInput) { noteInput.value = ""; });
                 
-            // 核心載入：渲染自訂或預設的重訓動作列表
-            renderAllExerciseLists();
-
-            // 各元件功能初始化
-            initCalendar(); 
-            loadAllWeights(); 
-            initAutoJump(); 
-            initSoundSetting(); 
-            initFlashSetting();
+            // 初始化並載入各模組元件與設定
+            renderAllExerciseLists(); // 渲染所有部位的動作清單
+            initCalendar();            // 載入日曆套件
+            loadAllWeights();         // 從暫存區(localStorage)載入各動作上次輸入的值
+            initAutoJump();           // 有氧卡片的時間欄位自動跳格功能
+            initSoundSetting();       // 載入聲音提醒開關狀態
+            initFlashSetting();       // 載入畫面閃爍提醒開關狀態
+            checkFirstTimeUser();     // 檢查新手上路
             
-            // 檢查是否需要顯示導覽
-            checkFirstTimeUser();
-            
-            // 綁定 HIIT 輸入欄位的即時計算與體重同步事件
+            // 綁定「HIIT 卡片」數值的連動監聽（體重連動有氧卡片、即時算卡路里）
             var hiitIds = ['hiit_weight', 'hiit_weight_min', 'hiit_weight_sec'];
             hiitIds.forEach(function(id) {
                 var el = document.querySelector('[data-id="' + id + '"]');
                 if(el) { 
                     el.addEventListener('input', function() {
-                        // 如果改的是 HIIT 體重，同步到有氧體重
                         if (id === 'hiit_weight') {
                             var cardioWeightEl = document.querySelector('[data-id="body_weight"]');
                             if (cardioWeightEl) {
                                 cardioWeightEl.value = el.value;
-                                saveCurrentWeight(cardioWeightEl); // 儲存有氧體重暫存
+                                saveCurrentWeight(cardioWeightEl); 
                             }
                         }
                         updateHiitStats(); 
@@ -818,22 +763,21 @@
                 }
             });
 
-            // 綁定有氧輸入欄位的即時計算與體重同步事件
+            // 綁定「有氧跑步卡片」數值的連動監聽（計算配速、卡路里）
             var cardioIds = ['body_weight', 'leg_1', 'leg_hr', 'leg_min', 'leg_sec'];
             cardioIds.forEach(function(id) {
                 var el = document.querySelector('[data-id="' + id + '"]');
                 if(el) { 
                     var handleCardioInput = function() {
-                        // 如果改的是有氧體重，同步到 HIIT 體重
                         if (id === 'body_weight') {
                             var hiitWeightEl = document.querySelector('[data-id="hiit_weight"]');
                             if (hiitWeightEl) {
                                 hiitWeightEl.value = el.value;
-                                saveCurrentWeight(hiitWeightEl); // 儲存 HIIT 體重暫存
+                                saveCurrentWeight(hiitWeightEl); 
                             }
                         }
                         updateCardioStats();
-                        updateHiitStats(); // 同步更新 HIIT 的熱量計算
+                        updateHiitStats(); 
                     };
                     el.addEventListener('input', handleCardioInput); 
                     el.addEventListener('change', handleCardioInput); 
@@ -841,22 +785,22 @@
             });
 
             updateCardioStats(); 
-            initTimerSettings();
+            initTimerSettings(); // 載入自定義倒數秒數設定
         };
 
-        // --- 4.3 動作清單渲染與維護功能 ---
-        
-        // 渲染所有卡片內的重訓動作清單
+        /* ==========================================================================
+           4. 重量訓練卡片動作清單動態生成與管理邏輯
+           ========================================================================== */
+        // 將儲存在瀏覽器的客製化動作佈局取出，並逐項繪製到對應的卡片中
         function renderAllExerciseLists() {
             const savedExercises = JSON.parse(localStorage.getItem('custom_exercises')) || defaultExercises;
-            
             Object.keys(savedExercises).forEach(type => {
                 const card = document.getElementById(`card-${type}`);
                 if (!card) return;
                 const container = card.querySelector('.exercise-list');
                 if (!container) return;
                 
-                container.innerHTML = '';
+                container.innerHTML = ''; // 清空舊內容
                 savedExercises[type].forEach(ex => {
                     const item = createExerciseItemHTML(ex.name, ex.id, ex.unit);
                     container.appendChild(item);
@@ -864,11 +808,10 @@
             });
         }
 
-        // 動態建構單個動作的 DOM HTML 物件並綁定事件
+        // 生成單一動作項目的 HTML 結構（包含動作名稱、重量輸入、單位選單、刪除按鈕）
         function createExerciseItemHTML(name, id, unit) {
             const div = document.createElement('div');
             div.className = 'exercise-item';
-
             const units = ['kg', 'lbs', 'reps', 'sec'];
             let optionsHTML = '';
             units.forEach(u => {
@@ -880,16 +823,14 @@
                 <span class="exercise-name" data-placeholder="自訂新動作" oninput="checkEmptyName(this)">${name}</span>
                 <div class="input-group">
                     <input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="${id}" placeholder="0" value="0">
-                    
                     <select class="unit-select" disabled style="border:none; background:transparent; font-size:0.9rem; color:#666; font-weight:bold; width:45px; -webkit-appearance:none; appearance:none; text-align:center; cursor:pointer;">
                         ${optionsHTML}
                     </select>
-                    
                     <button class="btn-delete-exercise" onclick="deleteExerciseItem(this)">×</button>
                 </div>
             `;
             
-            // 綁定輸入數值時的清空(focus)與防呆回復(blur)事件
+            // 處理數值輸入欄位的焦點事件（聚焦時清空方便使用者重新打字，失焦補零或還原）
             const input = div.querySelector('.weight-input');
             input.addEventListener('focus', function() { 
                 tempValue = this.value; 
@@ -907,8 +848,7 @@
             return div;
         }
 
-        
-        // 檢查動作名稱是否被刪光，若是則強制清空
+        // 防止 contenteditable 在被使用者刪光文字時留下遺留節點（如 <br>），維持 placeholder 正常運作
         function checkEmptyName(element) {
             const text = element.innerText.trim();
             if (text === "" || element.innerHTML === "<br>") {
@@ -916,7 +856,7 @@
             }
         }
 
-        // 儲存目前 UI 的動作名稱與單位結構至 LocalStorage
+        // 儲存目前卡片內所有動作的排列順序與單位，寫入 localStorage 快取
         function saveCurrentExerciseLayout(cardElement) {
             const type = cardElement.dataset.type;
             if (!type || type === 'leg' || type === 'hiit') return; 
@@ -935,13 +875,11 @@
             localStorage.setItem('custom_exercises', JSON.stringify(savedExercises));
         }
 
-        // 點擊新增自訂動作
+        // 於編輯模式下「新增動作」按鈕的實作邏輯
         function addExercise(btnElement, prefix) {
             var card = btnElement.closest('.card');
             var container = card.querySelector('.exercise-list');
-            
-            var cardType = (prefix === 'leg_str') ? 'leg-strength' : prefix;
-            var uniqueId = prefix + '_custom_' + Date.now(); 
+            var uniqueId = prefix + '_custom_' + Date.now(); // 使用時間戳記生成唯一的資料辨識 ID
             var unit = (prefix === 'abs') ? 'reps' : 'kg';
             
             var newItem = createExerciseItemHTML("", uniqueId, unit);
@@ -950,6 +888,7 @@
             const newInput = newItem.querySelector('.weight-input');
             saveCurrentWeight(newInput);
             
+            // 如果是在編輯模式下追加新項目，同步開放文字與選單控制
             if(card.classList.contains('editing-mode')) {
                 newItem.querySelector('.exercise-name').setAttribute('contenteditable', 'true');
                 newItem.querySelector('.weight-input').disabled = true; 
@@ -957,48 +896,47 @@
             }
         }
 
-        // 點擊刪除單個動作項目
+        // 刪除按鈕 (紅叉叉) 觸發：移除該筆動作節點
         function deleteExerciseItem(btn) {
-            const card = btn.closest('.card');
             btn.closest('.exercise-item').remove();
         }
 
-        // 切換編輯模式（頂部✏️ 進入，底部儲存）
+        // 切換進入/離開動作的自定義編輯模式 (管理模式切換)
         function toggleManageMode(btnElement) {
             var card = btnElement.closest('.card');
             card.classList.toggle('editing-mode');
             var exerciseNames = card.querySelectorAll('.exercise-name');
             var weightInputs = card.querySelectorAll('.weight-input'); 
-            var unitSelects = card.querySelectorAll('.unit-select'); // 抓取單位選單
+            var unitSelects = card.querySelectorAll('.unit-select'); 
             
             if (card.classList.contains('editing-mode')) {
-                // 進入編輯模式：允許修改名稱、開放修改單位、鎖定重量欄位
+                // 開啟編輯：允許改文字、允許改單位、鎖定數值輸入欄位避免衝突
                 exerciseNames.forEach(function(el) { el.setAttribute('contenteditable', 'true'); });
                 weightInputs.forEach(function(input) { input.disabled = true; }); 
-                unitSelects.forEach(function(select) { select.disabled = false; }); // 開放修改單位
+                unitSelects.forEach(function(select) { select.disabled = false; }); 
             } else {
-                // 退出編輯模式（儲存）：鎖定名稱、鎖定單位、重新啟用重量欄位
+                // 結束編輯並儲存：關閉文字修改權限、釋放重量輸入、鎖定單位、回存排版設定
                 exerciseNames.forEach(function(el) { el.removeAttribute('contenteditable'); });
                 weightInputs.forEach(function(input) { input.disabled = false; }); 
-                unitSelects.forEach(function(select) { select.disabled = true; }); // 鎖定單位
-                
+                unitSelects.forEach(function(select) { select.disabled = true; }); 
                 saveCurrentExerciseLayout(card);
             }
         }
 
-        // --- 4.4 有氧與 HIIT 即時熱量/配速計算邏輯 ---
-        
-        // 即時計算 HIIT 消耗熱量 (METs 基準)
+        /* ==========================================================================
+           5. 有氧與 HIIT 即時數據運算邏輯 (ACSM 生理學公式)
+           ========================================================================== */
+        // 計算 HIIT 訓練預估消耗熱量 (以 METs 10.0 固定值估算)
         function updateHiitStats() {
             var w = parseFloat(document.querySelector('[data-id="hiit_weight"]').value) || 0;
             var m = parseInt(document.getElementById('hiit-min').value) || 0;
             var s = parseInt(document.getElementById('hiit-sec').value) || 0;
             var totalHours = (m * 60 + s) / 3600;
-            var kcal = Math.round(10.0 * w * totalHours);
+            var kcal = Math.round(10.0 * w * totalHours); // 熱量公式 = METs * 體重(kg) * 時間(小時)
             document.getElementById('display-hiit-calories').innerText = kcal + " kcal";
         }
 
-        // 即時計算有氧跑步平均配速與熱量 (ACSM 跑步公式)
+        // 依據速度與坡度即時精密運算跑步的平均配速以及卡路里消耗 (ACSM 攝氧量公式)
         function updateCardioStats() {
             var weightInput = document.querySelector('[data-id="body_weight"]');
             var distInput = document.querySelector('[data-id="leg_1"]');
@@ -1020,7 +958,7 @@
             var paceDisplay = document.getElementById('display-pace'); 
             var speedKph = 0;
 
-            // 計算配速
+            // 配速計算邏輯
             if (dist > 0 && totalSeconds > 0) {
                 var paceTotalSecPerKm = totalSeconds / dist;
                 var pMin = Math.floor(paceTotalSecPerKm / 60); 
@@ -1031,21 +969,23 @@
                 paceDisplay.innerText = "--'--\""; 
             }
 
-            // 計算卡路里
+            // 熱量計算邏輯 (ACSM 臨床公式)
             var kcalDisplay = document.getElementById('display-calories');
             if (weight > 0 && dist > 0 && totalHours > 0) {
-                var speedMpm = speedKph * 16.6667; 
+                var speedMpm = speedKph * 16.6667; // 公里/小時 轉換為 公尺/分鐘
                 var vo2 = 0;
-                if (speedKph < 7) { vo2 = (0.1 * speedMpm) + (1.8 * speedMpm * incline) + 3.5; } // 走路
-                else { vo2 = (0.2 * speedMpm) + (0.9 * speedMpm * incline) + 3.5; } // 跑步
-                var met = vo2 / 3.5;
+                // 分別依 健走 (時速 < 7 km) 或 跑步 (時速 >= 7 km) 的公式處理攝氧量
+                if (speedKph < 7) { vo2 = (0.1 * speedMpm) + (1.8 * speedMpm * incline) + 3.5; } 
+                else { vo2 = (0.2 * speedMpm) + (0.9 * speedMpm * incline) + 3.5; } 
+                var met = vo2 / 3.5; // 攝氧量轉為等效代謝當量 METs
                 kcalDisplay.innerText = Math.round(met * weight * totalHours) + " kcal";
             } else { 
+                // 基本估算備用方案 (每公斤公里消耗大約 1.036 卡)
                 kcalDisplay.innerText = (weight > 0 && dist > 0) ? Math.round(weight * dist * 1.036) + " kcal" : "0 kcal"; 
             }
         }
 
-        // 有氧時間輸入框自動跳格功能 (時 -> 分 -> 秒)
+        // 有氧卡片輸入「時、分、秒」位數到達兩位時，自動聚焦跳格至下一欄位
         function initAutoJump() {
             var hrInput = document.getElementById('input-hr'); var minInput = document.getElementById('input-min'); var secInput = document.getElementById('input-sec');
             if(hrInput && minInput && secInput) {
@@ -1055,14 +995,19 @@
             }
         }
 
-        // --- 4.5 倒數計時器核心功能 ---
+        /* ==========================================================================
+           6. 組間/動作間隔計時器核心驅動
+           ========================================================================== */
+        // 分別讀取系統設定中設定的組間與動作間隔分鐘數，並轉換為秒數啟動倒數
         function startRestTimer() { handleRestClick((parseFloat(localStorage.getItem('cfg_rest_min')) || 2) * 60); }
         function startSwitchTimer() { handleSwitchClick((parseFloat(localStorage.getItem('cfg_switch_min')) || 4) * 60); }
         
+        // 組間休息：組數遞增並更新介面
         function handleRestClick(seconds) { setNum++; document.getElementById('set-counter').innerText = "第 " + setNum + " 組完成 "; startTimer(seconds); }
+        // 動作間隔：重設組數
         function handleSwitchClick(seconds) { setNum = 0; document.getElementById('set-counter').innerText = ""; startTimer(seconds); }
         
-        // 重設計時器狀態
+        // 停止並重設計時狀態
         function resetTimer() { 
             clearInterval(countdown); 
             var alarm = document.getElementById('alarm-sound'); 
@@ -1072,12 +1017,12 @@
             document.getElementById('set-counter').innerText = ""; 
         }
         
-        // 計時器主核心邏輯
+        // 計時器秒數倒數驅動引擎 (採用 Date 修正法，避免手機背景運行導致的失準與嚴重秒差)
         function startTimer(s) {
             clearInterval(countdown); 
             var display = document.querySelector('#timer-display'); 
             var alarm = document.getElementById('alarm-sound'); 
-            alarm.load();
+            alarm.load(); // 預載音訊，防止移動端瀏覽器因安全阻擋而無法播放
             var then = Date.now() + s * 1000;
             
             function updateDisplay() {
@@ -1085,7 +1030,7 @@
                 if (left <= 0) {
                     clearInterval(countdown); 
                     display.innerText = "00:00";
-                    // 時間到觸發提示
+                    // 時間到！觸發聲音與畫面閃爍機制
                     if (localStorage.getItem('cfg_sound_enable') === "true") { alarm.play(); }
                     if (localStorage.getItem('cfg_flash_enable') === "true") { document.getElementById('flash-screen').classList.add('flash-active'); }
                     showNotice("計時結束", "時間到！該開始下一組了 🏋️", false); 
@@ -1098,32 +1043,37 @@
             countdown = setInterval(updateDisplay, 1000);
         }
 
-        // --- 4.6 訓練歷史紀錄儲存與 FullCalendar 整合 ---
-        
-        // 初始化訓練日曆
+        /* ==========================================================================
+           7. 訓練日曆整合與資料庫歷史紀錄管理 (CRUD / LocalStorage)
+           ========================================================================== */
+        // 初始化 FullCalendar 實例與參數
         function initCalendar() {
             var calendarEl = document.getElementById('calendar');
             calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth', locale: 'zh-tw', height: 'auto',
                 headerToolbar: { left: 'prev', center: 'title', right: 'next' },
-                dayCellContent: function(arg) { return arg.date.getDate(); },
-                eventOrder: "order", 
+                dayCellContent: function(arg) { return arg.date.getDate(); }, // 簡化日期文字，只保留數字
+                eventOrder: "order", // 依自定義權重排序每日卡片顯示順序
                 events: JSON.parse(localStorage.getItem('gym_history') || "[]"),
-                // 點選日曆上的項目開啟詳細對話框（可進行刪除）
-                eventClick: function(info) { currentEventInfo = info; showNotice(info.event.title + " (" + info.event.startStr + ")", info.event.extendedProps.note || "無詳細內容", true); }
+                eventClick: function(info) { 
+                    currentEventInfo = info; 
+                    showNotice(info.event.title + " (" + info.event.startStr + ")", info.event.extendedProps.note || "無詳細內容", true); 
+                }
             });
             calendar.render();
         }
 
-        // 將重訓/有氧數據打包儲存至 LocalStorage 並推送到日曆
+        // 把當前操作卡片上填寫的所有動作、重量、備註整合編碼，儲存或複寫回訓練日曆資料庫中
         function saveToHistory(type, btnElement, color) {
             var card = btnElement.closest('.card'); 
             var dateVal = card.querySelector('.date-input').value;
             if (!dateVal) { showNotice("警告", "請選擇日期", false); return; }
             
+            // 定義日曆上項目的上下排序優先順序 (練胸 -> 練肩 -> ... -> HIIT)
             var orderWeight = (type === '練胸') ? 1 : (type === '練肩') ? 2 : (type === '練臂') ? 3 : (type === '練腹') ? 4 : (type === '練腿') ? 5 : (type === '有氧') ? 6 : (type === 'HIIT') ? 7 : 99;
             var details = "";
 
+            // 編碼有氧卡片資料
             if (type === '有氧') {
                 var dist = card.querySelector('[data-id="leg_1"]').value || "0";
                 var hr = parseInt(card.querySelector('[data-id="leg_hr"]').value) || 0;
@@ -1132,26 +1082,27 @@
                 var inclineEl = document.getElementById('input-incline');
                 var inclineText = inclineEl ? inclineEl.value : "0";
                 details += "● 距離: " + dist + " km\n● 坡度: " + inclineText + "%\n● 時間: " + (hr > 0 ? hr + " 時 " + (min < 10 ? '0' + min : min) : min) + " 分 " + (sec < 10 ? '0' + sec : sec) + " 秒\n● 配速: " + document.getElementById('display-pace').innerText + "\n● 消耗: " + document.getElementById('display-calories').innerText + "\n";
-            } else if (type === 'HIIT') {
+            } else if (type === 'HIIT') { // 編碼 HIIT 資料
                 var m = document.getElementById('hiit-min').value || "0";
                 var s = document.getElementById('hiit-sec').value || "0";
                 details += "● 時間: " + m + " 分 " + s + " 秒\n● 消耗: " + document.getElementById('display-hiit-calories').innerText + "\n";
-            } else {
+            } else { // 編碼重量訓練卡片動作資料
                 card.querySelectorAll('.exercise-item').forEach(function(item) {
                     var name = item.querySelector('.exercise-name').innerText; 
                     var weight = item.querySelector('.weight-input').value || "0"; 
                     var unitSelect = item.querySelector('.unit-select');
                     var unit = unitSelect ? unitSelect.value : "kg"; 
-                    
                     details += "● " + name + ": " + weight + " " + unit + "\n";
                 });
             }
 
+            // 擷取並寫入備註資訊
             var noteInput = card.querySelector('.card-note');
             var noteVal = noteInput ? noteInput.value.trim() : "";
             if (noteVal !== "") { details += "\n【備註】: " + noteVal; }
 
             var history = JSON.parse(localStorage.getItem('gym_history') || "[]");
+            // 查詢同日期、同訓練項目是否早已存在，存在即採用覆蓋策略 (Update)，不存在則追加 (Create)
             var existingIndex = history.findIndex(function(item) { return item.start === dateVal && item.title === type; });
             
             if (existingIndex > -1) {
@@ -1168,43 +1119,43 @@
                 calendar.addEvent(newRecord); 
                 showNotice("訓練紀錄已儲存", "", false);
             }
-            
-            localStorage.setItem('gym_history', JSON.stringify(history));
+            localStorage.setItem('gym_history', JSON.stringify(history)); // 寫入本機永久快取庫
         }
 
-
-        // 刪除日曆歷史紀錄事件
+        // 點擊 Modal 視窗內的「刪除本筆紀錄」按鈕時的實作
         document.getElementById('confirm-delete').onclick = function() {
             if (currentEventInfo) {
-                currentEventInfo.event.remove();
+                currentEventInfo.event.remove(); // 從日曆中拔除元件
+                // 從 localStorage 的陣列資料中過濾掉該筆資料
                 var history = JSON.parse(localStorage.getItem('gym_history') || "[]").filter(function(item) { return item.id !== currentEventInfo.event.id; });
                 localStorage.setItem('gym_history', JSON.stringify(history)); 
                 closeModal();
             }
         };
 
-        // --- 4.7 重量暫存與同步功能 ---
+        // 當使用者修改任何一張卡片的日期時，自動同步所有卡片的日期輸入框
         function syncDate(sourceInput) { var newDate = sourceInput.value; document.querySelectorAll('.date-input').forEach(function(input) { input.value = newDate; }); }
         
-        // 欄位輸入變更時即時將數值暫存在 LocalStorage，防止閃退或重整資料遺失
+        // 當欄位輸入數字時，立即儲存當前數值，防止網頁閃退或意外重整導致正在填寫的資料流失
         function saveCurrentWeight(input) {
             var id = input.dataset.id; var val = input.value === "" ? "0" : input.value;
             var currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
             currentWeights[id] = val; localStorage.setItem('current_weights', JSON.stringify(currentWeights)); updateCardioStats();
         }
 
-        // 網頁載入時回復所有輸入欄位的歷史數值
+        // 網頁開載時，自動回填使用者上次離開前在各個欄位所填入的重量數值
         function loadAllWeights() {
             var currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
             document.querySelectorAll('.weight-input').forEach(function(input) {
                 var id = input.dataset.id;
                 if (!id) { input.value = ""; } 
-                else if (id.includes('_min') || id.includes('_sec') || id.includes('_hr') || id === 'leg_1'|| id === 'leg_incline') {
+                else if (id.includes('_min') || id.includes('_sec') || id.includes('_hr') || id === 'leg_1' || id === 'leg_incline') {
                     input.value = "0"; currentWeights[id] = "0"; 
                 } else {
                     input.value = (currentWeights[id] !== undefined && currentWeights[id] !== "") ? currentWeights[id] : "0"; 
                 }
 
+                // 輸入重量欄位焦點優化
                 input.addEventListener('focus', function() { tempValue = this.value; this.value = ""; });
                 input.addEventListener('blur', function() { 
                     if (this.value === "" || isNaN(this.value)) { this.value = tempValue; } 
@@ -1214,6 +1165,8 @@
                     } 
                 });
             });
+            
+            // 雙向交叉連動：有氧卡片的體重與 HIIT 卡片的體重互相即時同步
             var cWeight = document.querySelector('[data-id="body_weight"]');
             var hWeight = document.querySelector('[data-id="hiit_weight"]');
             if (cWeight && hWeight) {
@@ -1225,22 +1178,22 @@
                     currentWeights['body_weight'] = hWeight.value;
                 }
             }
-
             localStorage.setItem('current_weights', JSON.stringify(currentWeights)); 
-            
-            // 重新計算有氧與 HIIT 的數據與熱量
             updateCardioStats();
             updateHiitStats();
         }
 
-        // --- 4.8 導覽、側邊欄與分頁切換控制 ---
+        /* ==========================================================================
+           8. 使用者介面互動操控與分頁切換控制 (UI / UX 邏輯)
+           ========================================================================== */
+        // 切換側邊欄抽屜選單展開或縮回
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('overlay');
             if (sidebar.classList.contains('active')) { sidebar.classList.remove('active'); overlay.classList.remove('active'); } 
             else { sidebar.classList.add('active'); overlay.classList.add('active'); }
         }
 
-        // 處理選單點擊切換不同主要功能卡片
+        // 處理由側邊欄選單點擊後的主面板頁面流轉切換
         function handleMenuClick(action) {
             toggleSidebar(); 
             const timerPanel = document.querySelector('.timer-panel'); 
@@ -1250,12 +1203,12 @@
 
             document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
 
-            if (action === 'add') {
+            if (action === 'add') { // 回到主畫面紀錄模式
                 timerPanel.style.display = 'block'; tabMenu.style.display = 'flex';
                 if(mainTitle) mainTitle.style.display = 'block';
                 if(timerTitle) timerTitle.style.display = 'block';
                 switchTab(0); 
-            } else {
+            } else { // 前往工具或獨立設定大頁面
                 timerPanel.style.display = 'none'; tabMenu.style.display = 'none';
                 if(mainTitle) mainTitle.style.display = 'none';
                 if(timerTitle) timerTitle.style.display = 'none';
@@ -1264,12 +1217,12 @@
                 else if (action === 'calendar') { document.getElementById('card-calendar').classList.add('active'); setTimeout(() => { calendar.render(); }, 100); } 
                 else if (action === 'settings') { document.getElementById('card-settings').classList.add('active'); }
             }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // 自動回到最頂端
         }
 
-        // 重訓分類小標籤切換
+        // 點選訓練部位分頁 (Tab) 切換特定紀錄卡片展示
         function switchTab(index) {
-            cancelAllEditing();
+            cancelAllEditing(); // 離開原卡片前自動中斷並還原未儲存的動作自訂編輯
             document.querySelector('.timer-panel').style.display = 'block'; document.querySelector('.tab-menu').style.display = 'flex'; document.getElementById('main-title').style.display = 'block';
             document.getElementById('timer-title').style.display = 'block';
             document.querySelectorAll('.card').forEach(function(card) { card.classList.remove('active'); });
@@ -1279,7 +1232,7 @@
             document.querySelectorAll('.tab-btn').forEach(function(btn, i) { btn.classList.toggle('active', i === index); });
         }
         
-        // 取消編輯狀態，還原名稱並回復輸入的重量
+        // 取消目前正處於動作編輯狀態之卡片，捨棄更動，並恢復成原始排版配置
         function cancelAllEditing() {
             const editingCards = document.querySelectorAll('.card.editing-mode');
             if (editingCards.length === 0) return;
@@ -1287,10 +1240,6 @@
         
             editingCards.forEach(card => {
                 card.classList.remove('editing-mode');
-                
-                const topToggleBtn = card.querySelector('.card-header .btn-manage-toggle');
-                if (topToggleBtn) topToggleBtn.innerText = '✏️';
-                
                 const type = card.dataset.type;
                 const originalList = savedExercises[type];
                 if (!originalList) return;
@@ -1302,20 +1251,16 @@
                         container.appendChild(item);
                     });
                 }
+                card.querySelectorAll('.weight-input').forEach(input => { input.disabled = false; });
+                card.querySelectorAll('.unit-select').forEach(select => { select.disabled = true; });
             });
             loadAllWeights();
-            document.querySelectorAll('.card .weight-input').forEach(input => {
-                input.disabled = false;
-            });
-            document.querySelectorAll('.card .unit-select').forEach(select => {
-                select.disabled = true;
-            });
-            document.querySelectorAll('.card .weight-input').forEach(input => {
-                input.disabled = false;
-            });
         }
 
-        // --- 4.9 系統環境設定與備份邏輯 ---
+        /* ==========================================================================
+           9. 系統參數配置設定與雲端 JSON 資料匯入匯出
+           ========================================================================== */
+        // 初始化載入計時器的使用者預設分鏡設定
         function initTimerSettings() {
             let restMin = localStorage.getItem('cfg_rest_min') || "2"; let switchMin = localStorage.getItem('cfg_switch_min') || "4";
             if (!localStorage.getItem('cfg_rest_min')) localStorage.setItem('cfg_rest_min', "2");
@@ -1326,24 +1271,27 @@
             if (btnRest) btnRest.innerText = "組間間隔\n" + restMin + " 分鐘"; if (btnSwitch) btnSwitch.innerText = "動作間隔\n" + switchMin + " 分鐘";
         }
 
+        // 寫入儲存使用者客製化設定的計時長度
         function saveTimerSettings() {
             var restValue = document.getElementById('cfg-rest-min').value || "2"; var swValue = document.getElementById('cfg-switch-min').value || "4";
             localStorage.setItem('cfg_rest_min', restValue); localStorage.setItem('cfg_switch_min', swValue); initTimerSettings();
         }
 
+        // 初始化與儲存聲音設定
         function initSoundSetting() {
             let soundEnabled = localStorage.getItem('cfg_sound_enable'); if (soundEnabled === null) { soundEnabled = "true"; localStorage.setItem('cfg_sound_enable', "true"); }
             const checkbox = document.getElementById('cfg-sound-enable'); if (checkbox) checkbox.checked = (soundEnabled === "true");
         }
         function saveSoundSetting() { localStorage.setItem('cfg_sound_enable', document.getElementById('cfg-sound-enable').checked ? "true" : "false"); }
         
+        // 初始化與儲存螢幕閃爍設定
         function initFlashSetting() {
             let flashEnabled = localStorage.getItem('cfg_flash_enable'); if (flashEnabled === null) { flashEnabled = "true"; localStorage.setItem('cfg_flash_enable', "true"); }
             const checkbox = document.getElementById('cfg-flash-enable'); if (checkbox) checkbox.checked = (flashEnabled === "true");
         }
         function saveFlashSetting() { localStorage.setItem('cfg_flash_enable', document.getElementById('cfg-flash-enable').checked ? "true" : "false"); }
 
-        // JSON 紀錄匯出備份功能
+        // 資料庫匯出：將所有訓練紀錄轉化為標準 JSON 文字檔並驅動瀏覽器下載備份
         function exportHistory() {
             var history = localStorage.getItem('gym_history');
             if (!history || history === "[]") { showNotice("沒有資料", "目前沒有任何訓練紀錄可以匯出", false); return; }
@@ -1354,7 +1302,7 @@
             showNotice("匯出完成", "訓練紀錄已下載成 JSON 檔", false);
         }
 
-        // JSON 紀錄匯入還原功能
+        // 資料庫匯入：讀取使用者上傳的 JSON 備份檔，解析、驗證結構無誤後覆蓋寫入，並重繪日曆面
         function importHistory(event) {
             var file = event.target.files[0]; if (!file) return;
             var reader = new FileReader();
@@ -1370,9 +1318,13 @@
             reader.readAsText(file);
         }
 
+        // 透過按鈕間接點擊隱藏的 File Input 檔案選取視窗
         function triggerImport() { document.getElementById('import-file').value = ""; document.getElementById('import-file').click(); }
 
-        // --- 4.10 通用對話視窗 (Modal) UI 顯示/關閉控制 ---
+        /* ==========================================================================
+           10. 共用 Modal 彈出視窗與對話盒顯示控制
+           ========================================================================== */
+        // 開啟共用 Modal 對話視窗並設定內容樣態與刪除按鈕顯隱狀態
         function showNotice(title, content, showDelete) {
             document.getElementById('modal-title').innerText = title;
             var detailsEl = document.getElementById('modal-details');
@@ -1382,41 +1334,33 @@
             document.getElementById('delete-modal').style.display = 'flex';
         }
 
-        // 【修改後】關閉對話框函式：在此處進行最終的全功能網頁解鎖
+        // 關閉 Modal 提示視窗，並確保強制停止正在大響的計時鬧鈴與閃動圖層，釋放導覽鎖定
         function closeModal() {
             var alarm = document.getElementById('alarm-sound'); if (alarm) { alarm.pause(); alarm.currentTime = 0; }
             document.getElementById('flash-screen').classList.remove('flash-active');
             document.getElementById('delete-modal').style.display = 'none'; currentEventInfo = null;
             
-            // === 【強效防卡死雙重解鎖防線】當使用者按下「確定」時，關閉所有鎖定樣式與接力遮罩 ===
-            
-            // 1. 隱藏並徹底還原導覽遮罩的 Class 與樣式
             const mask = document.getElementById('tour-mask');
             if (mask) {
                 mask.style.display = 'none';
                 mask.classList.remove('transparent-mask');
             }
             
-            // 2. 恢復提示視窗預設的 z-index 層級
             document.getElementById('delete-modal').style.zIndex = "2000";
-            
-            // 3. 移除鎖定 Class 
             document.body.classList.remove('tour-locked');
-            
-            // 4. 強制還原 body 樣式（防止行動裝置瀏覽器渲染殘留卡死）
             document.body.style.overflow = '';
             document.body.style.height = '';
             document.body.style.touchAction = '';
-            
-            // 5. 徹底移除手機板的全域觸控滑動阻斷事件監聽
             document.removeEventListener('touchmove', preventTourScroll, { passive: false });
         }
 
-        // --- 4.11 磅與公斤 (lb ⇄ kg) 即時雙向單位換算 ---
+        /* ==========================================================================
+           11. 磅 (lbs) 與 公斤 (kg) 即時雙向精準單位換算器
+           ========================================================================== */
         function convertUnit(source) {
             const lbsInput = document.getElementById('input-lbs');
             const kgsInput = document.getElementById('input-kgs');
-            const ratio = 0.45359237;
+            const ratio = 0.45359237; // 國際標準磅公斤物理換算比率常數
             if (source === 'lbs') {
                 const val = parseFloat(lbsInput.value); kgsInput.value = isNaN(val) ? "" : (val * ratio).toFixed(2);
             } else {
@@ -1424,37 +1368,30 @@
             }
         }
 
-        // --- 4.12 螢幕雙向滑動手勢控制（全螢幕任意處右滑拉出、左滑收回） ---
+        /* ==========================================================================
+           12. 手機版原生滑動手勢偵測功能 (左右側滑 快速呼叫/關閉側邊選單)
+           ========================================================================== */
         (function() {
             let touchStartX = 0;
             let touchStartY = 0;
             let touchEndX = 0;
             let touchEndY = 0;
-
-            const SWIPE_MIN_DISTANCE = 70; 
+            const SWIPE_MIN_DISTANCE = 70; // 判定手勢成立的最少水平滑行距離 (像素像素)
 
             window.addEventListener('touchstart', function(e) {
-                // 【修訂】如果 body 處於鎖定狀態（導覽中或結束提示視窗開啟中），全盤不記錄手勢起點
                 if (document.body.classList.contains('tour-locked')) return; 
-                
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
-                touchEndX = e.touches[0].clientX;
-                touchEndY = e.touches[0].clientY;
-            }, { passive: false }); // 改為 false 確保鎖定期間能被精準控制不抖動
+            }, { passive: true });
 
             window.addEventListener('touchmove', function(e) {
-                // 【修訂】如果 body 處於鎖定狀態，直接中斷跳出
                 if (document.body.classList.contains('tour-locked')) return; 
-
                 touchEndX = e.touches[0].clientX;
                 touchEndY = e.touches[0].clientY;
-            }, { passive: false }); // 改為 false 確保鎖定期間能被精準控制不抖動
+            }, { passive: true });
 
             window.addEventListener('touchend', function(e) {
-                // 【修訂】如果 body 處於鎖定狀態，不觸發任何側邊欄切換
                 if (document.body.classList.contains('tour-locked')) return; 
-
                 const sidebar = document.getElementById('sidebar');
                 if (!sidebar) return;
 
@@ -1463,19 +1400,22 @@
                 const deltaY = Math.abs(touchEndY - touchStartY);
 
                 if (!isSidebarActive) {
+                    // 由左向右劃過 且 水平滑移大於垂直滑移 -> 展開選單
                     if (deltaX > SWIPE_MIN_DISTANCE && deltaX > deltaY) {
                         toggleSidebar();
                     }
                 } else {
+                    // 選單開啟時由右向左劃過 -> 收合選單
                     if (deltaX < -SWIPE_MIN_DISTANCE && Math.abs(deltaX) > deltaY) {
                         toggleSidebar();
                     }
                 }
+                // 清空歸零座標
                 touchStartX = 0; touchStartY = 0; touchEndX = 0; touchEndY = 0;
             }, { passive: true });
         })();
 
-        // 註冊 PWA Service Worker 實現離線使用
+        // 註冊 PWA 離線服務線程 (Service Worker) 確保應用程式可以離線開啟
         if ("serviceWorker" in navigator) { navigator.serviceWorker.register("service-worker.js"); }
     </script>
 </body>
