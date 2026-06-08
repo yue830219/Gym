@@ -174,15 +174,37 @@
             --leg-strength: #008080; --hiit: #5856D6; 
         }
         
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 50px; }
+        body { 
+            font-family: -apple-system, system-ui, sans-serif; 
+            background: var(--bg); /* 蘋果官方標準淺灰底，最能襯托白色毛玻璃 */
+            margin: 0; 
+            padding: 15px; 
+            padding-bottom: 50px; 
+        }
         
-        /* 上方導覽列 */
-        .top-bar { display: flex; align-items: center; padding: 5px 0px; justify-content: space-between; background: var(--bg); }
+        /* 上方導覽列改透明，這樣卡片滾動過去時才漂亮 */
+        .top-bar { display: flex; align-items: center; padding: 5px 0px; justify-content: space-between; background: transparent; }
+        .menu-icon { font-size: 40px; cursor: pointer; width: 45px; text-align: center; margin-left: -7px; margin-top: -15px; color: #1c1c1e; user-select: none; }
         .menu-icon { font-size: 40px; cursor: pointer; width: 45px; text-align: center; margin-left: -7px; margin-top: -15px; color: #333; user-select: none; }
         .logo-container { flex-grow: 1; text-align: center; font-size: 1.25rem; font-weight: 800; margin-top: -5px; color: #007AFF; line-height: 1; display: flex; align-items: center; justify-content: center; }
         
         /* 側邊欄抽屜面板 */
-        .sidebar { position: fixed; top: 0; left: -220px; width: 200px; height: 100%; background: white; box-shadow: 2px 0 12px rgba(0,0,0,0.15); z-index: 3000; transition: transform 0.3s ease; padding: 20px 0; visibility: hidden; }
+        .sidebar { 
+            position: fixed; 
+            top: 0; 
+            left: -220px; 
+            width: 200px; 
+            height: 100%; 
+            background: rgba(255, 255, 255, 0.6); /* 亮白半透明 */
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            box-shadow: 4px 0 24px rgba(0,0,0,0.05); 
+            z-index: 3000; 
+            transition: transform 0.3s ease; 
+            padding: 20px 0; 
+            visibility: hidden; 
+            border-right: 1px solid rgba(255, 255, 255, 0.5); /* 亮色微光邊框 */
+        }
         .sidebar.active { transform: translateX(220px); visibility: visible; } /* 展開時向右滑出 */
         .sidebar-header { font-size: 1.25rem; font-weight: 800; color: #007AFF; padding: 15px 20px 25px 20px; border-bottom: 1px solid #f2f2f7; margin-bottom: 10px; }
         .sidebar-item { padding: 22px 25px; font-size: 1.05rem; color: #1c1c1e; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: background 0.2s; -webkit-tap-highlight-color: transparent; }
@@ -196,7 +218,17 @@
            2.3 計時器面板與標籤分頁樣式
            ========================================================================== */
         /* 組間/動作間隔休息計時器控制面板 */
-        .timer-panel { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 15px; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); z-index: 1000; margin-bottom: 20px; border: 1px solid #ddd; }
+        .timer-panel { 
+            background: rgba(255, 255, 255, 0.7); /* 亮白半透明 */
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            padding: 15px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.05); 
+            z-index: 1000; 
+            margin-bottom: 20px; 
+            border: 1px solid rgba(255, 255, 255, 0.6); /* 讓邊框像玻璃邊緣一樣微發光 */
+        }
         .timer-header { display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
         #timer-display { font-size: 3.5rem; font-weight: 800; margin: 5px 0; color: #1c1c1e; line-height: 1.2; text-align: left; }
         #set-counter { font-size: 1.2rem; font-weight: bold; color: #34c759; text-align: right; }
@@ -212,7 +244,17 @@
            2.4 卡片與輸入欄位樣式
            ========================================================================== */
         /* 各訓練主題的卡片基礎樣式 */
-        .card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none; }
+        .card {
+            background: rgba(255, 255, 255, 0.7);
+            /* 亮白半透明 */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            display: none;}
         .card.active { display: block; animation: fadeIn 0.3s; } /* 只有啟動狀態的卡片才會顯示 */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
@@ -232,7 +274,18 @@
            2.5 提示/刪除彈出視窗樣式 (Modal)
            ========================================================================== */
         #delete-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
-        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: popIn 0.2s cubic-bezier(0.17, 0.89, 0.32, 1.28); }
+        .modal-content { 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 25px; 
+            border-radius: 20px; 
+            width: 85%; 
+            max-width: 320px; 
+            text-align: center; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            animation: popIn 0.2s cubic-bezier(0.17, 0.89, 0.32, 1.28); }
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         #modal-details { text-align: left; background: #F2F2F7; padding: 12px; border-radius: 12px; font-size: 0.95rem; line-height: 1.6; margin: 15px 0; white-space: pre-wrap; color: #333; }
         .modal-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
@@ -588,6 +641,8 @@
 
         let currentTourStep = 0; // 當前新手導覽的進度索引
         let isTourActive = false; // 是否正在進行新手導覽
+        let isNoticeOpen = false; //    追蹤提示卡片是否正開啟中
+
         
         // 新手功能亮點引導的文案與網頁目標 DOM 節點設定
         const tourSteps = [
@@ -1291,29 +1346,89 @@
         }
         function saveFlashSetting() { localStorage.setItem('cfg_flash_enable', document.getElementById('cfg-flash-enable').checked ? "true" : "false"); }
 
-        // 資料庫匯出：將所有訓練紀錄轉化為標準 JSON 文字檔並驅動瀏覽器下載備份
+        // 資料庫匯出：將所有訓練紀錄、自訂動作與暫存重量完整打包匯出
         function exportHistory() {
-            var history = localStorage.getItem('gym_history');
-            if (!history || history === "[]") { showNotice("沒有資料", "目前沒有任何訓練紀錄可以匯出", false); return; }
-            var blob = new Blob([history], { type: "application/json;charset=utf-8;" });
+            // 打包所有需要備份的 LocalStorage 資料
+            var backupData = {
+                gym_history: JSON.parse(localStorage.getItem('gym_history') || "[]"),
+                custom_exercises: JSON.parse(localStorage.getItem('custom_exercises') || "null"),
+                current_weights: JSON.parse(localStorage.getItem('current_weights') || "{}"),
+                cfg_rest_min: localStorage.getItem('cfg_rest_min') || "2",
+                cfg_switch_min: localStorage.getItem('cfg_switch_min') || "4",
+                cfg_sound_enable: localStorage.getItem('cfg_sound_enable') || "true",
+                cfg_flash_enable: localStorage.getItem('cfg_flash_enable') || "true"
+            };
+            
+            // 檢查是否真的完全沒有任何資料
+            if (backupData.gym_history.length === 0 && !backupData.custom_exercises) {
+                showNotice("沒有資料", "目前沒有任何訓練紀錄或自訂動作可以匯出", false);
+                return;
+            }
+            
+            var blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json;charset=utf-8;" });
             var url = URL.createObjectURL(blob);
-            var a = document.createElement("a"); a.href = url; a.download = "gym_history_backup_" + new Date().toISOString().slice(0,10) + ".json";
-            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-            showNotice("匯出完成", "訓練紀錄已下載成 JSON 檔", false);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = "gym_complete_backup_" + new Date().toISOString().slice(0, 10) + ".json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showNotice("匯出完成", "訓練紀錄已下載成 JSON 備份檔", false);
         }
-
-        // 資料庫匯入：讀取使用者上傳的 JSON 備份檔，解析、驗證結構無誤後覆蓋寫入，並重繪日曆面
+        
+        // 資料庫匯入：讀取完整備份檔，完美還原日曆、自訂動作與系統設定
         function importHistory(event) {
-            var file = event.target.files[0]; if (!file) return;
+            var file = event.target.files[0];
+            if (!file) return;
             var reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     var importedData = JSON.parse(e.target.result);
-                    if (!Array.isArray(importedData)) { throw new Error("格式錯誤"); }
-                    localStorage.setItem('gym_history', JSON.stringify(importedData));
-                    calendar.removeAllEvents(); importedData.forEach(function(ev) { calendar.addEvent(ev); });
+                    
+                    // 相容舊版本（如果舊檔案只包含純陣列的日曆紀錄）
+                    if (Array.isArray(importedData)) {
+                        localStorage.setItem('gym_history', JSON.stringify(importedData));
+                        calendar.removeAllEvents();
+                        importedData.forEach(function(ev) { calendar.addEvent(ev); });
+                    }
+                    // 新版完整打包格式
+                    else if (importedData && importedData.gym_history) {
+                        // 1. 還原日曆紀錄
+                        localStorage.setItem('gym_history', JSON.stringify(importedData.gym_history));
+                        calendar.removeAllEvents();
+                        importedData.gym_history.forEach(function(ev) { calendar.addEvent(ev); });
+                        
+                        // 2. 還原自訂動作庫
+                        if (importedData.custom_exercises) {
+                            localStorage.setItem('custom_exercises', JSON.stringify(importedData.custom_exercises));
+                        }
+                        
+                        // 3. 還原暫存重量
+                        if (importedData.current_weights) {
+                            localStorage.setItem('current_weights', JSON.stringify(importedData.current_weights));
+                        }
+                        
+                        // 4. 還原系統與計時器設定
+                        if (importedData.cfg_rest_min) localStorage.setItem('cfg_rest_min', importedData.cfg_rest_min);
+                        if (importedData.cfg_switch_min) localStorage.setItem('cfg_switch_min', importedData.cfg_switch_min);
+                        if (importedData.cfg_sound_enable) localStorage.setItem('cfg_sound_enable', importedData.cfg_sound_enable);
+                        if (importedData.cfg_flash_enable) localStorage.setItem('cfg_flash_enable', importedData.cfg_flash_enable);
+                    } else {
+                        throw new Error("格式錯誤");
+                    }
+                    
+                    // 重新渲染介面，確保畫面上看到的動作和重量立刻更新
+                    renderAllExerciseLists();
+                    loadAllWeights();
+                    initTimerSettings();
+                    initSoundSetting();
+                    initFlashSetting();
+                    
                     showNotice("匯入成功", "訓練紀錄已成功還原 🎉", false);
-                } catch (err) { showNotice("匯入失敗", "檔案格式錯誤或不是有效的紀錄檔", false); }
+                } catch (err) {
+                    showNotice("匯入失敗", "檔案格式錯誤或不是有效的紀錄檔", false);
+                }
             };
             reader.readAsText(file);
         }
@@ -1326,9 +1441,12 @@
            ========================================================================== */
         // 開啟共用 Modal 對話視窗並設定內容樣態與刪除按鈕顯隱狀態
         function showNotice(title, content, showDelete) {
+            isNoticeOpen = true; // 🌟 關鍵：卡片跳出時，將狀態設定為 true
+            
             document.getElementById('modal-title').innerText = title;
             var detailsEl = document.getElementById('modal-details');
-            if (content && content.trim() !== "") { detailsEl.innerText = content; detailsEl.style.display = 'block'; } else { detailsEl.style.display = 'none'; }
+            if (content && content.trim() !== "") { detailsEl.innerText = content;
+                detailsEl.style.display = 'block'; } else { detailsEl.style.display = 'none'; }
             document.getElementById('confirm-delete').style.display = showDelete ? 'block' : 'none';
             document.getElementById('modal-close-btn').innerText = showDelete ? '關閉' : '確定';
             document.getElementById('delete-modal').style.display = 'flex';
@@ -1336,15 +1454,12 @@
 
         // 關閉 Modal 提示視窗，並確保強制停止正在大響的計時鬧鈴與閃動圖層，釋放導覽鎖定
         function closeModal() {
+            isNoticeOpen = false; // 🌟 關鍵：卡片關閉時，將狀態設定回 false
+            
             var alarm = document.getElementById('alarm-sound'); if (alarm) { alarm.pause(); alarm.currentTime = 0; }
             document.getElementById('flash-screen').classList.remove('flash-active');
             document.getElementById('delete-modal').style.display = 'none'; currentEventInfo = null;
-            
-            const mask = document.getElementById('tour-mask');
-            if (mask) {
-                mask.style.display = 'none';
-                mask.classList.remove('transparent-mask');
-            }
+            // ... 底下原本的程式碼保持不變 ...
             
             document.getElementById('delete-modal').style.zIndex = "2000";
             document.body.classList.remove('tour-locked');
@@ -1392,10 +1507,18 @@
 
             window.addEventListener('touchend', function(e) {
                 if (document.body.classList.contains('tour-locked')) return; 
+                
                 const sidebar = document.getElementById('sidebar');
                 if (!sidebar) return;
 
                 const isSidebarActive = sidebar.classList.contains('active');
+                
+                // 🌟 關鍵核心攔截：如果提示卡片開著，且側邊欄目前是關閉的，就禁止透過右滑叫出側邊欄
+                // (但如果側邊欄原本就開著，仍允許左滑關閉側邊欄，確保體驗順暢)
+                if (isNoticeOpen && !isSidebarActive) {
+                    return; 
+                }
+
                 const deltaX = touchEndX - touchStartX;
                 const deltaY = Math.abs(touchEndY - touchStartY);
 
@@ -1414,6 +1537,7 @@
                 touchStartX = 0; touchStartY = 0; touchEndX = 0; touchEndY = 0;
             }, { passive: true });
         })();
+
 
         // 註冊 PWA 離線服務線程 (Service Worker) 確保應用程式可以離線開啟
         if ("serviceWorker" in navigator) { navigator.serviceWorker.register("service-worker.js"); }
