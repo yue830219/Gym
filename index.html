@@ -804,7 +804,9 @@
                 <h4 style="margin:0 0 10px 0; color:#333;">提醒方式設定</h4>
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 15px;"><span style="font-size:1rem; font-weight:bold;">計時結束播放鈴聲</span><label class="switch"><input type="checkbox" id="cfg-sound-enable" onchange="saveSoundSetting()"><span class="slider"></span></label></div>
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 15px;"><span style="font-size:1rem; font-weight:bold;">計時結束畫面閃爍</span><label class="switch"><input type="checkbox" id="cfg-flash-enable" onchange="saveFlashSetting()"><span class="slider"></span></label></div>
-                <div style="display:flex; align-items:center; justify-content:space-between; border-top:1px solid rgba(0,0,0,0.05); padding-top:15px; margin-top:5px;"><span style="font-size:1rem; font-weight:bold;">暗黑風格模式</span><label class="switch"><input type="checkbox" id="cfg-dark-enable" onchange="toggleDarkTheme()"><span class="slider"></span></label></div>
+                <div style="display:flex; align-items:center; justify-content:space-between; border-top:1px solid rgba(0,0,0,0.05); padding-top:15px; margin-top:5px;"><span style="font-size:1rem; font-weight:bold;">暗黑風格模式</span><label class="switch"><input type="checkbox" id="cfg-dark-enable" onchange="toggleDarkTheme()"><span class="slider"></span></label><label class="setting-item"><span>自動切換</span>
+    <input type="checkbox" id="cfg-dark-auto" onchange="toggleAutoDarkTheme()">
+</label></div>
             </div>
             <div style="display: flex; gap: 10px; margin-top: 10px;">
                 <button class="btn-record" style="background:#007AFF; flex: 1; padding: 10px; font-size: 14px; margin-top: 0;" onclick="exportHistory()">📤 匯出紀錄</button>
@@ -1030,7 +1032,8 @@
             initAutoJump();           // 有氧卡片的時間欄位自動跳格功能
             initSoundSetting();       // 載入聲音提醒開關狀態
             initFlashSetting();       // 載入畫面閃爍提醒開關狀態
-            initDarkThemeSetting();   // 載入暗黑風格主題開關狀態
+            initDarkThemeSetting();   // 載入原有的暗黑狀態
+            autoCheckSunsetMode();   // 自動根據日落檢查
             checkFirstTimeUser();     // 檢查新手上路
             
             // 綁定「HIIT 卡片」數值的連動監聽（體重連動有氧卡片、即時算卡路里）
@@ -1583,26 +1586,100 @@
            9.1 新增：暗黑風格主題切換核心邏輯
            ========================================================================== */
         function initDarkThemeSetting() {
-            let darkEnabled = localStorage.getItem('cfg_dark_enable');
-            if (darkEnabled === "true") {
-                document.body.classList.add('dark-mode');
-                const checkbox = document.getElementById('cfg-dark-enable');
-                if (checkbox) checkbox.checked = true;
+            const isDark = localStorage.getItem('cfg_dark_enable') === 'true';
+            const isAuto = localStorage.getItem('cfg_dark_auto') === 'true';
+            
+            const darkCheckbox = document.getElementById('cfg-dark-enable');
+            const autoCheckbox = document.getElementById('cfg-dark-auto');
+            
+            // 還原自動切換開關狀態
+            if (autoCheckbox) autoCheckbox.checked = isAuto;
+            
+            if (isAuto) {
+                // 如果開啟了自動切換，手動開關改為禁用狀態，並執行自動時間檢查
+                if (darkCheckbox) darkCheckbox.disabled = true;
+                checkAutoDarkTheme();
+            } else {
+                // 如果沒開啟自動切換，走原本的手動設定
+                if (darkCheckbox) {
+                    darkCheckbox.checked = isDark;
+                    darkCheckbox.disabled = false;
+                }
+                if (isDark) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
             }
         }
+        
         function toggleDarkTheme() {
-            const isDark = document.getElementById('cfg-dark-enable').checked;
-            if (isDark) {
+            const darkCheckbox = document.getElementById('cfg-dark-enable');
+            if (!darkCheckbox || darkCheckbox.disabled) return; // 如果被禁用就不執行
+        
+            const isChecked = darkCheckbox.checked;
+            if (isChecked) {
                 document.body.classList.add('dark-mode');
-                localStorage.setItem('cfg_dark_enable', "true");
             } else {
                 document.body.classList.remove('dark-mode');
-                localStorage.setItem('cfg_dark_enable', "false");
             }
-            // 重新刷新日曆尺寸，確保格線不會因主題顏色切換而錯位
-            if (calendar) { setTimeout(() => { calendar.render(); }, 150); }
+            localStorage.setItem('cfg_dark_enable', isChecked);
+            
+            // 重新渲染日曆
+            if (typeof calendar !== 'undefined' && calendar) {
+                setTimeout(() => { calendar.render(); }, 150);
+            }
         }
-
+        
+        /* 自動切換日夜間模式邏輯（採用免權限、流暢的固定時間制 18:00~06:00） */
+        function toggleAutoDarkTheme() {
+            const autoCheckbox = document.getElementById('cfg-dark-auto');
+            const darkCheckbox = document.getElementById('cfg-dark-enable');
+            if (!autoCheckbox) return;
+        
+            const isAutoChecked = autoCheckbox.checked;
+            localStorage.setItem('cfg_dark_auto', isAutoChecked);
+        
+            if (isAutoChecked) {
+                // 啟用自動：禁用手動開關，並立即執行時間判定
+                if (darkCheckbox) darkCheckbox.disabled = true;
+                checkAutoDarkTheme();
+            } else {
+                // 關閉自動：恢復手動開關，並還原手動開關原本紀錄的狀態
+                if (darkCheckbox) {
+                    darkCheckbox.disabled = false;
+                    const lastDarkState = localStorage.getItem('cfg_dark_enable') === 'true';
+                    darkCheckbox.checked = lastDarkState;
+                    
+                    if (lastDarkState) {
+                        document.body.classList.add('dark-mode');
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                    }
+                }
+            }
+        
+            if (typeof calendar !== 'undefined' && calendar) {
+                setTimeout(() => { calendar.render(); }, 150);
+            }
+        }
+        
+        // 核心時間判斷：檢查目前時間是否處於夜間（18:00 到隔天 06:00）
+        function checkAutoDarkTheme() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const darkCheckbox = document.getElementById('cfg-dark-enable');
+        
+            // 判斷是否為晚上 6 點到早上 6 點之間
+            if (currentHour >= 18 || currentHour < 6) {
+                document.body.classList.add('dark-mode');
+                if (darkCheckbox) darkCheckbox.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                if (darkCheckbox) darkCheckbox.checked = false;
+            }
+        }
+        
         // 資料庫匯出：將所有訓練紀錄、自訂動作與暫存重量完整打包匯出
         function exportHistory() {
             // 打包所有需要備份的 LocalStorage 資料
@@ -1802,10 +1879,75 @@
                 touchStartX = 0; touchStartY = 0; touchEndX = 0; touchEndY = 0;
             }, { passive: true });
         })();
+        
+        /* 13.新增：依太陽下山時間自動切換暗黑模式（地理位置 API 版） */
+        function autoCheckSunsetMode() {
+            // 如果使用者在設定頁面「手動」設定過暗黑模式，就尊重使用者的決定，不進行自動覆蓋
+            if (localStorage.getItem('cfg_dark_enable') !== null) {
+                return; 
+            }
+        
+            // 檢查瀏覽器是否支援定位
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    // 呼叫免費的日出日落 API (回傳格式為 UTC 時間)
+                    fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lng}&formatted=0`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === "OK") {
+                                const sunsetTime = new Date(data.results.sunset); // 自動轉換為當地時區
+                                const sunriseTime = new Date(data.results.sunrise);
+                                const now = new Date();
+        
+                                // 如果現在時間大於日落時間，或者小於隔天的日出時間，就開啟暗黑模式
+                                if (now >= sunsetTime || now < sunriseTime) {
+                                    document.body.classList.add('dark-mode');
+                                    const checkbox = document.getElementById('cfg-dark-enable');
+                                    if (checkbox) checkbox.checked = true;
+                                } else {
+                                    document.body.classList.remove('dark-mode');
+                                    const checkbox = document.getElementById('cfg-dark-enable');
+                                    if (checkbox) checkbox.checked = false;
+                                }
+                                if (calendar) { setTimeout(() => { calendar.render(); }, 150); }
+                            }
+                        })
+                        .catch(err => {
+                            console.log("無法取得日落時間，改用時間估算", err);
+                            fallbackTimeCheck(); // API 失敗時，走備用時間制
+                        });
+                }, function(error) {
+                    console.log("使用者拒絕定位，改用時間估算");
+                    fallbackTimeCheck(); // 使用者拒絕定位時，走備用時間制
+                });
+            } else {
+                fallbackTimeCheck();
+            }
+        }
+        
+        // 備用方案：如果無法定位，預設下午 6:00 (18:00) 到隔天早上 6:00 為暗黑模式
+        function fallbackTimeCheck() {
+            const now = new Date();
+            const hour = now.getHours();
+            const checkbox = document.getElementById('cfg-dark-enable');
+            
+            if (hour >= 18 || hour < 6) {
+                document.body.classList.add('dark-mode');
+                if (checkbox) checkbox.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                if (checkbox) checkbox.checked = false;
+            }
+            if (calendar) { setTimeout(() => { calendar.render(); }, 150); }
+        }
 
 
         // 註冊 PWA 離線服務線程 (Service Worker) 確保應用程式可以離線開啟
         if ("serviceWorker" in navigator) { navigator.serviceWorker.register("service-worker.js"); }
+        
     </script>
 </body>
 </html>
