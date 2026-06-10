@@ -26,7 +26,7 @@
         .bottom-manage-bar {
             display: flex;
             align-items: center;
-            justify-content: flex-start;
+            justify flex-start;
             gap: 10px;
             margin: 15px 0;
         }
@@ -180,12 +180,12 @@
             margin: 0; 
             padding: 15px; 
             padding-bottom: 50px; 
+            transition: background 0.3s, color 0.3s;
         }
         
         /* 上方導覽列改透明，這樣卡片滾動過去時才漂亮 */
         .top-bar { display: flex; align-items: center; padding: 5px 0px; justify-content: space-between; background: transparent; }
         .menu-icon { font-size: 40px; cursor: pointer; width: 45px; text-align: center; margin-left: -7px; margin-top: -15px; color: #1c1c1e; user-select: none; }
-        .menu-icon { font-size: 40px; cursor: pointer; width: 45px; text-align: center; margin-left: -7px; margin-top: -15px; color: #333; user-select: none; }
         .logo-container { flex-grow: 1; text-align: center; font-size: 1.25rem; font-weight: 800; margin-top: -5px; color: #007AFF; line-height: 1; display: flex; align-items: center; justify-content: center; }
         
         /* 側邊欄抽屜面板 */
@@ -200,14 +200,14 @@
             -webkit-backdrop-filter: blur(20px); 
             box-shadow: 4px 0 24px rgba(0,0,0,0.05); 
             z-index: 3000; 
-            transition: transform 0.3s ease; 
+            transition: transform 0.3s ease, background 0.3s; 
             padding: 20px 0; 
             visibility: hidden; 
             border-right: 1px solid rgba(255, 255, 255, 0.5); /* 亮色微光邊框 */
         }
         .sidebar.active { transform: translateX(220px); visibility: visible; } /* 展開時向右滑出 */
         .sidebar-header { font-size: 1.25rem; font-weight: 800; color: #007AFF; padding: 15px 20px 25px 20px; border-bottom: 1px solid #f2f2f7; margin-bottom: 10px; }
-        .sidebar-item { padding: 22px 25px; font-size: 1.05rem; color: #1c1c1e; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: background 0.2s; -webkit-tap-highlight-color: transparent; }
+        .sidebar-item { padding: 22px 25px; font-size: 1.05rem; color: #1c1c1e; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: background 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent; }
         .sidebar-item:active { background: #f2f2f7; color: #007AFF; }
         
         /* 背景半透明遮罩（側邊欄或導覽觸發時使用） */
@@ -228,9 +228,10 @@
             z-index: 1000; 
             margin-bottom: 20px; 
             border: 1px solid rgba(255, 255, 255, 0.6); /* 讓邊框像玻璃邊緣一樣微發光 */
+            transition: background 0.3s, border-color 0.3s;
         }
         .timer-header { display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
-        #timer-display { font-size: 3.5rem; font-weight: 800; margin: 5px 0; color: #1c1c1e; line-height: 1.2; text-align: left; }
+        #timer-display { font-size: 3.5rem; font-weight: 800; margin: 5px 0; color: #1c1c1e; line-height: 1.2; text-align: left; transition: color 0.3s; }
         #set-counter { font-size: 1.2rem; font-weight: bold; color: #34c759; text-align: right; }
         .btn-group { display: flex; gap: 8px; }
         .btn-group button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
@@ -254,15 +255,17 @@
             margin-bottom: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.6);
-            display: none;}
+            display: none;
+            transition: background 0.3s, border-color 0.3s;
+        }
         .card.active { display: block; animation: fadeIn 0.3s; } /* 只有啟動狀態的卡片才會顯示 */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
+        .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f9f9f9; transition: border-color 0.3s; }
         .input-group { display: flex; align-items: center; gap: 5px; }
-        .weight-input { width: 70px; border: 1px solid #ccc; border-radius: 8px; padding: 6px; text-align: center; font-size: 1.1rem; font-weight: bold; color: #007AFF; background: white; }
-        .unit-text { font-size: 0.9rem; color: #666; font-weight: bold; width: 20px; }
-        .date-input { border: 1px solid #ddd; border-radius: 6px; padding: 6px; font-size: 1rem; font-weight: bold; background: #fff; }
+        .weight-input { width: 70px; border: 1px solid #ccc; border-radius: 8px; padding: 6px; text-align: center; font-size: 1.1rem; font-weight: bold; color: #007AFF; background: white; transition: background 0.3s, border-color 0.3s, color 0.3s; }
+        .unit-text { font-size: 0.9rem; color: #666; font-weight: bold; width: 20px; transition: color 0.3s; }
+        .date-input { border: 1px solid #ddd; border-radius: 6px; padding: 6px; font-size: 1rem; font-weight: bold; background: #fff; transition: background 0.3s, border-color 0.3s, color 0.3s; }
         /* 「儲存到日曆」大按鈕 */
         .btn-record { background: #34c759; color: white; padding: 14px; font-size: 16px; border-radius: 12px; width: 100%; margin-top: 15px; border: none; font-weight: bold; cursor: pointer; }
         
@@ -285,12 +288,14 @@
             text-align: center; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.1); 
             border: 1px solid rgba(255, 255, 255, 0.7);
-            animation: popIn 0.2s cubic-bezier(0.17, 0.89, 0.32, 1.28); }
+            animation: popIn 0.2s cubic-bezier(0.17, 0.89, 0.32, 1.28);
+            transition: background 0.3s, border-color 0.3s;
+        }
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        #modal-details { text-align: left; background: #F2F2F7; padding: 12px; border-radius: 12px; font-size: 0.95rem; line-height: 1.6; margin: 15px 0; white-space: pre-wrap; color: #333; }
+        #modal-details { text-align: left; background: #F2F2F7; padding: 12px; border-radius: 12px; font-size: 0.95rem; line-height: 1.6; margin: 15px 0; white-space: pre-wrap; color: #333; transition: background 0.3s, color 0.3s; }
         .modal-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .btn-del { background: var(--danger); color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; }
-        .btn-ok { background: #E5E5EA; color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .btn-ok { background: #E5E5EA; color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; transition: background 0.3s, color 0.3s; }
         
         /* ==========================================================================
            2.6 FullCalendar 套件外觀微調
@@ -376,6 +381,232 @@
             height: 100vh !important;
             touch-action: none !important;
         }        
+
+        /* ==========================================================================
+           2.9 新增：暗黑風格專屬變更配色方案（保留原有按鈕尺寸）
+           ========================================================================== */
+        body.dark-mode {
+            --bg: #1C1C1E;
+            color: #FFFFFF;
+        }
+        body.dark-mode .menu-icon { color: #FFFFFF; }
+        body.dark-mode .sidebar {
+            background: rgba(28, 28, 30, 0.6);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 4px 0 24px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .sidebar-item { color: #E5E5EA; }
+        body.dark-mode .sidebar-item:active { background: #2C2C2E; }
+        body.dark-mode .timer-panel {
+            background: rgba(44, 44, 46, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        body.dark-mode #timer-display { color: #FFFFFF; }
+        body.dark-mode .card {
+            background: rgba(44, 44, 46, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        body.dark-mode .exercise-item { border-bottom: 1px solid #3A3A3C; }
+        body.dark-mode .weight-input { background: #1C1C1E; border-color: #3A3A3C; color: #FFFFFF; }
+        body.dark-mode .unit-text { color: #AEAEB2; }
+        body.dark-mode .date-input { background: #1C1C1E; border-color: #3A3A3C; color: #FFFFFF; }
+        body.dark-mode .btn-manage-toggle { color: #AEAEB2; }
+        body.dark-mode #card-converter div[style*="background:#f8f8f8"] { background: #2C2C2E !important; border-color: #3A3A3C !important; }
+        body.dark-mode #card-settings div[style*="background:#f8f8f8"] { background: #2C2C2E !important; border-color: #3A3A3C !important; }
+        body.dark-mode h4 { color: #FFFFFF !important; }
+        body.dark-mode label[style*="color:#666"] { color: #AEAEB2 !important; }
+        body.dark-mode p[style*="color:#999"], body.dark-mode p[style*="color: #666"] { color: #8E8E93 !important; }
+        body.dark-mode .modal-content {
+            background: rgba(44, 44, 46, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        body.dark-mode #modal-title { color: #FFFFFF !important; }
+        body.dark-mode #modal-details { background: #1C1C1E; color: #E5E5EA; }
+        body.dark-mode .btn-ok { background: #3A3A3C; color: #FFFFFF; }
+        body.dark-mode .unit-select:disabled { color: #AEAEB2 !important; }
+        body.dark-mode .card-note { background: #1C1C1E !important; border-color: #3A3A3C !important; color: #FFFFFF !important; }
+        body.dark-mode .exercise-item[style*="background: #f0f9ff"] { background: #1A2530 !important; }
+        body.dark-mode .exercise-item[style*="background: #f5f3ff"] { background: #201B30 !important; }
+
+        /* ☟ 暗黑模式下：所有分頁按鈕預設「都是黑底、白字、深色暗邊框」、無發光 ☟ */
+        body.dark-mode .tab-menu .tab-btn {
+            background: #1A2026 !important;
+            color: #A0AAB2 !important; /* 未選中時用內斂的灰白字 */
+            border: 2px solid #2C353F !important; /* 細緻的深色邊框 */
+            box-shadow: none !important; /* 預設不發光 */
+            opacity: 0.7; /* 未選中時稍微帶點透明度，視覺更有層次 */
+            transition: all 0.25s ease; /* 讓切換時的霓虹燈亮起效果有淡入動畫 */
+        }
+
+        /* ☟ 當滑鼠懸停 (Hover) 時，稍微調亮字體與邊框（非行動裝置體驗優化） ☟ */
+        body.dark-mode .tab-menu .tab-btn:hover {
+            opacity: 0.9;
+            color: #ffffff !important;
+        }
+
+        /* ☟ 暗黑模式下：當按鈕被「選中 (.active)」時，瞬間觸發專屬霓虹燈特效 ☟ */
+        body.dark-mode .tab-menu button:nth-child(1).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--chest) !important; box-shadow: 0 0 14px rgba(255, 77, 77, 0.6) !important; }
+        body.dark-mode .tab-menu button:nth-child(2).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--shoulder) !important; box-shadow: 0 0 14px rgba(255, 159, 67, 0.6) !important; }
+        body.dark-mode .tab-menu button:nth-child(3).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--arm) !important; box-shadow: 0 0 14px rgba(38, 230, 168, 0.6) !important; }
+        body.dark-mode .tab-menu button:nth-child(4).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--abs) !important; box-shadow: 0 0 14px rgba(179, 136, 255, 0.6) !important; }
+        body.dark-mode .tab-menu button:nth-child(5).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--leg-strength) !important; box-shadow: 0 0 14px rgba(0, 191, 165, 0.6) !important; }
+        body.dark-mode .tab-menu button:nth-child(6).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--leg) !important; box-shadow: 0 0 14px rgba(0, 229, 255, 0.6) !important; }
+        body.dark-mode .tab-menu button:nth-child(7).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--hiit) !important; box-shadow: 0 0 14px rgba(124, 77, 255, 0.6) !important; }
+        
+        /* 1. 組間間隔按鈕 - 藍色霓虹 */
+        body.dark-mode #btn-rest-timer {
+            background: #1A2026 !important;
+            color: #E5E5EA !important; /* 亮灰白字 */
+            border: 2px solid #007AFF !important; /* 藍邊框 */
+            box-shadow: 0 0 12px rgba(0, 122, 255, 0.5) !important; /* 藍色光暈 */
+            opacity: 1 !important;
+            transition: all 0.2s ease;
+        }
+        body.dark-mode #btn-rest-timer:active {
+            box-shadow: 0 0 20px rgba(0, 122, 255, 0.85) !important;
+            transform: scale(0.96);
+        }
+
+        /* 2. 動作間隔按鈕 - 紫色霓虹 */
+        body.dark-mode #btn-switch-timer {
+            background: #1A2026 !important;
+            color: #E5E5EA !important; /* 亮灰白字 */
+            border: 2px solid #5856D6 !important; /* 紫邊框 */
+            box-shadow: 0 0 12px rgba(88, 86, 214, 0.5) !important; /* 紫色光暈 */
+            opacity: 1 !important;
+            transition: all 0.2s ease;
+        }
+        body.dark-mode #btn-switch-timer:active {
+            box-shadow: 0 0 20px rgba(88, 86, 214, 0.85) !important;
+            transform: scale(0.96);
+        }
+
+        /* 3. 重置按鈕 (↺) - 質感灰色/銀白霓虹 */
+        body.dark-mode .timer-panel .btn-group button[onclick*="resetTimer"] {
+            background: #1A2026 !important;
+            color: #E5E5EA !important; /* 亮灰白字 */
+            border: 2px solid #8E8E93 !important; /* 灰色邊框 */
+            box-shadow: 0 0 10px rgba(142, 142, 147, 0.5) !important; /* 灰色銀光暈 */
+            opacity: 1 !important;
+            transition: all 0.2s ease;
+        }
+        body.dark-mode .timer-panel .btn-group button[onclick*="resetTimer"]:active {
+            box-shadow: 0 0 18px rgba(229, 229, 234, 0.8) !important; /* 按下時爆發銀白光 */
+            transform: scale(0.92);
+        }
+        /* 頂部大標題 - 暗黑模式精準修正為白字 */
+        body.dark-mode .logo-container,
+        body.dark-mode .sidebar-header {
+            color: #ffffff !important;
+        }
+        /* 暗黑風儲存到日曆按鈕 - 翡翠綠霓虹風格 */
+        body.dark-mode .btn-calendar-only {
+            background: linear-gradient(135deg, #26E6A8 0%, #1B9A70 100%) !important; 
+            color: #E5E5EA !important; 
+            box-shadow: 0 8px 20px rgba(38, 230, 168, 0.25) !important;
+            text-shadow: none !important;
+        }
+        
+        body.dark-mode .btn-calendar-only:active {
+            transform: translateY(1px) !important;
+            box-shadow: 0 4px 10px rgba(38, 230, 168, 0.15) !important;
+        }
+
+        /* 儲存計時設定按鈕 - 翡翠綠霓虹風格 */
+        body.dark-mode #card-settings button[onclick*="saveTimerSettings"] {
+            background: linear-gradient(135deg, #2f97ff 0%, #0056b3 100%) !important; 
+            color: #E5E5EA !important; 
+            box-shadow: 0 6px 16px rgba(0, 122, 255, 0.3) !important;
+            border: none !important;
+            transition: all 0.2s ease !important;
+        }
+        body.dark-mode #card-settings button[onclick*="saveTimerSettings"]:active {
+            transform: translateY(1px) !important;
+            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.15) !important;
+            opacity: 0.95 !important;
+        }
+
+        /* 匯出紀錄按鈕 - 經典藍霓虹風格 */
+        body.dark-mode #card-settings button[onclick*="exportHistory"] {
+            background: linear-gradient(135deg, #2f97ff 0%, #0056b3 100%) !important;
+            color: #E5E5EA !important;
+            box-shadow: 0 6px 16px rgba(0, 122, 255, 0.3) !important;
+            border: none !important;
+            transition: all 0.2s ease !important;
+        }
+        body.dark-mode #card-settings button[onclick*="exportHistory"]:active {
+            transform: translateY(1px) !important;
+            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.15) !important;
+            opacity: 0.95 !important;
+        }
+
+        /* 匯入紀錄按鈕 - 魅惑紫霓虹風格 */
+        body.dark-mode #card-settings button[onclick*="triggerImport"] {
+            background: linear-gradient(135deg, #7c7aff 0%, #413fb3 100%) !important;
+            color: #E5E5EA !important;
+            box-shadow: 0 6px 16px rgba(88, 86, 214, 0.3) !important;
+            border: none !important;
+            transition: all 0.2s ease !important;
+        }
+        body.dark-mode #card-settings button[onclick*="triggerImport"]:active {
+            transform: translateY(1px) !important;
+            box-shadow: 0 4px 10px rgba(88, 86, 214, 0.15) !important;
+            opacity: 0.95 !important;
+        }
+        
+        /* 1. 「➕ 新增動作」按鈕 - 內斂藍色微光 */
+        body.dark-mode .btn-add-exercise {
+            background: #1A2026 !important;
+            color: #3094FF !important;           /* 稍微調亮藍色字體 */
+            border: 1px solid #007AFF !important; /* 藍色細邊框 */
+            box-shadow: 0 0 10px rgba(0, 122, 255, 0.25) !important;
+            transition: all 0.2s ease;
+        }
+        body.dark-mode .btn-add-exercise:active {
+            box-shadow: 0 0 16px rgba(0, 122, 255, 0.5) !important;
+            transform: scale(0.97);
+        }
+
+        /* 2. 「✖️ 取消」按鈕 - 質感深灰微光 */
+        body.dark-mode .btn-bottom-cancel {
+            background: #1A2026 !important;
+            color: #E5E5EA !important; /* 亮灰白字 */
+            border: 2px solid #8E8E93 !important; /* 灰色邊框 */
+            box-shadow: 0 0 10px rgba(142, 142, 147, 0.25) !important; /* 灰色銀光暈 */
+            opacity: 1 !important;
+            transition: all 0.2s ease;
+        }
+        body.dark-mode .btn-bottom-cancel:active {
+            background: #3A3A3C !important;
+            transform: scale(0.97);
+        }
+        
+
+        /* 3. 「✔️ 儲存」按鈕 - 活力翡翠綠微光 */
+        body.dark-mode .btn-bottom-save {
+            background: #1A251D !important;        /* 極深綠色底 */
+            color: #26E6A8 !important;            /* 螢光翡翠綠字 */
+            border: 1px solid #34C759 !important;  /* 綠色細邊框 */
+            box-shadow: 0 0 10px rgba(52, 199, 89, 0.25) !important;
+            transition: all 0.2s ease;
+        }
+        body.dark-mode .btn-bottom-save:active {
+            box-shadow: 0 0 16px rgba(52, 199, 89, 0.5) !important;
+            transform: scale(0.97);
+        }
+
+        /* 4. 編輯模式下正在修改的動作名稱虛線改為亮藍色，避免看錯 */
+        body.dark-mode .editing-mode .exercise-name {
+            border-bottom: 1px dashed #3094FF !important;
+        }
+        body.dark-mode .editing-mode .unit-select {
+            border-bottom: 1px dashed #3094FF !important;
+            color: #3094FF !important;
+        }
+        
     </style>
 </head>
 <body>
@@ -443,7 +674,7 @@
             <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
         </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>
-        <button class="btn-record" onclick="saveToHistory('練胸', this, '#FF3B30')">💾 儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練胸', this, '#FF3B30')">💾 儲存到日曆</button>
     </div>
 
     <div class="card" id="card-shoulder" data-type="shoulder">
@@ -459,7 +690,7 @@
             <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
         </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>        
-        <button class="btn-record" onclick="saveToHistory('練肩', this, '#FF9500')">💾 儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練肩', this, '#FF9500')">💾 儲存到日曆</button>
     </div>
 
     <div class="card" id="card-arm" data-type="arm">
@@ -475,7 +706,7 @@
             <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
         </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>        
-        <button class="btn-record" onclick="saveToHistory('練臂', this, '#4CD964')">💾 儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練臂', this, '#4CD964')">💾 儲存到日曆</button>
     </div>
 
     <div class="card" id="card-abs" data-type="abs">
@@ -491,7 +722,7 @@
             <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
         </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>    
-        <button class="btn-record" onclick="saveToHistory('練腹', this, '#AF52DE')">💾 儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練腹', this, '#AF52DE')">💾 儲存到日曆</button>
     </div>
 
     <div class="card" id="card-leg-strength" data-type="leg-strength">
@@ -507,7 +738,7 @@
             <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
         </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>        
-        <button class="btn-record" onclick="saveToHistory('練腿', this, '#008080')">💾 儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練腿', this, '#008080')">💾 儲存到日曆</button>
     </div>
 
     <div class="card" id="card-leg" data-type="leg">
@@ -521,12 +752,12 @@
             <div style="width: 1px; height: 30px; background: #ddd; margin: 0 10px;"></div>
             <div style="flex: 1; text-align: center;"><div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">預估燃燒</div><div id="display-calories" style="font-weight: 800; color: #FF9500; font-size: 1.2rem;">0 kcal</div></div>
         </div>
-        <button class="btn-record" onclick="saveToHistory('有氧', this, '#5AC8FA')">💾 儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('有氧', this, '#5AC8FA')">💾 儲存到日曆</button>
     </div>
 
     <div class="card" id="card-hiit" data-type="hiit">
         <div class="card-header"><h3 style="color:#5856D6;margin:0;">HIIT 訓練</h3><input type="date" class="date-input" onchange="syncDate(this)"></div>
-        <div class="exercise-item"><span>目前體重</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="hiit_weight" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>currently 體重</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="hiit_weight" placeholder="0"><span class="unit-text">kg</span></div></div>
         <div class="exercise-item"><span>訓練時間</span>
             <div class="input-group">
                 <input type="number" inputmode="decimal" class="weight-input" style="width: 45px;" id="hiit-min" oninput="saveCurrentWeight(this)" data-id="hiit_weight_min" placeholder="0"><span class="unit-text">分</span>
@@ -536,7 +767,7 @@
         <div class="exercise-item" style="background: #f5f3ff; border-radius: 12px; margin-top: 10px; padding: 12px; border-bottom: none;">
             <div style="flex: 1; text-align: center;"><div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">預估燃燒</div><div id="display-hiit-calories" style="font-weight: 800; color: #5856D6; font-size: 1.2rem;">0 kcal</div></div>
         </div>
-        <button class="btn-record" onclick="saveToHistory('HIIT', this, '#5856D6')">💾 儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('HIIT', this, '#5856D6')">💾 儲存到日曆</button>
     </div>
 
     <div class="card" id="card-converter">
@@ -572,7 +803,8 @@
             <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee; margin-top:15px;">
                 <h4 style="margin:0 0 10px 0; color:#333;">提醒方式設定</h4>
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 15px;"><span style="font-size:1rem; font-weight:bold;">計時結束播放鈴聲</span><label class="switch"><input type="checkbox" id="cfg-sound-enable" onchange="saveSoundSetting()"><span class="slider"></span></label></div>
-                <div style="display:flex; align-items:center; justify-content:space-between;"><span style="font-size:1rem; font-weight:bold;">計時結束畫面閃爍</span><label class="switch"><input type="checkbox" id="cfg-flash-enable" onchange="saveFlashSetting()"><span class="slider"></span></label></div>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 15px;"><span style="font-size:1rem; font-weight:bold;">計時結束畫面閃爍</span><label class="switch"><input type="checkbox" id="cfg-flash-enable" onchange="saveFlashSetting()"><span class="slider"></span></label></div>
+                <div style="display:flex; align-items:center; justify-content:space-between; border-top:1px solid rgba(0,0,0,0.05); padding-top:15px; margin-top:5px;"><span style="font-size:1rem; font-weight:bold;">暗黑風格模式</span><label class="switch"><input type="checkbox" id="cfg-dark-enable" onchange="toggleDarkTheme()"><span class="slider"></span></label></div>
             </div>
             <div style="display: flex; gap: 10px; margin-top: 10px;">
                 <button class="btn-record" style="background:#007AFF; flex: 1; padding: 10px; font-size: 14px; margin-top: 0;" onclick="exportHistory()">📤 匯出紀錄</button>
@@ -676,7 +908,7 @@
         /* ==========================================================================
            2. 新手引導功能 (Tour)
            ========================================================================== */
-        // 判斷使用者是否為首次開啟系統
+        // 判談使用者是否為首次開啟系統
         function checkFirstTimeUser() {
             if (!localStorage.getItem('has_seen_tour_v2')) {
                 setTimeout(startTour, 1000); // 延遲 1 秒後自動啟動引導教學
@@ -798,6 +1030,7 @@
             initAutoJump();           // 有氧卡片的時間欄位自動跳格功能
             initSoundSetting();       // 載入聲音提醒開關狀態
             initFlashSetting();       // 載入畫面閃爍提醒開關狀態
+            initDarkThemeSetting();   // 載入暗黑風格主題開關狀態
             checkFirstTimeUser();     // 檢查新手上路
             
             // 綁定「HIIT 卡片」數值的連動監聽（體重連動有氧卡片、即時算卡路里）
@@ -1346,6 +1579,30 @@
         }
         function saveFlashSetting() { localStorage.setItem('cfg_flash_enable', document.getElementById('cfg-flash-enable').checked ? "true" : "false"); }
 
+        /* ==========================================================================
+           9.1 新增：暗黑風格主題切換核心邏輯
+           ========================================================================== */
+        function initDarkThemeSetting() {
+            let darkEnabled = localStorage.getItem('cfg_dark_enable');
+            if (darkEnabled === "true") {
+                document.body.classList.add('dark-mode');
+                const checkbox = document.getElementById('cfg-dark-enable');
+                if (checkbox) checkbox.checked = true;
+            }
+        }
+        function toggleDarkTheme() {
+            const isDark = document.getElementById('cfg-dark-enable').checked;
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('cfg_dark_enable', "true");
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('cfg_dark_enable', "false");
+            }
+            // 重新刷新日曆尺寸，確保格線不會因主題顏色切換而錯位
+            if (calendar) { setTimeout(() => { calendar.render(); }, 150); }
+        }
+
         // 資料庫匯出：將所有訓練紀錄、自訂動作與暫存重量完整打包匯出
         function exportHistory() {
             // 打包所有需要備份的 LocalStorage 資料
@@ -1356,7 +1613,8 @@
                 cfg_rest_min: localStorage.getItem('cfg_rest_min') || "2",
                 cfg_switch_min: localStorage.getItem('cfg_switch_min') || "4",
                 cfg_sound_enable: localStorage.getItem('cfg_sound_enable') || "true",
-                cfg_flash_enable: localStorage.getItem('cfg_flash_enable') || "true"
+                cfg_flash_enable: localStorage.getItem('cfg_flash_enable') || "true",
+                cfg_dark_enable: localStorage.getItem('cfg_dark_enable') || "false"
             };
             
             // 檢查是否真的完全沒有任何資料
@@ -1414,6 +1672,7 @@
                         if (importedData.cfg_switch_min) localStorage.setItem('cfg_switch_min', importedData.cfg_switch_min);
                         if (importedData.cfg_sound_enable) localStorage.setItem('cfg_sound_enable', importedData.cfg_sound_enable);
                         if (importedData.cfg_flash_enable) localStorage.setItem('cfg_flash_enable', importedData.cfg_flash_enable);
+                        if (importedData.cfg_dark_enable) localStorage.setItem('cfg_dark_enable', importedData.cfg_dark_enable);
                     } else {
                         throw new Error("格式錯誤");
                     }
@@ -1424,6 +1683,7 @@
                     initTimerSettings();
                     initSoundSetting();
                     initFlashSetting();
+                    initDarkThemeSetting();
                     
                     showNotice("匯入成功", "訓練紀錄已成功還原 🎉", false);
                 } catch (err) {
@@ -1476,7 +1736,7 @@
 
         /* ==========================================================================
            11. 磅 (lbs) 與 公斤 (kg) 即時雙向精準單位換算器
-           ========================================================================== */
+           ========================================================================= */
         function convertUnit(source) {
             const lbsInput = document.getElementById('input-lbs');
             const kgsInput = document.getElementById('input-kgs');
