@@ -382,53 +382,101 @@
             touch-action: none !important;
         }        
 
-        /* ==========================================================================
-           2.9 新增：暗黑風格專屬變更配色方案（保留原有按鈕尺寸）
-           ========================================================================== */
+        /* 2.9暗黑風格專屬變更配色方案 */
+        
+        /* 整個網頁的背景與主文字顏色 */
         body.dark-mode {
-            --bg: #1C1C1E;
-            color: #FFFFFF;
+            --bg: #1C1C1E; /* 設定全域背景變數為深灰 */
+            color: #FFFFFF; /* 全域文字轉為白色 */
         }
+        
+        /* 側邊欄選單圖示顏色 */
         body.dark-mode .menu-icon { color: #FFFFFF; }
+        
+        /* 側邊欄（Sidebar）樣式：半透明背景、細邊框與陰影 */
         body.dark-mode .sidebar {
             background: rgba(28, 28, 30, 0.6);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 4px 0 24px rgba(0,0,0,0.3);
         }
+        
+        /* 側邊欄項目文字顏色 */
         body.dark-mode .sidebar-item { color: #E5E5EA; }
+        
+        /* 側邊欄項目被點擊/點選時的背景色 */
         body.dark-mode .sidebar-item:active { background: #2C2C2E; }
+        
+        /* 計時器面板（Timer Panel）：磨砂玻璃質感的半透明深色背景 */
         body.dark-mode .timer-panel {
             background: rgba(44, 44, 46, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
+        
+        /* 計時器數字顯示顏色 */
         body.dark-mode #timer-display { color: #FFFFFF; }
+        
+        /* 卡片容器（Card）：通用卡片區塊樣式 */
         body.dark-mode .card {
             background: rgba(44, 44, 46, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
+        
+        /* 運動/訓練項目之間的分隔線 */
         body.dark-mode .exercise-item { border-bottom: 1px solid #3A3A3C; }
+        
+        /* 重量輸入欄位：深色背景、暗色邊框與白色文字 */
         body.dark-mode .weight-input { background: #1C1C1E; border-color: #3A3A3C; color: #FFFFFF; }
+        
+        /* 單位文字顏色（例如：kg, lbs） */
         body.dark-mode .unit-text { color: #AEAEB2; }
+        
+        /* 日期輸入欄位樣式 */
         body.dark-mode .date-input { background: #1C1C1E; border-color: #3A3A3C; color: #FFFFFF; }
+        
+        /* 管理/切換按鈕顏色 */
         body.dark-mode .btn-manage-toggle { color: #AEAEB2; }
+        
+        /* 強制覆蓋：換算器與設定卡片中原本為淺灰（#f8f8f8）的區塊背景及邊框 */
         body.dark-mode #card-converter div[style*="background:#f8f8f8"] { background: #2C2C2E !important; border-color: #3A3A3C !important; }
         body.dark-mode #card-settings div[style*="background:#f8f8f8"] { background: #2C2C2E !important; border-color: #3A3A3C !important; }
+        
+        /* 強制覆蓋：H4 標題顏色轉為白色 */
         body.dark-mode h4 { color: #FFFFFF !important; }
+        
+        /* 強制覆蓋：原本為灰色的標籤（Label）文字顏色 */
         body.dark-mode label[style*="color:#666"] { color: #AEAEB2 !important; }
+        
+        /* 強制覆蓋：原本為淺灰色的段落（P）提示文字顏色 */
         body.dark-mode p[style*="color:#999"], body.dark-mode p[style*="color: #666"] { color: #8E8E93 !important; }
+        
+        /* 彈出視窗內容區（Modal Content）：提高陰影與半透明深色背景 */
         body.dark-mode .modal-content {
             background: rgba(44, 44, 46, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
+        
+        /* 強制覆蓋：彈出視窗標題顏色 */
         body.dark-mode #modal-title { color: #FFFFFF !important; }
+        
+        /* 彈出視窗詳細內容區：深色背景與淺灰文字 */
         body.dark-mode #modal-details { background: #1C1C1E; color: #E5E5EA; }
+        
+        /* 彈出視窗的確認按鈕樣式 */
         body.dark-mode .btn-ok { background: #3A3A3C; color: #FFFFFF; }
+        
+        /* 強制覆蓋：當單位下拉選單（Select）被停用時的文字顏色 */
         body.dark-mode .unit-select:disabled { color: #AEAEB2 !important; }
+        
+        /* 強制覆蓋：卡片備忘錄/筆記區塊樣式 */
         body.dark-mode .card-note { background: #1C1C1E !important; border-color: #3A3A3C !important; color: #FFFFFF !important; }
+        
+        /* 強制覆蓋：特定運動項目背景色（將原本的淺藍 #f0f9ff 轉為深藍色系背景） */
         body.dark-mode .exercise-item[style*="background: #f0f9ff"] { background: #1A2530 !important; }
+        
+        /* 強制覆蓋：特定運動項目背景色（將原本的淺紫 #f5f3ff 轉為深紫色系背景） */
         body.dark-mode .exercise-item[style*="background: #f5f3ff"] { background: #201B30 !important; }
 
         /* ☟ 暗黑模式下：所有分頁按鈕預設「都是黑底、白字、深色暗邊框」、無發光 ☟ */
@@ -574,9 +622,8 @@
         body.dark-mode .btn-bottom-cancel {
             background: #1A2026 !important;
             color: #E5E5EA !important; /* 亮灰白字 */
-            border: 2px solid #8E8E93 !important; /* 灰色邊框 */
+            border: 1px solid #8E8E93 !important; /* 灰色細邊框 */
             box-shadow: 0 0 10px rgba(142, 142, 147, 0.25) !important; /* 灰色銀光暈 */
-            opacity: 1 !important;
             transition: all 0.2s ease;
         }
         body.dark-mode .btn-bottom-cancel:active {
@@ -605,6 +652,14 @@
         body.dark-mode .editing-mode .unit-select {
             border-bottom: 1px dashed #3094FF !important;
             color: #3094FF !important;
+        }
+        
+        /* 週一至週日標頭格加上深灰色背景，文字為白字 */
+        body.dark-mode .fc-theme-standard .fc-col-header-cell {
+            background-color: #8E8E93 !important;
+        }
+        body.dark-mode .fc .fc-col-header-cell-cushion {
+            color: #FFFFFF !important; /* 確保文字維持清晰的純白 */
         }
         
     </style>
