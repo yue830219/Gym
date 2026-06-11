@@ -661,12 +661,136 @@
         body.dark-mode .fc .fc-col-header-cell-cushion {
             color: #FFFFFF !important; /* 確保文字維持清晰的純白 */
         }
-        
+       
+        /* 2.10具有質感的雙模態加載螢幕樣式（自動支援白天/暗黑模式切換）*/
+        /* 【預設：高質感白天模式 (Light Mode)】 */
+        #loading-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, #f2f2f7 0%, #f2f2f7 100%);
+            z-index: 10000; /* 確保在最上層 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.5s ease-out, visibility 0.5s;
+            overflow: hidden;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        /* 白天模式的流線背景紋理（改為極淡墨色） */
+        #loading-screen::before {
+            content: "";
+            position: absolute;
+            width: 200%; height: 200%;
+            top: -50%; left: -50%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path d="M0,500 C250,250 250,750 500,500 C750,250 750,750 1000,500" stroke="%2300000012" stroke-width="1" fill="none" /></svg>');
+            background-size: 100px 100px;
+            opacity: 0.1;
+            filter: blur(1px);
+            animation: moveTexture 30s linear infinite;
+        }
+
+        @keyframes moveTexture {
+            from { transform: translate(0, 0); }
+            to { transform: translate(-100px, -100px); }
+        }
+
+        #loading-screen #loading-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #loading-screen #loading-logo-container {
+            width: 110px; height: 110px;
+            display: flex; justify-content: center; align-items: center;
+            position: relative;
+        }
+
+        /* 白天模式圖標陰影：精緻的懸浮與環境光立體感 */
+        #loading-screen #loading-logo {
+            max-width: 100%; max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.07)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.04));
+        }
+
+        #loading-screen #loading-text-container {
+            margin-top: 35px;
+            text-align: center;
+        }
+
+        /* 白天模式優雅字體顏色 */
+        #loading-screen #prep-text {
+            font-size: 14px; color: #8e8e93; margin: 0; font-weight: normal;
+            letter-spacing: 1px;
+        }
+
+        #loading-screen #app-text {
+            font-size: 16px; color: #1c1c1e; margin: 6px 0 0 0; font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        /* 白天模式底部指示條 */
+        #loading-screen #home-indicator {
+            position: absolute;
+            bottom: 12px;
+            width: 134px; height: 5px;
+            background: #000000;
+            border-radius: 100px;
+            opacity: 0.15;
+        }
+
+        /* ------------------------------------------------------------
+           【切換：高質感暗黑模式 (Dark Mode) - 當具備 .dark-theme 類別時】
+           ------------------------------------------------------------ */
+        #loading-screen.dark-theme {
+            background: radial-gradient(circle at center, #2a2a1a 0%, #1c1c1e 100%);
+        }
+
+        #loading-screen.dark-theme::before {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path d="M0,500 C250,250 250,750 500,500 C750,250 750,750 1000,500" stroke="%23ffea0033" stroke-width="1" fill="none" /></svg>');
+        }
+
+        #loading-screen.dark-theme #loading-logo {
+            filter: drop-shadow(0 0 20px rgba(255, 234, 0, 0.25)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.4));
+        }
+
+        #loading-screen.dark-theme #prep-text {
+            color: #aeaeb2;
+        }
+
+        #loading-screen.dark-theme #app-text {
+            color: #ffffff;
+        }
+
+        #loading-screen.dark-theme #home-indicator {
+            background: #ffffff;
+            opacity: 0.7;
+        }
+
     </style>
 </head>
 <body>
     <audio id="alarm-sound" src="https://github.com/yue830219/Gym/raw/refs/heads/main/music.mp3" preload="auto"></audio>
     <div id="flash-screen" class="flash-overlay"></div>
+    
+    <div id="loading-screen">
+        <div id="loading-content">
+            <div id="loading-logo-container">
+                <img id="loading-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' stroke='white' stroke-width='2' fill='none'/><path d='M20 50 H30 M70 50 H80 M30 45 H70 v10 H30 v-10z M35 40 H45 v20 H35 v-20z M55 40 H65 v20 H55 v-20z' fill='white'/></svg>" alt="健身助手標誌">
+            </div>
+            <div id="loading-text-container">
+                <p id="prep-text">準備啟動流程...</p>
+                <p id="app-text">健身助手 Pro</p>
+            </div>
+        </div>
+        <div id="home-indicator"></div>
+    </div>
 
     <div id="tour-mask"></div>
     <div id="tour-dialog">
@@ -1131,7 +1255,8 @@
             });
 
             updateCardioStats(); 
-            initTimerSettings(); // 載入自定義倒數秒數設定
+            initTimerSettings();
+            setTimeout(hideLoadingScreen, 2500); 
         };
 
         /* ==========================================================================
@@ -1999,6 +2124,40 @@
             if (calendar) { setTimeout(() => { calendar.render(); }, 150); }
         }
 
+        // 隱藏加載螢幕的控制函數
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.style.opacity = '0';
+                loadingScreen.style.visibility = 'hidden';
+            }
+        }
+        
+        (function() {
+            const screen = document.getElementById('loading-screen');
+            if (screen) {
+                // 1. 讀取手動暗黑模式設定
+                const savedDark = localStorage.getItem('cfg_dark_enable');
+                // 2. 讀取自動切換設定 (💡 請確認你的自動切換 Key 是不是叫 'cfg_dark_auto')
+                const isAuto = localStorage.getItem('cfg_dark_auto') === 'true'; 
+                
+                const hour = new Date().getHours();
+                const isNight = (hour >= 18 || hour < 6); // 判斷現在是否為夜間時間
+        
+                // 3. 判斷載入畫面是否該顯示暗黑風格：
+                // 情況 A：開啟了自動切換，且現在時間是晚上
+                // 情況 B：沒開自動切換，但手動設定為開啟（或是完全沒設定過且現在是晚上）
+                if (isAuto) {
+                    if (isNight) {
+                        screen.classList.add('dark-theme');
+                    }
+                } else {
+                    if (savedDark === 'true' || (savedDark === null && isNight)) {
+                        screen.classList.add('dark-theme');
+                    }
+                }
+            }
+        })();
 
         // 註冊 PWA 離線服務線程 (Service Worker) 確保應用程式可以離線開啟
         if ("serviceWorker" in navigator) { navigator.serviceWorker.register("service-worker.js"); }
