@@ -1950,15 +1950,20 @@
                         throw new Error("格式錯誤");
                     }
                     
-                    // 重新渲染介面，確保畫面上看到的動作和重量立刻更新
+                      // 重新渲染介面（日曆和重量一定要更新）
                     renderAllExerciseLists();
                     loadAllWeights();
-                    initTimerSettings();
-                    initSoundSetting();
-                    initFlashSetting();
-                    initDarkThemeSetting();
+                    
+                    // 修正：只有當檔案裡有包含設定時，才去重新初始化設定，避免畫面被洗回預設白天模式
+                    if (importedData.cfg_rest_min || importedData.cfg_switch_min) {
+                        initTimerSettings();
+                    }
+                    if (importedData.cfg_sound_enable) initSoundSetting();
+                    if (importedData.cfg_flash_enable) initFlashSetting();
+                    if (importedData.cfg_dark_enable) initDarkThemeSetting();
                     
                     showNotice("匯入成功", "訓練紀錄已成功還原 🎉", false);
+
                 } catch (err) {
                     showNotice("匯入失敗", "檔案格式錯誤或不是有效的紀錄檔", false);
                 }
