@@ -949,7 +949,7 @@
 
     <div class="card" id="card-hiit" data-type="hiit">
         <div class="card-header"><h3 style="color:#5856D6;margin:0;">HIIT 訓練</h3><input type="date" class="date-input" onchange="syncDate(this)"></div>
-        <div class="exercise-item"><span>體重</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="hiit_weight" placeholder="0"><span class="unit-text">kg</span></div></div>
+        <div class="exercise-item"><span>目前體重</span><div class="input-group"><input type="number" step="any" inputmode="decimal" class="weight-input" oninput="saveCurrentWeight(this)" data-id="hiit_weight" placeholder="0"><span class="unit-text">kg</span></div></div>
         <div class="exercise-item"><span>訓練時間</span>
             <div class="input-group">
                 <input type="number" inputmode="decimal" class="weight-input" style="width: 45px;" id="hiit-min" oninput="saveCurrentWeight(this)" data-id="hiit_weight_min" placeholder="0"><span class="unit-text">分</span>
@@ -1649,22 +1649,35 @@
             var currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
             document.querySelectorAll('.weight-input').forEach(function(input) {
                 var id = input.dataset.id;
-                if (!id) { input.value = ""; } 
+                if (!id) { input.value = ""; }
                 else if (id.includes('_min') || id.includes('_sec') || id.includes('_hr') || id === 'leg_1' || id === 'leg_incline') {
-                    input.value = "0"; currentWeights[id] = "0"; 
+                    input.value = "0";
+                    currentWeights[id] = "0";
                 } else {
-                    input.value = (currentWeights[id] !== undefined && currentWeights[id] !== "") ? currentWeights[id] : "0"; 
+                    input.value = (currentWeights[id] !== undefined && currentWeights[id] !== "") ? currentWeights[id] : "0";
                 }
-
-                // 輸入重量欄位焦點優化
-                input.addEventListener('focus', function() { tempValue = this.value; this.value = ""; });
-                input.addEventListener('blur', function() { 
-                    if (this.value === "" || isNaN(this.value)) { this.value = tempValue; } 
-                    else { 
-                        if (this.dataset.id) { this.value = parseFloat(this.value).toString(); saveCurrentWeight(this); } 
-                        else { this.value = parseFloat(this.value).toString(); }
-                    } 
-                });
+                
+                // 🌟 修正核心：加入防重複綁定機制，並改用專屬 dataset 暫存
+                if (!input.dataset.listenerBound && !input.hasAttribute('onfocus')) {
+                    input.addEventListener('focus', function() {
+                        this.dataset.oldVal = this.value; // 獨立暫存舊數值，取代全域 tempValue
+                        this.value = ""; // 點擊時清空方便使用者輸入
+                    });
+                    input.addEventListener('blur', function() {
+                        if (this.value === "" || isNaN(this.value)) {
+                            this.value = this.dataset.oldVal || "0"; // 若未輸入則還原
+                            if (this.dataset.id) saveCurrentWeight(this); // 確保還原後存檔
+                        } else {
+                            if (this.dataset.id) {
+                                this.value = parseFloat(this.value).toString();
+                                saveCurrentWeight(this);
+                            } else {
+                                this.value = parseFloat(this.value).toString();
+                            }
+                        }
+                    });
+                    input.dataset.listenerBound = "true"; // 打上防護標記，防止匯入時重複綁定
+                }
             });
             
             // 雙向交叉連動：有氧卡片的體重與 HIIT 卡片的體重互相即時同步
@@ -1679,7 +1692,7 @@
                     currentWeights['body_weight'] = hWeight.value;
                 }
             }
-            localStorage.setItem('current_weights', JSON.stringify(currentWeights)); 
+            localStorage.setItem('current_weights', JSON.stringify(currentWeights));
             updateCardioStats();
             updateHiitStats();
         }
