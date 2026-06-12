@@ -330,7 +330,7 @@
             background: rgba(0, 0, 0, 0.75);
             z-index: 99998; 
             display: none;
-            /*核心修改：強制讓遮罩與鏤空處都接收點擊，不允許事件穿透到下一層 */
+            /* 核心修改：強制讓遮罩與鏤空處都接收點擊，不允許事件穿透到下一層 */
             pointer-events: auto !important; 
             clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%); 
             transition: clip-path 0.25s ease-in-out;
