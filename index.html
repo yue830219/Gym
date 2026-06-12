@@ -1880,36 +1880,35 @@
             }
         }
         
-          function exportHistory() {
-            // 撈取訓練日曆紀錄與 有氧/HIIT 卡片裡的體重紀錄
+        // 資料庫匯出：將所有訓練紀錄、自訂動作與暫存重量完整打包匯出
+        function exportHistory() {
+            // 只撈取訓練日曆裡面記錄到的東西 (gym_history)
             var gymHistory = JSON.parse(localStorage.getItem('gym_history') || "[]");
-            var cardioWeightHistory = JSON.parse(localStorage.getItem('cardio_weight_history') || "[]");
             
-            // 檢查是否真的完全沒有任何核心紀錄
-            if (gymHistory.length === 0 && cardioWeightHistory.length === 0) {
-                showNotice("沒有資料", "目前訓練日曆與有氧體重中沒有任何紀錄可以匯出", false);
+            // 檢查是否真的完全沒有任何日曆紀錄
+            if (gymHistory.length === 0) {
+                showNotice("沒有資料", "目前訓練日曆中沒有任何紀錄可以匯出", false);
                 return;
             }
             
-            // 精準打包：只帶走日曆紀錄與卡片體重紀錄，其餘系統設定和雜項都不要
+            // 為了保持架構乾淨，且讓原本的匯入功能相容，我們只打包 gym_history 
             var backupData = {
-                gym_history: gymHistory,
-                cardio_weight_history: cardioWeightHistory
+                gym_history: gymHistory
             };
             
             var blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json;charset=utf-8;" });
             var url = URL.createObjectURL(blob);
             var a = document.createElement("a");
             a.href = url;
-            a.download = "gym_cardio_backup_" + new Date().toISOString().slice(0, 10) + ".json";
+            a.download = "gym_calendar_backup_" + new Date().toISOString().slice(0, 10) + ".json";
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showNotice("匯出完成", "訓練與有氧體重紀錄已下載成 JSON 備份檔", false);
+            showNotice("匯出完成", "訓練日曆紀錄已下載成 JSON 備份檔", false);
         }
         
-        // 資料庫匯入：完美支援包含日曆、有氧體重紀錄的純淨備份檔，且絕不影響目前網頁的主題顏色
+        // 資料庫匯入：完美支援只包含日曆紀錄的純淨備份檔
         function importHistory(event) {
             var file = event.target.files[0];
             if (!file) return;
@@ -1924,32 +1923,24 @@
                         calendar.removeAllEvents();
                         importedData.forEach(function(ev) { calendar.addEvent(ev); });
                     }
-                    // 相容模式 2：包含 gym_history 或 cardio_weight_history 的打包格式
-                    else if (importedData && (importedData.gym_history || importedData.cardio_weight_history)) {
+                    // 相容模式 2：新版純淨格式或舊版完整格式（只要有包含 gym_history 就能匯入）
+                    else if (importedData && importedData.gym_history) {
+                        // 1. 還原日曆紀錄
+                        localStorage.setItem('gym_history', JSON.stringify(importedData.gym_history));
+                        calendar.removeAllEvents();
+                        importedData.gym_history.forEach(function(ev) { calendar.addEvent(ev); });
                         
-                        // 1. 還原日曆紀錄（如果有帶的話）
-                        if (importedData.gym_history) {
-                            localStorage.setItem('gym_history', JSON.stringify(importedData.gym_history));
-                            calendar.removeAllEvents();
-                            importedData.gym_history.forEach(function(ev) { calendar.addEvent(ev); });
-                        }
-                        
-                        // 2. 還原 有氧與HIIT卡片裡的體重紀錄（如果有帶的話）
-                        if (importedData.cardio_weight_history) {
-                            localStorage.setItem('cardio_weight_history', JSON.stringify(importedData.cardio_weight_history));
-                        }
-                        
-                        // 3. 還原自訂動作庫（若無此欄位則保持網頁現狀，不蓋掉使用者的現有資料）
+                        // 2. 還原自訂動作庫（若無此欄位則保持原樣，不蓋掉使用者的現有資料）
                         if (importedData.custom_exercises) {
                             localStorage.setItem('custom_exercises', JSON.stringify(importedData.custom_exercises));
                         }
                         
-                        // 4. 還原暫存重量（若無此欄位則保持網頁現狀）
+                        // 3. 還原暫存重量（若無此欄位則保持原樣）
                         if (importedData.current_weights) {
                             localStorage.setItem('current_weights', JSON.stringify(importedData.current_weights));
                         }
                         
-                        // 5. 還原系統與計時器設定（有帶才會覆蓋，沒帶就維持網頁現狀）
+                        // 4. 還原系統與計時器設定（有帶才會覆蓋，沒帶就維持網頁現狀）
                         if (importedData.cfg_rest_min) localStorage.setItem('cfg_rest_min', importedData.cfg_rest_min);
                         if (importedData.cfg_switch_min) localStorage.setItem('cfg_switch_min', importedData.cfg_switch_min);
                         if (importedData.cfg_sound_enable) localStorage.setItem('cfg_sound_enable', importedData.cfg_sound_enable);
@@ -1959,15 +1950,11 @@
                         throw new Error("格式錯誤");
                     }
                     
-                    // 重新渲染介面，確保日曆與所有有氧/HIIT圖表與體重紀錄立刻更新
+                      // 重新渲染介面（日曆和重量一定要更新）
                     renderAllExerciseLists();
                     loadAllWeights();
-                    if (typeof refreshCardioWeightDisplay === "function") {
-                        refreshCardioWeightDisplay(); // 確保卡片內部的體重文字或圖表同步刷新
-                    }
                     
-                    // 【顏色保護機制】：只有當匯入檔案裡面「真的有包含設定」時，才去重新初始化設定
-                    // 匯入這個純淨檔案時，會直接跳過這裡，你目前的白天/暗黑模式會被完好保留！
+                    // 修正：只有當檔案裡有包含設定時，才去重新初始化設定，避免畫面被洗回預設白天模式
                     if (importedData.cfg_rest_min || importedData.cfg_switch_min) {
                         initTimerSettings();
                     }
@@ -1975,14 +1962,14 @@
                     if (importedData.cfg_flash_enable) initFlashSetting();
                     if (importedData.cfg_dark_enable) initDarkThemeSetting();
                     
-                    showNotice("匯入成功", "紀錄與有氧體重資料已成功還原 🎉", false);
+                    showNotice("匯入成功", "訓練紀錄已成功還原 🎉", false);
+
                 } catch (err) {
                     showNotice("匯入失敗", "檔案格式錯誤或不是有效的紀錄檔", false);
                 }
             };
             reader.readAsText(file);
         }
-
 
         // 透過按鈕間接點擊隱藏的 File Input 檔案選取視窗
         function triggerImport() { document.getElementById('import-file').value = ""; document.getElementById('import-file').click(); }
