@@ -324,24 +324,18 @@
         /* ==========================================================================
            2.8 圖像聚光燈式導覽樣式 (Spotlight Tour)
            ========================================================================== */
-        /* 新手導覽的黑色半透明鏤空背景層 */
         #tour-mask {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.75);
             z-index: 99998; 
             display: none;
-            pointer-events: auto;
-            clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%); /* 預設全黑遮罩 */
+            /*核心修改：強制讓遮罩與鏤空處都接收點擊，不允許事件穿透到下一層 */
+            pointer-events: auto !important; 
+            clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%); 
             transition: clip-path 0.25s ease-in-out;
         }
-
-        #tour-mask.transparent-mask {
-            background: rgba(0, 0, 0, 0) !important;
-            clip-path: none !important; 
-        }
-
-        /* 導覽說明的彈出對話框 */
+        
         #tour-dialog {
             position: fixed;
             z-index: 99999; 
@@ -356,7 +350,23 @@
             box-sizing: border-box;
             transition: all 0.3s ease-in-out;
             animation: tourFade 0.2s ease-out;
+            /*確保導覽對話框內本身的按鈕是可以正常點選的 */
+            pointer-events: auto; 
         }
+        
+            /*在新手導覽對話盒加上全螢幕透明攔截層，阻擋鏤空處的穿透點擊 */
+        #tour-dialog::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;          /* 確保在對話盒本體下方，但依然在網頁最上層 */
+            pointer-events: auto; /* 攔截全螢幕所有點擊 */
+            background: transparent;
+        }
+
         @keyframes tourFade {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -665,11 +675,13 @@
         /* 2.10具有質感的雙模態加載螢幕樣式（自動支援白天/暗黑模式切換）*/
         /* 【預設：高質感白天模式 (Light Mode)】 */
         #loading-screen {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
+            position: fixed;   /* 確保釘死在視窗最上層 */
+            top: 0;
+            left: 0;
+            width: 100vw;      /* 滿版寬度 */
+            height: 100vh;     /* 滿版高度 */
             background: radial-gradient(circle at center, #f2f2f7 0%, #f2f2f7 100%);
-            z-index: 10000; /* 確保在最上層 */
+            z-index: 10000;    /* 確保在所有 UI（包括導覽、Modal）的最上層 */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -677,8 +689,12 @@
             opacity: 1;
             visibility: visible;
             transition: opacity 0.5s ease-out, visibility 0.5s;
-            overflow: hidden;
+            overflow: hidden;  /* 防止載入畫面內部元件超出範圍產生捲軸 */
             font-family: -apple-system, system-ui, sans-serif;
+        
+            /* 💡 關鍵新增：禁止任何透過載入畫面的手動點選與滑動行為 */
+            pointer-events: auto;  /* 讓載入畫面本身接收點擊，從而阻止點擊穿透到下層按鈕 */
+            touch-action: none;    /* 阻止行動裝置上的滑動與縮放行為 */
         }
 
         /* 白天模式的流線背景紋理（改為極淡墨色） */
@@ -735,16 +751,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* 白天模式底部指示條 */
-        #loading-screen #home-indicator {
-            position: absolute;
-            bottom: 12px;
-            width: 134px; height: 5px;
-            background: #000000;
-            border-radius: 100px;
-            opacity: 0.15;
-        }
-
         /* ------------------------------------------------------------
            【切換：高質感暗黑模式 (Dark Mode) - 當具備 .dark-theme 類別時】
            ------------------------------------------------------------ */
@@ -771,6 +777,13 @@
         #loading-screen.dark-theme #home-indicator {
             background: #ffffff;
             opacity: 0.7;
+        }
+        
+        /* 載入中鎖定全域捲動 */
+        body.loading-locked {
+            overflow: hidden !important;
+            height: 100vh !important;
+            touch-action: none !important;
         }
 
     </style>
@@ -1118,8 +1131,15 @@
         function closeTour() {
             isTourActive = false;
             document.getElementById('tour-dialog').style.display = 'none';
+            
             const mask = document.getElementById('tour-mask');
+            mask.style.display = 'none'; // 直接隱藏遮罩，釋放全網頁的點擊權限
             mask.classList.add('transparent-mask'); 
+            
+            // 解鎖網頁滾動與點擊
+            document.body.classList.remove('tour-locked');
+            document.removeEventListener('touchmove', preventTourScroll);
+            
             localStorage.setItem('has_seen_tour_v2', 'true'); // 在瀏覽器標記已看過教學
             showNotice("🎉 導覽結束！", "開始記錄今天的訓練吧！", false);
             document.getElementById('delete-modal').style.zIndex = "99999";
@@ -2124,29 +2144,30 @@
             if (calendar) { setTimeout(() => { calendar.render(); }, 150); }
         }
 
-        // 隱藏加載螢幕的控制函數
+        // 1. 頁面初始化時，立刻鎖定 body 的點選與滑動捲動
+        document.body.classList.add('loading-locked');
+        
+        // 2. 原有的關閉載入畫面函式微調
         function hideLoadingScreen() {
             const loadingScreen = document.getElementById('loading-screen');
             if (loadingScreen) {
                 loadingScreen.style.opacity = '0';
                 loadingScreen.style.visibility = 'hidden';
+                
+                // 💡 關鍵新增：載入完成後，解除 body 的鎖定，恢復正常點選與滑動捲動
+                document.body.classList.remove('loading-locked');
             }
         }
         
+        // 3. 原有的立即執行判斷暗黑/白天模式邏輯（保持不變）
         (function() {
             const screen = document.getElementById('loading-screen');
             if (screen) {
-                // 1. 讀取手動暗黑模式設定
                 const savedDark = localStorage.getItem('cfg_dark_enable');
-                // 2. 讀取自動切換設定 (💡 請確認你的自動切換 Key 是不是叫 'cfg_dark_auto')
                 const isAuto = localStorage.getItem('cfg_dark_auto') === 'true'; 
-                
                 const hour = new Date().getHours();
-                const isNight = (hour >= 18 || hour < 6); // 判斷現在是否為夜間時間
-        
-                // 3. 判斷載入畫面是否該顯示暗黑風格：
-                // 情況 A：開啟了自動切換，且現在時間是晚上
-                // 情況 B：沒開自動切換，但手動設定為開啟（或是完全沒設定過且現在是晚上）
+                const isNight = (hour >= 18 || hour < 6);
+                
                 if (isAuto) {
                     if (isNight) {
                         screen.classList.add('dark-theme');
@@ -2158,6 +2179,7 @@
                 }
             }
         })();
+
 
         // 註冊 PWA 離線服務線程 (Service Worker) 確保應用程式可以離線開啟
         if ("serviceWorker" in navigator) { navigator.serviceWorker.register("service-worker.js"); }
