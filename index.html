@@ -2,170 +2,20 @@
 <html lang="zh-TW">
 <head>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#007AFF"> <meta name="mobile-web-app-capable" content="yes"> <link rel="apple-touch-icon" href="./Strength.png"> <link rel="icon" type="image/jpeg" href="./Strength.png"> <meta charset="UTF-8">
+    <meta name="theme-color" content="#007AFF"> 
+    <meta name="mobile-web-app-capable" content="yes"> 
+    <link rel="apple-touch-icon" href="./Strength.png"> 
+    <link rel="icon" type="image/jpeg" href="./Strength.png"> 
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>健身助手 Pro</title>
     <meta name="apple-mobile-web-app-title" content="健身助手">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> 
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
 
     <style>
         /* ==========================================================================
-           2.1 動作名稱與編輯模式樣式
-           ========================================================================== */
-        /* 可編輯的動作名稱基礎樣式 */
-        .exercise-name {
-            min-width: 60px;
-            display: inline-block;
-            outline: none;
-            padding-bottom: 2px;
-            border-bottom: 1px solid transparent;
-            transition: all 0.2s;
-        }
-        
-        /* 卡片底部的管理按鈕區塊 (包含新增、取消、儲存) */
-        .bottom-manage-bar {
-            display: flex;
-            align-items: center;
-            justify flex-start;
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        /* 進入編輯模式時，動作名稱外觀變更為虛線提示可輸入 */
-        .editing-mode .exercise-name {
-            border-bottom: 1px dashed #007AFF;
-            cursor: text;
-        }
-
-        /* 預設隱藏所有管理按鈕 */
-        .btn-delete-exercise, .btn-add-exercise, .btn-bottom-save, .btn-bottom-cancel {
-            display: none; 
-        }
-        
-        /* 進入編輯模式時，隱藏右上角的鉛筆圖示 */
-        .editing-mode .card-header .btn-manage-toggle {
-            display: none !important;
-        }
-
-        /* 進入編輯模式時，顯示對應的管理按鈕 */
-        .editing-mode .btn-delete-exercise { display: inline-block; }
-        .editing-mode .btn-bottom-save { display: inline-block; }
-        .editing-mode .btn-bottom-cancel { display: inline-block; }
-        .editing-mode .btn-add-exercise { display: inline-block; }
-
-        /* 「新增動作」按鈕樣式 */
-        .btn-add-exercise {
-            font-size: 0.9rem;         
-            padding: 8px 16px;         
-            width: auto;           
-            background: #E5F0FF;       
-            color: #007AFF;            
-            border-radius: 8px;
-            border: none;
-            font-weight: bold;
-        }
-        
-        /* 「取消編輯」按鈕樣式 */
-        .btn-bottom-cancel {
-            background: #E5E5EA;
-            color: #333333;
-            font-size: 0.9rem;
-            padding: 8px 16px;
-            width: auto;
-            border-radius: 8px;
-            border: none;
-            font-weight: bold;
-        }
-
-        /* 「儲存變更」按鈕樣式 */
-        .btn-bottom-save {
-            background: #E5F9E7;
-            color: #34C759;
-            font-size: 0.9rem;
-            padding: 8px 16px;
-            width: auto;
-            border-radius: 8px;
-            border: none;
-            font-weight: bold;
-        }
-
-        /* 重量輸入欄位被禁用時（編輯模式中游標鎖定）的樣式 */
-        .weight-input:disabled {
-            background-color: #E5E5EA !important;
-            color: #8E8E93 !important;
-            border-color: #D1D1D6 !important;
-            cursor: not-allowed;
-        }
-        
-        /* 右上角切換編輯模式的鉛筆按鈕樣式 */
-        .btn-manage-toggle {
-            color: #545456;
-            background: transparent; 
-            border: none;
-            padding: 0 2px;       
-            border-radius: 6px;
-            font-size: 1.4rem;     
-            font-weight: bold;
-            cursor: pointer;
-            margin-left: 30px;      
-            margin-right: 30px;      
-            flex-shrink: 0;         
-            width: auto;
-            text-align: center;
-            display: inline-block;
-            transition: all 0.2s;
-        }
-
-        /* 刪除動作按鈕的紅叉叉 (×) 樣式 */
-        .btn-delete-exercise {
-            background: none;
-            border: none;
-            color: #FF3B30;
-            font-size: 2rem;
-            font-family: Arial, sans-serif;
-            font-weight: 900;
-            padding: 0 0 0 10px;
-            cursor: pointer;
-            vertical-align: middle;
-        }
-        
-        /* 當動作名稱被清空時，利用偽元素顯示預設文字提示 */
-        .exercise-name:empty::before {
-            content: attr(data-placeholder);
-            color: #BFBFC3;
-            font-style: normal;
-            pointer-events: none;
-            display: inline-block;
-        }
-        
-        /* 非編輯模式下，隱藏單位的下拉選單箭頭，偽裝成一般文字 */
-        .unit-select:disabled {
-            color: #666 !important;
-            opacity: 1 !important;
-            background: transparent !important;
-            border-bottom: 1px solid transparent !important;
-            cursor: default;
-            width: auto !important;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-
-        /* 進入編輯模式時，單位選單顯示虛線，提示可以點擊切換 */
-        .editing-mode .unit-select {
-            border-bottom: 1px dashed #007AFF !important;
-            color: #007AFF !important;
-            background: transparent !important;
-            width: auto !important;
-            min-width: 25px;
-            padding: 2px 4px !important;
-            text-align: center !important;
-            text-align-last: center !important;
-            -webkit-appearance: none !important;
-            appearance: none !important;
-        }
-
-        /* ==========================================================================
-           2.2 全域變數、版面與側邊欄樣式
+           1. 基礎版面與全域變數 (Base Layout & Variables)
            ========================================================================== */
         /* 定義專案專屬的色碼變數（iOS 風格色彩） */
         :root { 
@@ -182,12 +32,19 @@
             padding-bottom: 50px; 
             transition: background 0.3s, color 0.3s;
         }
-        
+
         /* 上方導覽列改透明，這樣卡片滾動過去時才漂亮 */
         .top-bar { display: flex; align-items: center; padding: 5px 0px; justify-content: space-between; background: transparent; }
         .menu-icon { font-size: 40px; cursor: pointer; width: 45px; text-align: center; margin-left: -7px; margin-top: -15px; color: #1c1c1e; user-select: none; }
         .logo-container { flex-grow: 1; text-align: center; font-size: 1.25rem; font-weight: 800; margin-top: -5px; color: #007AFF; line-height: 1; display: flex; align-items: center; justify-content: center; }
-        
+
+        /* 背景半透明遮罩（側邊欄或導覽觸發時使用） */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); display: none; z-index: 2500; }
+        .overlay.active { display: block; }
+
+        /* ==========================================================================
+           2. 側邊欄與選單 (Sidebar & Tabs)
+           ========================================================================== */
         /* 側邊欄抽屜面板 */
         .sidebar { 
             position: fixed; 
@@ -195,59 +52,39 @@
             left: -220px; 
             width: 200px; 
             height: 100%; 
-            background: rgba(255, 255, 255, 0.6); /* 亮白半透明 */
+            background: rgba(255, 255, 255, 0.6); 
             backdrop-filter: blur(20px); 
             -webkit-backdrop-filter: blur(20px); 
             box-shadow: 4px 0 24px rgba(0,0,0,0.05); 
             z-index: 3000; 
-            transition: transform 0.3s ease, background 0.3s; 
+            transition: transform 0.3s ease, 
+                        left 0.3s ease, 
+                        visibility 0.3s ease, 
+                        background-color 0.8s ease, 
+                        background 0.8s ease, 
+                        border-color 0.8s ease, 
+                        box-shadow 0.8s ease; 
+                        
             padding: 20px 0; 
             visibility: hidden; 
-            border-right: 1px solid rgba(255, 255, 255, 0.5); /* 亮色微光邊框 */
+            border-right: 1px solid rgba(255, 255, 255, 0.5); 
         }
         .sidebar.active { transform: translateX(220px); visibility: visible; } /* 展開時向右滑出 */
         .sidebar-header { font-size: 1.25rem; font-weight: 800; color: #007AFF; padding: 15px 20px 25px 20px; border-bottom: 1px solid #f2f2f7; margin-bottom: 10px; }
         .sidebar-item { padding: 22px 25px; font-size: 1.05rem; color: #1c1c1e; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: background 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent; }
         .sidebar-item:active { background: #f2f2f7; color: #007AFF; }
-        
-        /* 背景半透明遮罩（側邊欄或導覽觸發時使用） */
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); display: none; z-index: 2500; }
-        .overlay.active { display: block; }
 
-        /* ==========================================================================
-           2.3 計時器面板與標籤分頁樣式
-           ========================================================================== */
-        /* 組間/動作間隔休息計時器控制面板 */
-        .timer-panel { 
-            background: rgba(255, 255, 255, 0.7); /* 亮白半透明 */
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px);
-            padding: 15px; 
-            border-radius: 20px; 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.05); 
-            z-index: 1000; 
-            margin-bottom: 20px; 
-            border: 1px solid rgba(255, 255, 255, 0.6); /* 讓邊框像玻璃邊緣一樣微發光 */
-            transition: background 0.3s, border-color 0.3s;
-        }
-        .timer-header { display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
-        #timer-display { font-size: 3.5rem; font-weight: 800; margin: 5px 0; color: #1c1c1e; line-height: 1.2; text-align: left; transition: color 0.3s; }
-        #set-counter { font-size: 1.2rem; font-weight: bold; color: #34c759; text-align: right; }
-        .btn-group { display: flex; gap: 8px; }
-        .btn-group button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        
         /* 主畫面訓練部位分頁選單 */
         .tab-menu { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 0px; }
         .tab-btn { flex: 1 1 17%; min-width: 70px; padding: 12px 5px; border-radius: 12px; border: none; font-size: 0.9rem; font-weight: bold; color: white; opacity: 0.4; transition: 0.3s; margin-bottom: 5px; cursor: pointer; }
         .tab-btn.active { opacity: 1; transform: translateY(-2px); } /* 被選中的分頁會完全顯示並稍微往上浮動 */
 
         /* ==========================================================================
-           2.4 卡片與輸入欄位樣式
+           3. 卡片結構與輸入欄位 (Cards & Inputs)
            ========================================================================== */
         /* 各訓練主題的卡片基礎樣式 */
         .card {
             background: rgba(255, 255, 255, 0.7);
-            /* 亮白半透明 */
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-radius: 18px;
@@ -272,10 +109,85 @@
         /* 訓練日曆專用卡片樣式表 */
         .calendar-card { display: none; }
         #calendar { margin-top: 10px; }
-        
+
         /* ==========================================================================
-           2.5 提示/刪除彈出視窗樣式 (Modal)
+           4. 動作管理與編輯模式樣式 (Edit Mode Styles)
            ========================================================================== */
+        /* 可編輯的動作名稱基礎樣式 */
+        .exercise-name { min-width: 60px; display: inline-block; outline: none; padding-bottom: 2px; border-bottom: 1px solid transparent; transition: all 0.2s; }
+        
+        /* 卡片底部的管理按鈕區塊 (包含新增、取消、儲存) */
+        .bottom-manage-bar { display: flex; align-items: center; justify-content: flex-start; gap: 10px; margin: 15px 0; }
+
+        /* 進入編輯模式時，動作名稱外觀變更為虛線提示可輸入 */
+        .editing-mode .exercise-name { border-bottom: 1px dashed #007AFF; cursor: text; }
+
+        /* 預設隱藏所有管理按鈕 */
+        .btn-delete-exercise, .btn-add-exercise, .btn-bottom-save, .btn-bottom-cancel { display: none; }
+        
+        /* 進入編輯模式時，隱藏右上角的鉛筆圖示 */
+        .editing-mode .card-header .btn-manage-toggle { display: none !important; }
+
+        /* 進入編輯模式時，顯示對應的管理按鈕 */
+        .editing-mode .btn-delete-exercise { display: inline-block; }
+        .editing-mode .btn-bottom-save { display: inline-block; }
+        .editing-mode .btn-bottom-cancel { display: inline-block; }
+        .editing-mode .btn-add-exercise { display: inline-block; }
+
+        /* 管理按鈕獨立樣式 */
+        .btn-add-exercise { font-size: 0.9rem; padding: 8px 16px; width: auto; background: #E5F0FF; color: #007AFF; border-radius: 8px; border: none; font-weight: bold; }
+        .btn-bottom-cancel { background: #E5E5EA; color: #333333; font-size: 0.9rem; padding: 8px 16px; width: auto; border-radius: 8px; border: none; font-weight: bold; }
+        .btn-bottom-save { background: #E5F9E7; color: #34C759; font-size: 0.9rem; padding: 8px 16px; width: auto; border-radius: 8px; border: none; font-weight: bold; }
+
+        /* 重量輸入欄位被禁用時（編輯模式中游標鎖定）的樣式 */
+        .weight-input:disabled { background-color: #E5E5EA !important; color: #8E8E93 !important; border-color: #D1D1D6 !important; cursor: not-allowed; }
+        
+        /* 右上角切換編輯模式的鉛筆按鈕樣式 */
+        .btn-manage-toggle { color: #545456; background: transparent; border: none; padding: 0 2px; border-radius: 6px; font-size: 1.4rem; font-weight: bold; cursor: pointer; margin-left: 30px; margin-right: 30px; flex-shrink: 0; width: auto; text-align: center; display: inline-block; transition: all 0.2s; }
+
+        /* 刪除動作按鈕的紅叉叉 (×) 樣式 */
+        .btn-delete-exercise { background: none; border: none; color: #FF3B30; font-size: 2rem; font-family: Arial, sans-serif; font-weight: 900; padding: 0 0 0 10px; cursor: pointer; vertical-align: middle; }
+        
+        /* 當動作名稱被清空時，利用偽元素顯示預設文字提示 */
+        .exercise-name:empty::before { content: attr(data-placeholder); color: #BFBFC3; font-style: normal; pointer-events: none; display: inline-block; }
+        
+        /* 非編輯模式下，隱藏單位的下拉選單箭頭，偽裝成一般文字 */
+        .unit-select:disabled { color: #666 !important; opacity: 1 !important; background: transparent !important; border-bottom: 1px solid transparent !important; cursor: default; width: auto !important; -webkit-appearance: none; appearance: none; }
+
+        /* 進入編輯模式時，單位選單顯示虛線，提示可以點擊切換 */
+        .editing-mode .unit-select { border-bottom: 1px dashed #007AFF !important; color: #007AFF !important; background: transparent !important; width: auto !important; min-width: 25px; padding: 2px 4px !important; text-align: center !important; text-align-last: center !important; -webkit-appearance: none !important; appearance: none !important; }
+
+        /* ==========================================================================
+           5. 計時器與動態特效 (Timer & Effects)
+           ========================================================================== */
+        /* 組間/動作間隔休息計時器控制面板 */
+        .timer-panel { 
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            padding: 15px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.05); 
+            z-index: 1000; 
+            margin-bottom: 20px; 
+            border: 1px solid rgba(255, 255, 255, 0.6); 
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .timer-header { display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
+        #timer-display { font-size: 3.5rem; font-weight: 800; margin: 5px 0; color: #1c1c1e; line-height: 1.2; text-align: left; transition: color 0.3s; }
+        #set-counter { font-size: 1.2rem; font-weight: bold; color: #34c759; text-align: right; }
+        .btn-group { display: flex; gap: 8px; }
+        .btn-group button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+
+        /* 計時結束時的紅色全螢幕閃爍動畫背景疊加層 */
+        .flash-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1500; display: none; pointer-events: none; }
+        .flash-active { display: block; animation: alarm-flash 0.7s infinite; }
+        @keyframes alarm-flash { 0% { background-color: rgba(255, 0, 0, 0.4); } 50% { background-color: rgba(255, 255, 255, 0); } 100% { background-color: rgba(255, 0, 0, 0.4); } }
+
+        /* ==========================================================================
+           6. 互動彈窗與切換開關 (Modals & Switches)
+           ========================================================================== */
+        /* 共用 Modal 彈窗樣式 */
         #delete-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-content { 
             background: rgba(255, 255, 255, 0.8); 
@@ -296,216 +208,118 @@
         .modal-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .btn-del { background: var(--danger); color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; }
         .btn-ok { background: #E5E5EA; color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; transition: background 0.3s, color 0.3s; }
-        
-        /* ==========================================================================
-           2.6 FullCalendar 套件外觀微調
-           ========================================================================== */
-        .fc-event-title { text-align: center; width: 100%; display: block; font-weight: bold; }
-        .fc-daygrid-event { justify-content: center !important; }
-        .fc .fc-daygrid-day-frame { min-height: 40px !important; }
-        .fc-daygrid-event { margin-top: 1px !important; padding: 0 2px !important; font-size: 0.75rem !important; }
-        
-        /* ==========================================================================
-           2.7 開關按鈕 (Switch) 與計時結束閃爍特效
-           ========================================================================== */
+
         /* iOS 風格的滑塊開關 */
         .switch { position: relative; display: inline-block; width: 52px; height: 30px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: 0.25s; border-radius: 30px; }
         .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 2px; top: 2px; background-color: white; transition: 0.25s; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.25); }
-        .switch input:checked + .slider { background-color: #34C759; } /* 開啟時變綠色 */
+        .switch input:checked + .slider { background-color: #34C759; } 
         .switch input:checked + .slider:before { transform: translateX(22px); }
-        
-        /* 計時結束時的紅色全螢幕閃爍動畫背景疊加層 */
-        .flash-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1500; display: none; pointer-events: none; }
-        .flash-active { display: block; animation: alarm-flash 0.7s infinite; }
-        @keyframes alarm-flash { 0% { background-color: rgba(255, 0, 0, 0.4); } 50% { background-color: rgba(255, 255, 255, 0); } 100% { background-color: rgba(255, 0, 0, 0.4); } }
 
         /* ==========================================================================
-           2.8 圖像聚光燈式導覽樣式 (Spotlight Tour)
+           7. 導覽教學與載入畫面 (Tour & Loading Screen)
            ========================================================================== */
+        /* 圖像聚光燈式導覽遮罩 */
         #tour-mask {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: 99998; 
-            display: none;
-            /* 核心修改：強制讓遮罩與鏤空處都接收點擊，不允許事件穿透到下一層 */
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.75); z-index: 99998; display: none;
             pointer-events: auto !important; 
             clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%); 
             transition: clip-path 0.25s ease-in-out;
         }
         
         #tour-dialog {
-            position: fixed;
-            z-index: 99999; 
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            width: 280px;
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-            box-sizing: border-box;
-            transition: all 0.3s ease-in-out;
-            animation: tourFade 0.2s ease-out;
-            /*確保導覽對話框內本身的按鈕是可以正常點選的 */
+            position: fixed; z-index: 99999; background: white; padding: 20px;
+            border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); width: 280px;
+            display: none; flex-direction: column; gap: 12px; box-sizing: border-box;
+            transition: all 0.3s ease-in-out; animation: tourFade 0.2s ease-out;
             pointer-events: auto; 
         }
-        
-            /*在新手導覽對話盒加上全螢幕透明攔截層，阻擋鏤空處的穿透點擊 */
-        #tour-dialog::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;          /* 確保在對話盒本體下方，但依然在網頁最上層 */
-            pointer-events: auto; /* 攔截全螢幕所有點擊 */
-            background: transparent;
-        }
-
-        @keyframes tourFade {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .tour-header {
-            display: flex;
-            justify-content: flex-end;
-            font-size: 0.85rem;
-            color: #8e8e93;
-            font-weight: bold;
-        }
+        #tour-dialog::before { content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: auto; background: transparent; }
+        @keyframes tourFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tour-header { display: flex; justify-content: flex-end; font-size: 0.85rem; color: #8e8e93; font-weight: bold; }
         .tour-title { font-size: 1.15rem; font-weight: 800; color: #007AFF; margin: 0; }
         .tour-body { font-size: 0.95rem; color: #1c1c1e; line-height: 1.6; }
         .tour-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 5px; }
         .tour-btn { padding: 10px 18px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; border: none; cursor: pointer; }
         .tour-btn-skip { background: #E5E5EA; color: #3a3a3c; }
         .tour-btn-next { background: #007AFF; color: white; }
-        
-        /* 導覽進行中鎖定網頁滾動 */
-        body.tour-locked {
-            overflow: hidden !important;
-            height: 100vh !important;
-            touch-action: none !important;
-        }        
+        body.tour-locked { overflow: hidden !important; height: 100vh !important; touch-action: none !important; }        
 
-        /* 2.9暗黑風格專屬變更配色方案 */
-        
-        /* 整個網頁的背景與主文字顏色 */
-        body.dark-mode {
-            --bg: #1C1C1E; /* 設定全域背景變數為深灰 */
-            color: #FFFFFF; /* 全域文字轉為白色 */
+        /* 雙模態加載螢幕 (Loading Screen) */
+        #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, #f2f2f7 0%, #f2f2f7 100%);
+            z-index: 10000; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; opacity: 1; visibility: visible;
+            transition: opacity 0.5s ease-out, visibility 0.5s; overflow: hidden; font-family: -apple-system, system-ui, sans-serif;
+            pointer-events: auto; touch-action: none;
         }
-        
-        /* 側邊欄選單圖示顏色 */
+        #loading-screen::before {
+            content: ""; position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path d="M0,500 C250,250 250,750 500,500 C750,250 750,750 1000,500" stroke="%2300000012" stroke-width="1" fill="none" /></svg>');
+            background-size: 100px 100px; opacity: 0.1; filter: blur(1px); animation: moveTexture 30s linear infinite;
+        }
+        @keyframes moveTexture { from { transform: translate(0, 0); } to { transform: translate(-100px, -100px); } }
+        #loading-screen #loading-content { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        #loading-screen #loading-logo-container { width: 110px; height: 110px; display: flex; justify-content: center; align-items: center; position: relative; }
+        #loading-screen #loading-logo { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.07)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.04)); }
+        #loading-screen #loading-text-container { margin-top: 35px; text-align: center; }
+        #loading-screen #prep-text { font-size: 14px; color: #8e8e93; margin: 0; font-weight: normal; letter-spacing: 1px; }
+        #loading-screen #app-text { font-size: 16px; color: #1c1c1e; margin: 6px 0 0 0; font-weight: bold; letter-spacing: 0.5px; }
+        body.loading-locked { overflow: hidden !important; height: 100vh !important; touch-action: none !important; }
+
+        /* ==========================================================================
+           8. FullCalendar 套件與外觀微調 (Calendar Tweaks)
+           ========================================================================== */
+        .fc-event-title { text-align: center; width: 100%; display: block; font-weight: bold; }
+        .fc-daygrid-event { justify-content: center !important; }
+        .fc .fc-daygrid-day-frame { min-height: 40px !important; }
+        .fc-daygrid-event { margin-top: 1px !important; padding: 0 2px !important; font-size: 0.75rem !important; }
+
+        /* ==========================================================================
+           9. 暗黑模式主題與漸變動畫 (Dark Mode Styles)
+           ========================================================================== */
+        /* 全域日夜間模式切換平滑漸變動畫 (0.8秒柔和過渡) */
+        body, .timer-panel, .card, .weight-input, .date-input, .card-note, .modal-content, 
+        #modal-details, .tab-btn, .sidebar-item, .btn-bottom-save, .btn-bottom-cancel, .btn-add-exercise, button {
+            transition: background-color 0.8s ease, background 0.8s ease, color 0.4s ease, border-color 0.8s ease, box-shadow 0.8s ease !important;
+        }
+
+        /* 整個網頁與元件顏色反轉 */
+        body.dark-mode { --bg: #1C1C1E; color: #FFFFFF; }
         body.dark-mode .menu-icon { color: #FFFFFF; }
-        
-        /* 側邊欄（Sidebar）樣式：半透明背景、細邊框與陰影 */
-        body.dark-mode .sidebar {
-            background: rgba(28, 28, 30, 0.6);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 4px 0 24px rgba(0,0,0,0.3);
-        }
-        
-        /* 側邊欄項目文字顏色 */
+        body.dark-mode .sidebar { background: rgba(28, 28, 30, 0.6); border-right: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 4px 0 24px rgba(0,0,0,0.3); }
         body.dark-mode .sidebar-item { color: #E5E5EA; }
-        
-        /* 側邊欄項目被點擊/點選時的背景色 */
         body.dark-mode .sidebar-item:active { background: #2C2C2E; }
-        
-        /* 計時器面板（Timer Panel）：磨砂玻璃質感的半透明深色背景 */
-        body.dark-mode .timer-panel {
-            background: rgba(44, 44, 46, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        }
-        
-        /* 計時器數字顯示顏色 */
+        body.dark-mode .timer-panel { background: rgba(44, 44, 46, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
         body.dark-mode #timer-display { color: #FFFFFF; }
-        
-        /* 卡片容器（Card）：通用卡片區塊樣式 */
-        body.dark-mode .card {
-            background: rgba(44, 44, 46, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-        
-        /* 運動/訓練項目之間的分隔線 */
+        body.dark-mode .card { background: rgba(44, 44, 46, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
         body.dark-mode .exercise-item { border-bottom: 1px solid #3A3A3C; }
-        
-        /* 重量輸入欄位：深色背景、暗色邊框與白色文字 */
         body.dark-mode .weight-input { background: #1C1C1E; border-color: #3A3A3C; color: #FFFFFF; }
-        
-        /* 單位文字顏色（例如：kg, lbs） */
         body.dark-mode .unit-text { color: #AEAEB2; }
-        
-        /* 日期輸入欄位樣式 */
         body.dark-mode .date-input { background: #1C1C1E; border-color: #3A3A3C; color: #FFFFFF; }
-        
-        /* 管理/切換按鈕顏色 */
         body.dark-mode .btn-manage-toggle { color: #AEAEB2; }
         
-        /* 強制覆蓋：換算器與設定卡片中原本為淺灰（#f8f8f8）的區塊背景及邊框 */
+        /* 強制覆蓋：設定、換算器與文字 */
         body.dark-mode #card-converter div[style*="background:#f8f8f8"] { background: #2C2C2E !important; border-color: #3A3A3C !important; }
         body.dark-mode #card-settings div[style*="background:#f8f8f8"] { background: #2C2C2E !important; border-color: #3A3A3C !important; }
-        
-        /* 強制覆蓋：H4 標題顏色轉為白色 */
         body.dark-mode h4 { color: #FFFFFF !important; }
-        
-        /* 強制覆蓋：原本為灰色的標籤（Label）文字顏色 */
         body.dark-mode label[style*="color:#666"] { color: #AEAEB2 !important; }
-        
-        /* 強制覆蓋：原本為淺灰色的段落（P）提示文字顏色 */
         body.dark-mode p[style*="color:#999"], body.dark-mode p[style*="color: #666"] { color: #8E8E93 !important; }
-        
-        /* 彈出視窗內容區（Modal Content）：提高陰影與半透明深色背景 */
-        body.dark-mode .modal-content {
-            background: rgba(44, 44, 46, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
-        
-        /* 強制覆蓋：彈出視窗標題顏色 */
+        body.dark-mode .modal-content { background: rgba(44, 44, 46, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         body.dark-mode #modal-title { color: #FFFFFF !important; }
-        
-        /* 彈出視窗詳細內容區：深色背景與淺灰文字 */
         body.dark-mode #modal-details { background: #1C1C1E; color: #E5E5EA; }
-        
-        /* 彈出視窗的確認按鈕樣式 */
         body.dark-mode .btn-ok { background: #3A3A3C; color: #FFFFFF; }
-        
-        /* 強制覆蓋：當單位下拉選單（Select）被停用時的文字顏色 */
         body.dark-mode .unit-select:disabled { color: #AEAEB2 !important; }
-        
-        /* 強制覆蓋：卡片備忘錄/筆記區塊樣式 */
         body.dark-mode .card-note { background: #1C1C1E !important; border-color: #3A3A3C !important; color: #FFFFFF !important; }
-        
-        /* 強制覆蓋：特定運動項目背景色（將原本的淺藍 #f0f9ff 轉為深藍色系背景） */
         body.dark-mode .exercise-item[style*="background: #f0f9ff"] { background: #1A2530 !important; }
-        
-        /* 強制覆蓋：特定運動項目背景色（將原本的淺紫 #f5f3ff 轉為深紫色系背景） */
         body.dark-mode .exercise-item[style*="background: #f5f3ff"] { background: #201B30 !important; }
 
-        /* ☟ 暗黑模式下：所有分頁按鈕預設「都是黑底、白字、深色暗邊框」、無發光 ☟ */
-        body.dark-mode .tab-menu .tab-btn {
-            background: #1A2026 !important;
-            color: #A0AAB2 !important; /* 未選中時用內斂的灰白字 */
-            border: 2px solid #2C353F !important; /* 細緻的深色邊框 */
-            box-shadow: none !important; /* 預設不發光 */
-            opacity: 0.7; /* 未選中時稍微帶點透明度，視覺更有層次 */
-            transition: all 0.25s ease; /* 讓切換時的霓虹燈亮起效果有淡入動畫 */
-        }
-
-        /* ☟ 當滑鼠懸停 (Hover) 時，稍微調亮字體與邊框（非行動裝置體驗優化） ☟ */
-        body.dark-mode .tab-menu .tab-btn:hover {
-            opacity: 0.9;
-            color: #ffffff !important;
-        }
-
-        /* ☟ 暗黑模式下：當按鈕被「選中 (.active)」時，瞬間觸發專屬霓虹燈特效 ☟ */
+        /* 分頁按鈕深色質感與霓虹發光特效 */
+        body.dark-mode .tab-menu .tab-btn { background: #1A2026 !important; color: #A0AAB2 !important; border: 2px solid #2C353F !important; box-shadow: none !important; opacity: 0.7; transition: all 0.25s ease; }
+        body.dark-mode .tab-menu .tab-btn:hover { opacity: 0.9; color: #ffffff !important; }
         body.dark-mode .tab-menu button:nth-child(1).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--chest) !important; box-shadow: 0 0 14px rgba(255, 77, 77, 0.6) !important; }
         body.dark-mode .tab-menu button:nth-child(2).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--shoulder) !important; box-shadow: 0 0 14px rgba(255, 159, 67, 0.6) !important; }
         body.dark-mode .tab-menu button:nth-child(3).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--arm) !important; box-shadow: 0 0 14px rgba(38, 230, 168, 0.6) !important; }
@@ -514,278 +328,44 @@
         body.dark-mode .tab-menu button:nth-child(6).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--leg) !important; box-shadow: 0 0 14px rgba(0, 229, 255, 0.6) !important; }
         body.dark-mode .tab-menu button:nth-child(7).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--hiit) !important; box-shadow: 0 0 14px rgba(124, 77, 255, 0.6) !important; }
         
-        /* 1. 組間間隔按鈕 - 藍色霓虹 */
-        body.dark-mode #btn-rest-timer {
-            background: #1A2026 !important;
-            color: #E5E5EA !important; /* 亮灰白字 */
-            border: 2px solid #007AFF !important; /* 藍邊框 */
-            box-shadow: 0 0 12px rgba(0, 122, 255, 0.5) !important; /* 藍色光暈 */
-            opacity: 1 !important;
-            transition: all 0.2s ease;
-        }
-        body.dark-mode #btn-rest-timer:active {
-            box-shadow: 0 0 20px rgba(0, 122, 255, 0.85) !important;
-            transform: scale(0.96);
-        }
-
-        /* 2. 動作間隔按鈕 - 紫色霓虹 */
-        body.dark-mode #btn-switch-timer {
-            background: #1A2026 !important;
-            color: #E5E5EA !important; /* 亮灰白字 */
-            border: 2px solid #5856D6 !important; /* 紫邊框 */
-            box-shadow: 0 0 12px rgba(88, 86, 214, 0.5) !important; /* 紫色光暈 */
-            opacity: 1 !important;
-            transition: all 0.2s ease;
-        }
-        body.dark-mode #btn-switch-timer:active {
-            box-shadow: 0 0 20px rgba(88, 86, 214, 0.85) !important;
-            transform: scale(0.96);
-        }
-
-        /* 3. 重置按鈕 (↺) - 質感灰色/銀白霓虹 */
-        body.dark-mode .timer-panel .btn-group button[onclick*="resetTimer"] {
-            background: #1A2026 !important;
-            color: #E5E5EA !important; /* 亮灰白字 */
-            border: 2px solid #8E8E93 !important; /* 灰色邊框 */
-            box-shadow: 0 0 10px rgba(142, 142, 147, 0.5) !important; /* 灰色銀光暈 */
-            opacity: 1 !important;
-            transition: all 0.2s ease;
-        }
-        body.dark-mode .timer-panel .btn-group button[onclick*="resetTimer"]:active {
-            box-shadow: 0 0 18px rgba(229, 229, 234, 0.8) !important; /* 按下時爆發銀白光 */
-            transform: scale(0.92);
-        }
-        /* 頂部大標題 - 暗黑模式精準修正為白字 */
-        body.dark-mode .logo-container,
-        body.dark-mode .sidebar-header {
-            color: #ffffff !important;
-        }
-        /* 暗黑風儲存到日曆按鈕 - 翡翠綠霓虹風格 */
-        body.dark-mode .btn-calendar-only {
-            background: linear-gradient(135deg, #26E6A8 0%, #1B9A70 100%) !important; 
-            color: #E5E5EA !important; 
-            box-shadow: 0 8px 20px rgba(38, 230, 168, 0.25) !important;
-            text-shadow: none !important;
-        }
+        /* 操作按鈕霓虹特效 */
+        body.dark-mode #btn-rest-timer { background: #1A2026 !important; color: #E5E5EA !important; border: 2px solid #007AFF !important; box-shadow: 0 0 12px rgba(0, 122, 255, 0.5) !important; opacity: 1 !important; transition: all 0.2s ease; }
+        body.dark-mode #btn-rest-timer:active { box-shadow: 0 0 20px rgba(0, 122, 255, 0.85) !important; transform: scale(0.96); }
+        body.dark-mode #btn-switch-timer { background: #1A2026 !important; color: #E5E5EA !important; border: 2px solid #5856D6 !important; box-shadow: 0 0 12px rgba(88, 86, 214, 0.5) !important; opacity: 1 !important; transition: all 0.2s ease; }
+        body.dark-mode #btn-switch-timer:active { box-shadow: 0 0 20px rgba(88, 86, 214, 0.85) !important; transform: scale(0.96); }
+        body.dark-mode .timer-panel .btn-group button[onclick*="resetTimer"] { background: #1A2026 !important; color: #E5E5EA !important; border: 2px solid #8E8E93 !important; box-shadow: 0 0 10px rgba(142, 142, 147, 0.5) !important; opacity: 1 !important; transition: all 0.2s ease; }
+        body.dark-mode .timer-panel .btn-group button[onclick*="resetTimer"]:active { box-shadow: 0 0 18px rgba(229, 229, 234, 0.8) !important; transform: scale(0.92); }
         
-        body.dark-mode .btn-calendar-only:active {
-            transform: translateY(1px) !important;
-            box-shadow: 0 4px 10px rgba(38, 230, 168, 0.15) !important;
-        }
-
-        /* 儲存計時設定按鈕 - 翡翠綠霓虹風格 */
-        body.dark-mode #card-settings button[onclick*="saveTimerSettings"] {
-            background: linear-gradient(135deg, #2f97ff 0%, #0056b3 100%) !important; 
-            color: #E5E5EA !important; 
-            box-shadow: 0 6px 16px rgba(0, 122, 255, 0.3) !important;
-            border: none !important;
-            transition: all 0.2s ease !important;
-        }
-        body.dark-mode #card-settings button[onclick*="saveTimerSettings"]:active {
-            transform: translateY(1px) !important;
-            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.15) !important;
-            opacity: 0.95 !important;
-        }
-
-        /* 匯出紀錄按鈕 - 經典藍霓虹風格 */
-        body.dark-mode #card-settings button[onclick*="exportHistory"] {
-            background: linear-gradient(135deg, #2f97ff 0%, #0056b3 100%) !important;
-            color: #E5E5EA !important;
-            box-shadow: 0 6px 16px rgba(0, 122, 255, 0.3) !important;
-            border: none !important;
-            transition: all 0.2s ease !important;
-        }
-        body.dark-mode #card-settings button[onclick*="exportHistory"]:active {
-            transform: translateY(1px) !important;
-            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.15) !important;
-            opacity: 0.95 !important;
-        }
-
-        /* 匯入紀錄按鈕 - 魅惑紫霓虹風格 */
-        body.dark-mode #card-settings button[onclick*="triggerImport"] {
-            background: linear-gradient(135deg, #7c7aff 0%, #413fb3 100%) !important;
-            color: #E5E5EA !important;
-            box-shadow: 0 6px 16px rgba(88, 86, 214, 0.3) !important;
-            border: none !important;
-            transition: all 0.2s ease !important;
-        }
-        body.dark-mode #card-settings button[onclick*="triggerImport"]:active {
-            transform: translateY(1px) !important;
-            box-shadow: 0 4px 10px rgba(88, 86, 214, 0.15) !important;
-            opacity: 0.95 !important;
-        }
+        body.dark-mode .logo-container, body.dark-mode .sidebar-header { color: #ffffff !important; }
         
-        /* 1. 「➕ 新增動作」按鈕 - 內斂藍色微光 */
-        body.dark-mode .btn-add-exercise {
-            background: #1A2026 !important;
-            color: #3094FF !important;           /* 稍微調亮藍色字體 */
-            border: 1px solid #007AFF !important; /* 藍色細邊框 */
-            box-shadow: 0 0 10px rgba(0, 122, 255, 0.25) !important;
-            transition: all 0.2s ease;
-        }
-        body.dark-mode .btn-add-exercise:active {
-            box-shadow: 0 0 16px rgba(0, 122, 255, 0.5) !important;
-            transform: scale(0.97);
-        }
-
-        /* 2. 「✖️ 取消」按鈕 - 質感深灰微光 */
-        body.dark-mode .btn-bottom-cancel {
-            background: #1A2026 !important;
-            color: #E5E5EA !important; /* 亮灰白字 */
-            border: 1px solid #8E8E93 !important; /* 灰色細邊框 */
-            box-shadow: 0 0 10px rgba(142, 142, 147, 0.25) !important; /* 灰色銀光暈 */
-            transition: all 0.2s ease;
-        }
-        body.dark-mode .btn-bottom-cancel:active {
-            background: #3A3A3C !important;
-            transform: scale(0.97);
-        }
+        body.dark-mode .btn-calendar-only { background: linear-gradient(135deg, #26E6A8 0%, #1B9A70 100%) !important; color: #E5E5EA !important; box-shadow: 0 8px 20px rgba(38, 230, 168, 0.25) !important; text-shadow: none !important; }
+        body.dark-mode .btn-calendar-only:active { transform: translateY(1px) !important; box-shadow: 0 4px 10px rgba(38, 230, 168, 0.15) !important; }
+        body.dark-mode #card-settings button[onclick*="saveTimerSettings"], body.dark-mode #card-settings button[onclick*="exportHistory"] { background: linear-gradient(135deg, #2f97ff 0%, #0056b3 100%) !important; color: #E5E5EA !important; box-shadow: 0 6px 16px rgba(0, 122, 255, 0.3) !important; border: none !important; transition: all 0.2s ease !important; }
+        body.dark-mode #card-settings button[onclick*="saveTimerSettings"]:active, body.dark-mode #card-settings button[onclick*="exportHistory"]:active { transform: translateY(1px) !important; box-shadow: 0 4px 10px rgba(0, 122, 255, 0.15) !important; opacity: 0.95 !important; }
+        body.dark-mode #card-settings button[onclick*="triggerImport"] { background: linear-gradient(135deg, #7c7aff 0%, #413fb3 100%) !important; color: #E5E5EA !important; box-shadow: 0 6px 16px rgba(88, 86, 214, 0.3) !important; border: none !important; transition: all 0.2s ease !important; }
+        body.dark-mode #card-settings button[onclick*="triggerImport"]:active { transform: translateY(1px) !important; box-shadow: 0 4px 10px rgba(88, 86, 214, 0.15) !important; opacity: 0.95 !important; }
         
+        body.dark-mode .btn-add-exercise { background: #1A2026 !important; color: #3094FF !important; border: 1px solid #007AFF !important; box-shadow: 0 0 10px rgba(0, 122, 255, 0.25) !important; transition: all 0.2s ease; }
+        body.dark-mode .btn-add-exercise:active { box-shadow: 0 0 16px rgba(0, 122, 255, 0.5) !important; transform: scale(0.97); }
+        body.dark-mode .btn-bottom-cancel { background: #1A2026 !important; color: #E5E5EA !important; border: 1px solid #8E8E93 !important; box-shadow: 0 0 10px rgba(142, 142, 147, 0.25) !important; transition: all 0.2s ease; }
+        body.dark-mode .btn-bottom-cancel:active { background: #3A3A3C !important; transform: scale(0.97); }
+        body.dark-mode .btn-bottom-save { background: #1A251D !important; color: #26E6A8 !important; border: 1px solid #34C759 !important; box-shadow: 0 0 10px rgba(52, 199, 89, 0.25) !important; transition: all 0.2s ease; }
+        body.dark-mode .btn-bottom-save:active { box-shadow: 0 0 16px rgba(52, 199, 89, 0.5) !important; transform: scale(0.97); }
 
-        /* 3. 「✔️ 儲存」按鈕 - 活力翡翠綠微光 */
-        body.dark-mode .btn-bottom-save {
-            background: #1A251D !important;        /* 極深綠色底 */
-            color: #26E6A8 !important;            /* 螢光翡翠綠字 */
-            border: 1px solid #34C759 !important;  /* 綠色細邊框 */
-            box-shadow: 0 0 10px rgba(52, 199, 89, 0.25) !important;
-            transition: all 0.2s ease;
-        }
-        body.dark-mode .btn-bottom-save:active {
-            box-shadow: 0 0 16px rgba(52, 199, 89, 0.5) !important;
-            transform: scale(0.97);
-        }
-
-        /* 4. 編輯模式下正在修改的動作名稱虛線改為亮藍色，避免看錯 */
-        body.dark-mode .editing-mode .exercise-name {
-            border-bottom: 1px dashed #3094FF !important;
-        }
-        body.dark-mode .editing-mode .unit-select {
-            border-bottom: 1px dashed #3094FF !important;
-            color: #3094FF !important;
-        }
+        body.dark-mode .editing-mode .exercise-name { border-bottom: 1px dashed #3094FF !important; }
+        body.dark-mode .editing-mode .unit-select { border-bottom: 1px dashed #3094FF !important; color: #3094FF !important; }
         
-        /* 週一至週日標頭格加上深灰色背景，文字為白字 */
-        body.dark-mode .fc-theme-standard .fc-col-header-cell {
-            background-color: #8E8E93 !important;
-        }
-        body.dark-mode .fc .fc-col-header-cell-cushion {
-            color: #FFFFFF !important; /* 確保文字維持清晰的純白 */
-        }
-       
-        /* 2.10具有質感的雙模態加載螢幕樣式（自動支援白天/暗黑模式切換）*/
-        /* 【預設：高質感白天模式 (Light Mode)】 */
-        #loading-screen {
-            position: fixed;   /* 確保釘死在視窗最上層 */
-            top: 0;
-            left: 0;
-            width: 100vw;      /* 滿版寬度 */
-            height: 100vh;     /* 滿版高度 */
-            background: radial-gradient(circle at center, #f2f2f7 0%, #f2f2f7 100%);
-            z-index: 10000;    /* 確保在所有 UI（包括導覽、Modal）的最上層 */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            opacity: 1;
-            visibility: visible;
-            transition: opacity 0.5s ease-out, visibility 0.5s;
-            overflow: hidden;  /* 防止載入畫面內部元件超出範圍產生捲軸 */
-            font-family: -apple-system, system-ui, sans-serif;
-        
-            /* 💡 關鍵新增：禁止任何透過載入畫面的手動點選與滑動行為 */
-            pointer-events: auto;  /* 讓載入畫面本身接收點擊，從而阻止點擊穿透到下層按鈕 */
-            touch-action: none;    /* 阻止行動裝置上的滑動與縮放行為 */
-        }
+        /* 日曆暗黑微調 */
+        body.dark-mode .fc-theme-standard .fc-col-header-cell { background-color: #8E8E93 !important; }
+        body.dark-mode .fc .fc-col-header-cell-cushion { color: #FFFFFF !important; }
 
-        /* 白天模式的流線背景紋理（改為極淡墨色） */
-        #loading-screen::before {
-            content: "";
-            position: absolute;
-            width: 200%; height: 200%;
-            top: -50%; left: -50%;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path d="M0,500 C250,250 250,750 500,500 C750,250 750,750 1000,500" stroke="%2300000012" stroke-width="1" fill="none" /></svg>');
-            background-size: 100px 100px;
-            opacity: 0.1;
-            filter: blur(1px);
-            animation: moveTexture 30s linear infinite;
-        }
-
-        @keyframes moveTexture {
-            from { transform: translate(0, 0); }
-            to { transform: translate(-100px, -100px); }
-        }
-
-        #loading-screen #loading-content {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #loading-screen #loading-logo-container {
-            width: 110px; height: 110px;
-            display: flex; justify-content: center; align-items: center;
-            position: relative;
-        }
-
-        /* 白天模式圖標陰影：精緻的懸浮與環境光立體感 */
-        #loading-screen #loading-logo {
-            max-width: 100%; max-height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.07)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.04));
-        }
-
-        #loading-screen #loading-text-container {
-            margin-top: 35px;
-            text-align: center;
-        }
-
-        /* 白天模式優雅字體顏色 */
-        #loading-screen #prep-text {
-            font-size: 14px; color: #8e8e93; margin: 0; font-weight: normal;
-            letter-spacing: 1px;
-        }
-
-        #loading-screen #app-text {
-            font-size: 16px; color: #1c1c1e; margin: 6px 0 0 0; font-weight: bold;
-            letter-spacing: 0.5px;
-        }
-
-        /* ------------------------------------------------------------
-           【切換：高質感暗黑模式 (Dark Mode) - 當具備 .dark-theme 類別時】
-           ------------------------------------------------------------ */
-        #loading-screen.dark-theme {
-            background: radial-gradient(circle at center, #2a2a1a 0%, #1c1c1e 100%);
-        }
-
-        #loading-screen.dark-theme::before {
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path d="M0,500 C250,250 250,750 500,500 C750,250 750,750 1000,500" stroke="%23ffea0033" stroke-width="1" fill="none" /></svg>');
-        }
-
-        #loading-screen.dark-theme #loading-logo {
-            filter: drop-shadow(0 0 20px rgba(255, 234, 0, 0.25)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.4));
-        }
-
-        #loading-screen.dark-theme #prep-text {
-            color: #aeaeb2;
-        }
-
-        #loading-screen.dark-theme #app-text {
-            color: #ffffff;
-        }
-
-        #loading-screen.dark-theme #home-indicator {
-            background: #ffffff;
-            opacity: 0.7;
-        }
-        
-        /* 載入中鎖定全域捲動 */
-        body.loading-locked {
-            overflow: hidden !important;
-            height: 100vh !important;
-            touch-action: none !important;
-        }
-
+        /* 暗黑加載畫面 */
+        #loading-screen.dark-theme { background: radial-gradient(circle at center, #2a2a1a 0%, #1c1c1e 100%); }
+        #loading-screen.dark-theme::before { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path d="M0,500 C250,250 250,750 500,500 C750,250 750,750 1000,500" stroke="%23ffea0033" stroke-width="1" fill="none" /></svg>'); }
+        #loading-screen.dark-theme #loading-logo { filter: drop-shadow(0 0 20px rgba(255, 234, 0, 0.25)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.4)); }
+        #loading-screen.dark-theme #prep-text { color: #aeaeb2; }
+        #loading-screen.dark-theme #app-text { color: #ffffff; }
+        #loading-screen.dark-theme #home-indicator { background: #ffffff; opacity: 0.7; }
     </style>
 </head>
 <body>
@@ -967,12 +547,12 @@
         <div style="background:#f8f8f8; padding:20px; border-radius:15px; border:1px solid #eee;">
             <div style="margin-bottom: 20px;">
                 <label style="display:block; margin-bottom:8px; font-weight:bold; color:#666;">磅 (lbs)</label>
-                <input type="text" id="input-lbs" inputmode="decimal" pattern="[0-9]*" class="weight-input" style="width:100%; box-sizing:border-box; height:50px; font-size:1.5rem;" placeholder="輸入磅數" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value.trim()==='') { this.value='0'; convertUnit('lbs'); }" oninput="convertUnit('lbs')">
+                <input type="text" id="input-lbs" inputmode="decimal" class="weight-input" style="width:100%; box-sizing:border-box; height:50px; font-size:1.5rem;" placeholder="輸入磅數" onfocus="this.value='';" onblur="if(this.value.trim()==='') { this.value='0'; convertUnit('lbs'); }" oninput="convertUnit('lbs')">
             </div>
             <div style="text-align:center; margin: 10px 0; color:#007AFF; font-size:1.5rem; user-select:none;">⇅</div>
             <div>
                 <label style="display:block; margin-bottom:8px; font-weight:bold; color:#666;">公斤 (kg)</label>
-                <input type="text" id="input-kgs" inputmode="decimal" pattern="[0-9]*" class="weight-input" style="width:100%; box-sizing:border-box; height:50px; font-size:1.5rem;" placeholder="輸入公斤" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value.trim()==='') { this.value='0'; convertUnit('kgs'); }" oninput="convertUnit('kgs')">
+                <input type="text" id="input-kgs" inputmode="decimal" class="weight-input" style="width:100%; box-sizing:border-box; height:50px; font-size:1.5rem;" placeholder="輸入公斤" onfocus="this.value='';" onblur="if(this.value.trim()==='') { this.value='0'; convertUnit('kgs'); }" oninput="convertUnit('kgs')">
             </div>
             <p style="font-size:0.8rem; color:#999; margin-top:15px; text-align:center;">換算基準：1 lb ≈ 0.45359 kg</p>
         </div>
@@ -988,8 +568,8 @@
         <div style="display:flex; flex-direction:column; gap:15px; margin-top:10px;">
             <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
                 <h4 style="margin:0 0 10px 0; color:#333;">自定義計時器 (分鐘)</h4>
-                <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;"><span style="font-size:0.9rem; flex:1; text-align:right;">組間間隔：</span><input type="number" id="cfg-rest-min" class="weight-input" style="width:40px;" onfocus="tempTimerVal=this.value; this.value='';" onblur="if(this.value===''){this.value=tempTimerVal;}" placeholder="2"><span class="unit-text">分</span></div>
-                <div style="display:flex; gap:10px; align-items:center;"><span style="font-size:0.9rem; flex:1; text-align:right;">動作間隔：</span><input type="number" id="cfg-switch-min" class="weight-input" style="width:40px;" onfocus="tempTimerVal=this.value; this.value='';" onblur="if(this.value===''){this.value=tempTimerVal;}" placeholder="4"><span class="unit-text">分</span></div>
+                <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;"><span style="font-size:0.9rem; flex:1; text-align:right;">組間間隔：</span><input type="number" id="cfg-rest-min" class="weight-input" style="width:40px;" onfocus="this.dataset.oldVal=this.value; this.value='';" onblur="if(this.value===''){this.value=this.dataset.oldVal;}" placeholder="2"><span class="unit-text">分</span></div>
+                <div style="display:flex; gap:10px; align-items:center;"><span style="font-size:0.9rem; flex:1; text-align:right;">動作間隔：</span><input type="number" id="cfg-switch-min" class="weight-input" style="width:40px;" onfocus="this.dataset.oldVal=this.value; this.value='';" onblur="if(this.value===''){this.value=this.dataset.oldVal;}" placeholder="4"><span class="unit-text">分</span></div>
                 <button class="btn-record" style="background:var(--primary); padding:8px; margin-top:10px; font-size:14px;" onclick="saveTimerSettings()">✅ 儲存計時設定</button>
             </div>
             <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee; margin-top:15px;">
@@ -1021,9 +601,10 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/zh-tw.global.min.js"></script>
     <script>
         /* ==========================================================================
-           1. 全域變數定義與預設動作庫
+           1. 全域變數與預設資料 (Global Variables & Defaults)
            ========================================================================== */
         // 當 localStorage 內沒有使用者變更紀錄時，程式所使用的預設動作佈局資料
         const defaultExercises = {
@@ -1067,156 +648,19 @@
 
         let currentTourStep = 0; // 當前新手導覽的進度索引
         let isTourActive = false; // 是否正在進行新手導覽
-        let isNoticeOpen = false; //    追蹤提示卡片是否正開啟中
+        let isNoticeOpen = false; // 追蹤提示卡片是否正開啟中
 
-        
         // 新手功能亮點引導的文案與網頁目標 DOM 節點設定
         const tourSteps = [
-            {
-                target: '.timer-panel', 
-                title: "⏱️ 專業間隔計時器",
-                desc: "點擊【組間】或【動作】間隔，時間到會自動播放鈴聲與閃爍畫面，幫你精準掌控休息時間！"
-            },
-            {
-                target: '.tab-menu', 
-                title: "🔥 切換訓練部位",
-                desc: "在這裡快速切換不同部位的紀錄卡片，有氧與 HIIT 分類還會幫你自動計算消耗熱量喔！"
-            },
-            {
-                target: '.card.active .card-header .btn-manage-toggle', 
-                title: "✏️ 自訂你的專屬動作",
-                desc: "點擊這裡可以進入編輯模式。你可以自由更換動作名稱、修改計重單位，或是新增、刪除動作！"
-            },
-            {
-                target: '.card.active .card-note', 
-                title: "📝 紀錄訓練心得",
-                desc: "每張卡片底部都有備註欄，可以寫下今天訓練的狀態、遞減組資訊或心情。"
-            },
-            {
-                target: '.card.active .btn-record', 
-                title: "📅 儲存到訓練日曆",
-                desc: "輸入完數據後，點擊這裡就會將今日成果永久儲存。你可以隨時到側邊欄的「訓練日曆」查看歷史紀錄！"
-            }
+            { target: '.timer-panel', title: "⏱️ 專業間隔計時器", desc: "點擊【組間】或【動作】間隔，時間到會自動播放鈴聲與閃爍畫面，幫你精準掌控休息時間！" },
+            { target: '.tab-menu', title: "🔥 切換訓練部位", desc: "在這裡快速切換不同部位的紀錄卡片，有氧與 HIIT 分類還會幫你自動計算消耗熱量喔！" },
+            { target: '.card.active .card-header .btn-manage-toggle', title: "✏️ 自訂你的專屬動作", desc: "點擊這裡可以進入編輯模式。你可以自由更換動作名稱、修改計重單位，或是新增、刪除動作！" },
+            { target: '.card.active .card-note', title: "📝 紀錄訓練心得", desc: "每張卡片底部都有備註欄，可以寫下今天訓練的狀態、遞減組資訊或心情。" },
+            { target: '.card.active .btn-record', title: "📅 儲存到訓練日曆", desc: "輸入完數據後，點擊這裡就會將今日成果永久儲存。你可以隨時到側邊欄的「訓練日曆」查看歷史紀錄！" }
         ];
 
         /* ==========================================================================
-           2. 新手引導功能 (Tour)
-           ========================================================================== */
-        // 判談使用者是否為首次開啟系統
-        function checkFirstTimeUser() {
-            if (!localStorage.getItem('has_seen_tour_v2')) {
-                setTimeout(startTour, 1000); // 延遲 1 秒後自動啟動引導教學
-            }
-        }
-
-        // 導覽進行中阻止使用者用手指在螢幕上亂滾動
-        function preventTourScroll(e) {
-            if (document.body.classList.contains('tour-locked')) {
-                e.preventDefault();
-            }
-        }
-
-        // 啟動新手導覽教學
-        function startTour() {
-            currentTourStep = 0;
-            isTourActive = true;
-            document.body.classList.add('tour-locked'); // 鎖定網頁滾動
-            document.addEventListener('touchmove', preventTourScroll, { passive: false });
-            document.getElementById('tour-mask').style.display = 'block';
-            document.getElementById('tour-dialog').style.display = 'flex';
-            highlightStep();
-        }
-
-        // 關閉新手導覽教學
-        function closeTour() {
-            isTourActive = false;
-            document.getElementById('tour-dialog').style.display = 'none';
-            
-            const mask = document.getElementById('tour-mask');
-            mask.style.display = 'none'; // 直接隱藏遮罩，釋放全網頁的點擊權限
-            mask.classList.add('transparent-mask'); 
-            
-            // 解鎖網頁滾動與點擊
-            document.body.classList.remove('tour-locked');
-            document.removeEventListener('touchmove', preventTourScroll);
-            
-            localStorage.setItem('has_seen_tour_v2', 'true'); // 在瀏覽器標記已看過教學
-            showNotice("🎉 導覽結束！", "開始記錄今天的訓練吧！", false);
-            document.getElementById('delete-modal').style.zIndex = "99999";
-        }
-
-        // 計算聚光燈裁剪位置，並讓畫面平滑滾動到目標物件
-        function highlightStep() {
-            if (!isTourActive) return;
-            const step = tourSteps[currentTourStep];
-            const mask = document.getElementById('tour-mask');
-            const dialog = document.getElementById('tour-dialog');
-            let element = document.querySelector(step.target);
-            
-            // 例外處理：若是備註欄，則聚光燈照向其父節點
-            if (step.target === '.card.active .card-note' && element) {
-                element = element.parentElement;
-            }
-            if (!element) {
-                element = document.querySelector('.card.active');
-            }
-
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' }); // 網頁畫面平滑滾動至亮點區塊
-                setTimeout(() => {
-                    const rect = element.getBoundingClientRect();
-                    const padding = 8; // 預留亮點邊框間距
-                    const top = rect.top - padding;
-                    const left = rect.left - padding;
-                    const bottom = rect.bottom + padding;
-                    const right = rect.right + padding;
-
-                    // 利用 CSS clip-path 的多邊形公式，鏤空目標元素，做出聚焦聚光燈特效
-                    mask.style.clipPath = `polygon(
-                        0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%,
-                        ${left}px ${top}px, 
-                        ${right}px ${top}px, 
-                        ${right}px ${bottom}px, 
-                        ${left}px ${bottom}px, 
-                        ${left}px ${top}px
-                    )`;
-
-                    // 置換對話盒文案
-                    document.getElementById('tour-step-idx').innerText = `${currentTourStep + 1} / ${tourSteps.length}`;
-                    document.getElementById('tour-title').innerText = step.title;
-                    document.getElementById('tour-body').innerText = step.desc;
-
-                    // 動態計算對話盒的最佳顯示位置，防止超出螢幕邊界
-                    let dialogTop = bottom + 12;
-                    if (dialogTop + 240 > window.innerHeight) {
-                        dialogTop = top - 240; 
-                    }
-                    if (dialogTop < 10) dialogTop = 10; 
-                    let dialogLeft = (window.innerWidth / 2) - 140; 
-                    
-                    dialog.style.top = `${dialogTop}px`;
-                    dialog.style.left = `${dialogLeft}px`;
-                }, 400); 
-            }
-        }
-
-        // 前往引導教學的下一個步驟
-        function nextTourStep() {
-            if (currentTourStep < tourSteps.length - 1) {
-                currentTourStep++;
-                highlightStep();
-            } else {
-                closeTour();
-            }
-        }
-
-        // 監聽螢幕寬度改變，即時修正聚光燈座標
-        window.addEventListener('resize', () => {
-            if (isTourActive) highlightStep();
-        });
-
-        /* ==========================================================================
-           3. 系統初始化與事件綁定 (window.onload)
+           2. 系統初始化與生命週期 (Initialization & Lifecycle)
            ========================================================================== */
         window.onload = function() {
             // 初始化所有卡片的日期選擇器為「今天」
@@ -1226,14 +670,12 @@
                 
             // 初始化並載入各模組元件與設定
             renderAllExerciseLists(); // 渲染所有部位的動作清單
-            initCalendar();            // 載入日曆套件
+            initCalendar();           // 載入日曆套件
             loadAllWeights();         // 從暫存區(localStorage)載入各動作上次輸入的值
             initAutoJump();           // 有氧卡片的時間欄位自動跳格功能
             initSoundSetting();       // 載入聲音提醒開關狀態
             initFlashSetting();       // 載入畫面閃爍提醒開關狀態
             initDarkThemeSetting();   // 載入原有的暗黑狀態
-            autoCheckSunsetMode();   // 自動根據日落檢查
-            checkFirstTimeUser();     // 檢查新手上路
             
             // 綁定「HIIT 卡片」數值的連動監聽（體重連動有氧卡片、即時算卡路里）
             var hiitIds = ['hiit_weight', 'hiit_weight_min', 'hiit_weight_sec'];
@@ -1276,11 +718,197 @@
 
             updateCardioStats(); 
             initTimerSettings();
-            setTimeout(hideLoadingScreen, 2500); 
+            setTimeout(hideLoadingScreen, 2500); // 載入完成後關閉雙模態加載螢幕
         };
 
+        // 關閉載入畫面並解除頁面鎖定
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.style.opacity = '0';
+                loadingScreen.style.visibility = 'hidden';
+                // 載入完成後，解除 body 的鎖定，恢復正常點選與滑動捲動，並檢查是否為第一次開啟程式
+                document.body.classList.remove('loading-locked');
+                setTimeout(checkFirstTimeUser, 300);
+            }
+        }
+
         /* ==========================================================================
-           4. 重量訓練卡片動作清單動態生成與管理邏輯
+           3. UI 介面與導航互動 (UI & Navigation)
+           ========================================================================== */
+        // 切換側邊欄抽屜選單展開或縮回
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('overlay');
+            if (sidebar.classList.contains('active')) { sidebar.classList.remove('active'); overlay.classList.remove('active'); } 
+            else { sidebar.classList.add('active'); overlay.classList.add('active'); }
+        }
+
+        // 處理由側邊欄選單點擊後的主面板頁面流轉切換
+        function handleMenuClick(action) {
+            toggleSidebar(); 
+            const timerPanel = document.querySelector('.timer-panel'); 
+            const tabMenu = document.querySelector('.tab-menu');
+            const mainTitle = document.getElementById('main-title');
+            const timerTitle = document.getElementById('timer-title');
+
+            document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+
+            if (action === 'add') { // 回到主畫面紀錄模式
+                timerPanel.style.display = 'block'; tabMenu.style.display = 'flex';
+                if(mainTitle) mainTitle.style.display = 'block';
+                if(timerTitle) timerTitle.style.display = 'block';
+                switchTab(0); 
+            } else { // 前往工具或獨立設定大頁面
+                timerPanel.style.display = 'none'; tabMenu.style.display = 'none';
+                if(mainTitle) mainTitle.style.display = 'none';
+                if(timerTitle) timerTitle.style.display = 'none';
+
+                if (action === 'converter') { document.getElementById('card-converter').classList.add('active'); } 
+                else if (action === 'calendar') { document.getElementById('card-calendar').classList.add('active'); setTimeout(() => { calendar.render(); }, 100); } 
+                else if (action === 'settings') { document.getElementById('card-settings').classList.add('active'); }
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // 自動回到最頂端
+        }
+
+        // 點選訓練部位分頁 (Tab) 切換特定紀錄卡片展示
+        function switchTab(index) {
+            cancelAllEditing(); // 離開原卡片前自動中斷並還原未儲存的動作自訂編輯
+            document.querySelector('.timer-panel').style.display = 'block'; document.querySelector('.tab-menu').style.display = 'flex'; document.getElementById('main-title').style.display = 'block';
+            document.getElementById('timer-title').style.display = 'block';
+            document.querySelectorAll('.card').forEach(function(card) { card.classList.remove('active'); });
+            
+            const targetCards = document.querySelectorAll('.card'); 
+            if(targetCards[index]) targetCards[index].classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(function(btn, i) { btn.classList.toggle('active', i === index); });
+        }
+
+        /* ==========================================================================
+           4. 共用提示與彈出視窗 (Modals & Notices)
+           ========================================================================== */
+        // 開啟共用 Modal 對話視窗並設定內容樣態與刪除按鈕顯隱狀態
+        function showNotice(title, content, showDelete) {
+            isNoticeOpen = true; // 狀態設定為 true 攔截右滑手勢
+            document.getElementById('modal-title').innerText = title;
+            var detailsEl = document.getElementById('modal-details');
+            if (content && content.trim() !== "") { detailsEl.innerText = content; detailsEl.style.display = 'block'; } 
+            else { detailsEl.style.display = 'none'; }
+            document.getElementById('confirm-delete').style.display = showDelete ? 'block' : 'none';
+            document.getElementById('modal-close-btn').innerText = showDelete ? '關閉' : '確定';
+            document.getElementById('delete-modal').style.display = 'flex';
+        }
+
+        // 關閉提示視窗，並確保強制停止正在大響的計時鬧鈴與閃動圖層
+        function closeModal() {
+            isNoticeOpen = false; // 卡片關閉時，將狀態設定回 false
+            var alarm = document.getElementById('alarm-sound');
+            if (alarm) { alarm.pause(); alarm.currentTime = 0; }
+            document.getElementById('flash-screen').classList.remove('flash-active');
+            document.getElementById('delete-modal').style.display = 'none';
+            currentEventInfo = null;
+            document.body.style.overflow = '';
+            document.body.style.height = '';
+            document.body.style.touchAction = '';
+        }
+
+        /* ==========================================================================
+           5. 新手導覽功能 (Tour Guide)
+           ========================================================================== */
+        // 判斷使用者是否為首次開啟系統
+        function checkFirstTimeUser() {
+            if (!localStorage.getItem('has_seen_tour_v2')) {
+                startTour();
+            }
+        }
+
+        // 導覽進行中阻止使用者用手指在螢幕上亂滾動
+        function preventTourScroll(e) {
+            if (document.body.classList.contains('tour-locked')) { e.preventDefault(); }
+        }
+
+        // 啟動新手導覽教學
+        function startTour() {
+            currentTourStep = 0;
+            isTourActive = true;
+            document.body.classList.add('tour-locked'); // 鎖定網頁滾動
+            document.addEventListener('touchmove', preventTourScroll, { passive: false });
+            document.getElementById('tour-mask').style.display = 'block';
+            document.getElementById('tour-dialog').style.display = 'flex';
+            highlightStep();
+        }
+
+        // 關閉新手導覽教學
+        function closeTour() {
+            isTourActive = false;
+            document.getElementById('tour-dialog').style.display = 'none';
+            
+            const mask = document.getElementById('tour-mask');
+            mask.style.display = 'none'; // 解鎖網頁點擊限制
+            
+            // 解鎖網頁滾動與點擊
+            document.body.classList.remove('tour-locked');
+            document.removeEventListener('touchmove', preventTourScroll);
+            
+            localStorage.setItem('has_seen_tour_v2', 'true'); // 在瀏覽器標記已看過教學
+            showNotice("🎉 導覽結束！", "開始記錄今天的訓練吧！", false);
+            document.getElementById('delete-modal').style.zIndex = "99999";
+        }
+
+        // 計算聚光燈裁剪位置，並讓畫面平滑滾動到目標物件
+        function highlightStep() {
+            if (!isTourActive) return;
+            const step = tourSteps[currentTourStep];
+            const mask = document.getElementById('tour-mask');
+            const dialog = document.getElementById('tour-dialog');
+            let element = document.querySelector(step.target);
+            
+            // 例外處理：若是備註欄，則聚光燈照向其父節點
+            if (step.target === '.card.active .card-note' && element) { element = element.parentElement; }
+            if (!element) { element = document.querySelector('.card.active'); }
+
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' }); // 網頁畫面平滑滾動至亮點區塊
+                setTimeout(() => {
+                    const rect = element.getBoundingClientRect();
+                    const padding = 8; // 預留亮點邊框間距
+                    const top = rect.top - padding; const left = rect.left - padding;
+                    const bottom = rect.bottom + padding; const right = rect.right + padding;
+
+                    // 利用 CSS clip-path 的多邊形公式，鏤空目標元素，做出聚焦聚光燈特效
+                    mask.style.clipPath = `polygon(
+                        0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%,
+                        ${left}px ${top}px, ${right}px ${top}px, 
+                        ${right}px ${bottom}px, ${left}px ${bottom}px, 
+                        ${left}px ${top}px
+                    )`;
+
+                    // 置換對話盒文案
+                    document.getElementById('tour-step-idx').innerText = `${currentTourStep + 1} / ${tourSteps.length}`;
+                    document.getElementById('tour-title').innerText = step.title;
+                    document.getElementById('tour-body').innerText = step.desc;
+
+                    // 動態計算對話盒的最佳顯示位置，防止超出螢幕邊界
+                    let dialogTop = bottom + 12;
+                    if (dialogTop + 240 > window.innerHeight) { dialogTop = top - 240; }
+                    if (dialogTop < 10) dialogTop = 10; 
+                    let dialogLeft = (window.innerWidth / 2) - 140; 
+                    
+                    dialog.style.top = `${dialogTop}px`;
+                    dialog.style.left = `${dialogLeft}px`;
+                }, 400); 
+            }
+        }
+
+        // 前往引導教學的下一個步驟
+        function nextTourStep() {
+            if (currentTourStep < tourSteps.length - 1) { currentTourStep++; highlightStep(); } 
+            else { closeTour(); }
+        }
+
+        // 監聽螢幕寬度改變，即時修正聚光燈座標
+        window.addEventListener('resize', () => { if (isTourActive) highlightStep(); });
+
+        /* ==========================================================================
+           6. 重量訓練卡片管理 (Strength Training Management)
            ========================================================================== */
         // 將儲存在瀏覽器的客製化動作佈局取出，並逐項繪製到對應的卡片中
         function renderAllExerciseLists() {
@@ -1313,48 +941,23 @@
             div.innerHTML = `
                 <span class="exercise-name" data-placeholder="自訂新動作" oninput="checkEmptyName(this)">${name}</span>
                 <div class="input-group">
-                <input type="number" 
-                       step="any" 
-                       inputmode="decimal" 
-                       class="weight-input" 
-                       data-id="${id}" 
-                       placeholder="0" 
-                       value="0"
-                       onfocus="this.dataset.oldVal = this.value; if(this.value === '0') this.value = '';" 
+                <input type="number" step="any" inputmode="decimal" class="weight-input" data-id="${id}" placeholder="0" value="0"
+                       onfocus="this.dataset.oldVal = this.value; this.value = '';" 
                        onblur="if(this.value.trim() === '') { this.value = this.dataset.oldVal; } else { saveCurrentWeight(this); }"
                        oninput="saveCurrentWeight(this)">
-
                     <select class="unit-select" disabled style="border:none; background:transparent; font-size:0.9rem; color:#666; font-weight:bold; width:45px; -webkit-appearance:none; appearance:none; text-align:center; cursor:pointer;">
                         ${optionsHTML}
                     </select>
                     <button class="btn-delete-exercise" onclick="deleteExerciseItem(this)">×</button>
                 </div>
             `;
-            
-            // 處理數值輸入欄位的焦點事件（聚焦時清空方便使用者重新打字，失焦補零或還原）
-            const input = div.querySelector('.weight-input');
-            input.addEventListener('focus', function() { 
-                tempValue = this.value; 
-                this.value = ""; 
-            });
-            input.addEventListener('blur', function() { 
-                if (this.value === "" || isNaN(this.value)) { 
-                    this.value = "0"; 
-                    saveCurrentWeight(this);
-                } else { 
-                    this.value = parseFloat(this.value).toString(); 
-                    saveCurrentWeight(this); 
-                } 
-            });
             return div;
         }
 
         // 防止 contenteditable 在被使用者刪光文字時留下遺留節點（如 <br>），維持 placeholder 正常運作
         function checkEmptyName(element) {
             const text = element.innerText.trim();
-            if (text === "" || element.innerHTML === "<br>") {
-                element.innerHTML = "";
-            }
+            if (text === "" || element.innerHTML === "<br>") { element.innerHTML = ""; }
         }
 
         // 儲存目前卡片內所有動作的排列順序與單位，寫入 localStorage 快取
@@ -1398,9 +1001,7 @@
         }
 
         // 刪除按鈕 (紅叉叉) 觸發：移除該筆動作節點
-        function deleteExerciseItem(btn) {
-            btn.closest('.exercise-item').remove();
-        }
+        function deleteExerciseItem(btn) { btn.closest('.exercise-item').remove(); }
 
         // 切換進入/離開動作的自定義編輯模式 (管理模式切換)
         function toggleManageMode(btnElement) {
@@ -1424,8 +1025,33 @@
             }
         }
 
+        // 取消目前正處於動作編輯狀態之卡片，捨棄更動，並恢復成原始排版配置
+        function cancelAllEditing() {
+            const editingCards = document.querySelectorAll('.card.editing-mode');
+            if (editingCards.length === 0) return;
+            const savedExercises = JSON.parse(localStorage.getItem('custom_exercises')) || defaultExercises;
+        
+            editingCards.forEach(card => {
+                card.classList.remove('editing-mode');
+                const type = card.dataset.type;
+                const originalList = savedExercises[type];
+                if (!originalList) return;
+                const container = card.querySelector('.exercise-list');
+                if (container) {
+                    container.innerHTML = ''; 
+                    originalList.forEach(ex => {
+                        const item = createExerciseItemHTML(ex.name, ex.id, ex.unit);
+                        container.appendChild(item);
+                    });
+                }
+                card.querySelectorAll('.weight-input').forEach(input => { input.disabled = false; });
+                card.querySelectorAll('.unit-select').forEach(select => { select.disabled = true; });
+            });
+            loadAllWeights();
+        }
+
         /* ==========================================================================
-           5. 有氧與 HIIT 即時數據運算邏輯 (ACSM 生理學公式)
+           7. 有氧與 HIIT 運算邏輯 (Cardio & HIIT Calculations)
            ========================================================================== */
         // 計算 HIIT 訓練預估消耗熱量 (以 METs 10.0 固定值估算)
         function updateHiitStats() {
@@ -1461,9 +1087,10 @@
 
             // 配速計算邏輯
             if (dist > 0 && totalSeconds > 0) {
-                var paceTotalSecPerKm = totalSeconds / dist;
+                 var paceTotalSecPerKm = Math.round(totalSeconds / dist);
                 var pMin = Math.floor(paceTotalSecPerKm / 60); 
-                var pSec = Math.round(paceTotalSecPerKm % 60);
+                var pSec = paceTotalSecPerKm % 60;
+
                 paceDisplay.innerText = pMin + "'" + (pSec < 10 ? "0" + pSec : pSec) + '"';
                 speedKph = dist / totalHours;
             } else { 
@@ -1497,7 +1124,71 @@
         }
 
         /* ==========================================================================
-           6. 組間/動作間隔計時器核心驅動
+           8. 數據暫存與回填 (Data Caching & Loading)
+           ========================================================================== */
+        // 當欄位輸入數字時，立即儲存當前數值，防止網頁閃退或意外重整導致正在填寫的資料流失
+        function saveCurrentWeight(input) {
+            var id = input.dataset.id; var val = input.value === "" ? "0" : input.value;
+            var currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
+            currentWeights[id] = val; localStorage.setItem('current_weights', JSON.stringify(currentWeights)); updateCardioStats();
+        }
+
+        // 網頁開載時，自動回填使用者上次離開前在各個欄位所填入的重量數值
+        function loadAllWeights() {
+            var currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
+            document.querySelectorAll('.weight-input').forEach(function(input) {
+                var id = input.dataset.id;
+                if (!id) { input.value = ""; }
+                else if (id.includes('_min') || id.includes('_sec') || id.includes('_hr') || id === 'leg_1' || id === 'leg_incline') {
+                    input.value = "0";
+                    currentWeights[id] = "0";
+                } else {
+                    input.value = (currentWeights[id] !== undefined && currentWeights[id] !== "") ? currentWeights[id] : "0";
+                }
+                
+                // 防重複綁定機制，並改用專屬 dataset 暫存
+                if (!input.dataset.listenerBound && !input.hasAttribute('onfocus')) {
+                    input.addEventListener('focus', function() {
+                        this.dataset.oldVal = this.value; // 獨立暫存舊數值
+                        this.value = ""; // 點擊時清空方便使用者輸入
+                    });
+                    input.addEventListener('blur', function() {
+                        if (this.value === "" || isNaN(this.value)) {
+                            this.value = this.dataset.oldVal || "0"; // 若未輸入則還原
+                            if (this.dataset.id) saveCurrentWeight(this); // 確保還原後存檔
+                        } else {
+                            if (this.dataset.id) {
+                                this.value = parseFloat(this.value).toString();
+                                saveCurrentWeight(this);
+                            } else {
+                                this.value = parseFloat(this.value).toString();
+                            }
+                        }
+                    });
+                    input.dataset.listenerBound = "true"; // 打上防護標記，防止匯入時重複綁定
+                }
+            });
+            
+            // 雙向交叉連動：有氧卡片的體重與 HIIT 卡片的體重互相即時同步
+            var cWeight = document.querySelector('[data-id="body_weight"]');
+            var hWeight = document.querySelector('[data-id="hiit_weight"]');
+            if (cWeight && hWeight) {
+                if (cWeight.value !== "0" && (hWeight.value === "0" || hWeight.value === "")) {
+                    hWeight.value = cWeight.value; currentWeights['hiit_weight'] = cWeight.value;
+                } else if (hWeight.value !== "0" && (cWeight.value === "0" || cWeight.value === "")) {
+                    cWeight.value = hWeight.value; currentWeights['body_weight'] = hWeight.value;
+                }
+            }
+            localStorage.setItem('current_weights', JSON.stringify(currentWeights));
+            updateCardioStats();
+            updateHiitStats();
+        }
+
+        // 當使用者修改任何一張卡片的日期時，自動同步所有卡片的日期輸入框
+        function syncDate(sourceInput) { var newDate = sourceInput.value; document.querySelectorAll('.date-input').forEach(function(input) { input.value = newDate; }); }
+
+        /* ==========================================================================
+           9. 計時器系統 (Timer System)
            ========================================================================== */
         // 分別讀取系統設定中設定的組間與動作間隔分鐘數，並轉換為秒數啟動倒數
         function startRestTimer() { handleRestClick((parseFloat(localStorage.getItem('cfg_rest_min')) || 2) * 60); }
@@ -1545,7 +1236,7 @@
         }
 
         /* ==========================================================================
-           7. 訓練日曆整合與資料庫歷史紀錄管理 (CRUD / LocalStorage)
+           10. 日曆與歷史紀錄管理 (Calendar & History)
            ========================================================================== */
         // 初始化 FullCalendar 實例與參數
         function initCalendar() {
@@ -1634,145 +1325,8 @@
             }
         };
 
-        // 當使用者修改任何一張卡片的日期時，自動同步所有卡片的日期輸入框
-        function syncDate(sourceInput) { var newDate = sourceInput.value; document.querySelectorAll('.date-input').forEach(function(input) { input.value = newDate; }); }
-        
-        // 當欄位輸入數字時，立即儲存當前數值，防止網頁閃退或意外重整導致正在填寫的資料流失
-        function saveCurrentWeight(input) {
-            var id = input.dataset.id; var val = input.value === "" ? "0" : input.value;
-            var currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
-            currentWeights[id] = val; localStorage.setItem('current_weights', JSON.stringify(currentWeights)); updateCardioStats();
-        }
-
-        // 網頁開載時，自動回填使用者上次離開前在各個欄位所填入的重量數值
-        function loadAllWeights() {
-            var currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
-            document.querySelectorAll('.weight-input').forEach(function(input) {
-                var id = input.dataset.id;
-                if (!id) { input.value = ""; }
-                else if (id.includes('_min') || id.includes('_sec') || id.includes('_hr') || id === 'leg_1' || id === 'leg_incline') {
-                    input.value = "0";
-                    currentWeights[id] = "0";
-                } else {
-                    input.value = (currentWeights[id] !== undefined && currentWeights[id] !== "") ? currentWeights[id] : "0";
-                }
-                
-                // 🌟 修正核心：加入防重複綁定機制，並改用專屬 dataset 暫存
-                if (!input.dataset.listenerBound && !input.hasAttribute('onfocus')) {
-                    input.addEventListener('focus', function() {
-                        this.dataset.oldVal = this.value; // 獨立暫存舊數值，取代全域 tempValue
-                        this.value = ""; // 點擊時清空方便使用者輸入
-                    });
-                    input.addEventListener('blur', function() {
-                        if (this.value === "" || isNaN(this.value)) {
-                            this.value = this.dataset.oldVal || "0"; // 若未輸入則還原
-                            if (this.dataset.id) saveCurrentWeight(this); // 確保還原後存檔
-                        } else {
-                            if (this.dataset.id) {
-                                this.value = parseFloat(this.value).toString();
-                                saveCurrentWeight(this);
-                            } else {
-                                this.value = parseFloat(this.value).toString();
-                            }
-                        }
-                    });
-                    input.dataset.listenerBound = "true"; // 打上防護標記，防止匯入時重複綁定
-                }
-            });
-            
-            // 雙向交叉連動：有氧卡片的體重與 HIIT 卡片的體重互相即時同步
-            var cWeight = document.querySelector('[data-id="body_weight"]');
-            var hWeight = document.querySelector('[data-id="hiit_weight"]');
-            if (cWeight && hWeight) {
-                if (cWeight.value !== "0" && (hWeight.value === "0" || hWeight.value === "")) {
-                    hWeight.value = cWeight.value;
-                    currentWeights['hiit_weight'] = cWeight.value;
-                } else if (hWeight.value !== "0" && (cWeight.value === "0" || cWeight.value === "")) {
-                    cWeight.value = hWeight.value;
-                    currentWeights['body_weight'] = hWeight.value;
-                }
-            }
-            localStorage.setItem('current_weights', JSON.stringify(currentWeights));
-            updateCardioStats();
-            updateHiitStats();
-        }
-
         /* ==========================================================================
-           8. 使用者介面互動操控與分頁切換控制 (UI / UX 邏輯)
-           ========================================================================== */
-        // 切換側邊欄抽屜選單展開或縮回
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('overlay');
-            if (sidebar.classList.contains('active')) { sidebar.classList.remove('active'); overlay.classList.remove('active'); } 
-            else { sidebar.classList.add('active'); overlay.classList.add('active'); }
-        }
-
-        // 處理由側邊欄選單點擊後的主面板頁面流轉切換
-        function handleMenuClick(action) {
-            toggleSidebar(); 
-            const timerPanel = document.querySelector('.timer-panel'); 
-            const tabMenu = document.querySelector('.tab-menu');
-            const mainTitle = document.getElementById('main-title');
-            const timerTitle = document.getElementById('timer-title');
-
-            document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
-
-            if (action === 'add') { // 回到主畫面紀錄模式
-                timerPanel.style.display = 'block'; tabMenu.style.display = 'flex';
-                if(mainTitle) mainTitle.style.display = 'block';
-                if(timerTitle) timerTitle.style.display = 'block';
-                switchTab(0); 
-            } else { // 前往工具或獨立設定大頁面
-                timerPanel.style.display = 'none'; tabMenu.style.display = 'none';
-                if(mainTitle) mainTitle.style.display = 'none';
-                if(timerTitle) timerTitle.style.display = 'none';
-
-                if (action === 'converter') { document.getElementById('card-converter').classList.add('active'); } 
-                else if (action === 'calendar') { document.getElementById('card-calendar').classList.add('active'); setTimeout(() => { calendar.render(); }, 100); } 
-                else if (action === 'settings') { document.getElementById('card-settings').classList.add('active'); }
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // 自動回到最頂端
-        }
-
-        // 點選訓練部位分頁 (Tab) 切換特定紀錄卡片展示
-        function switchTab(index) {
-            cancelAllEditing(); // 離開原卡片前自動中斷並還原未儲存的動作自訂編輯
-            document.querySelector('.timer-panel').style.display = 'block'; document.querySelector('.tab-menu').style.display = 'flex'; document.getElementById('main-title').style.display = 'block';
-            document.getElementById('timer-title').style.display = 'block';
-            document.querySelectorAll('.card').forEach(function(card) { card.classList.remove('active'); });
-            
-            const targetCards = document.querySelectorAll('.card'); 
-            if(targetCards[index]) targetCards[index].classList.add('active');
-            document.querySelectorAll('.tab-btn').forEach(function(btn, i) { btn.classList.toggle('active', i === index); });
-        }
-        
-        // 取消目前正處於動作編輯狀態之卡片，捨棄更動，並恢復成原始排版配置
-        function cancelAllEditing() {
-            const editingCards = document.querySelectorAll('.card.editing-mode');
-            if (editingCards.length === 0) return;
-            const savedExercises = JSON.parse(localStorage.getItem('custom_exercises')) || defaultExercises;
-        
-            editingCards.forEach(card => {
-                card.classList.remove('editing-mode');
-                const type = card.dataset.type;
-                const originalList = savedExercises[type];
-                if (!originalList) return;
-                const container = card.querySelector('.exercise-list');
-                if (container) {
-                    container.innerHTML = ''; 
-                    originalList.forEach(ex => {
-                        const item = createExerciseItemHTML(ex.name, ex.id, ex.unit);
-                        container.appendChild(item);
-                    });
-                }
-                card.querySelectorAll('.weight-input').forEach(input => { input.disabled = false; });
-                card.querySelectorAll('.unit-select').forEach(select => { select.disabled = true; });
-            });
-            loadAllWeights();
-        }
-
-        /* ==========================================================================
-           9. 系統參數配置設定與雲端 JSON 資料匯入匯出
+           11. 系統設定與資料匯入匯出 (Settings, Export/Import)
            ========================================================================== */
         // 初始化載入計時器的使用者預設分鏡設定
         function initTimerSettings() {
@@ -1789,6 +1343,7 @@
         function saveTimerSettings() {
             var restValue = document.getElementById('cfg-rest-min').value || "2"; var swValue = document.getElementById('cfg-switch-min').value || "4";
             localStorage.setItem('cfg_rest_min', restValue); localStorage.setItem('cfg_switch_min', swValue); initTimerSettings();
+            showNotice("設定已儲存", "計時器設定已成功更新！", false); 
         }
 
         // 初始化與儲存聲音設定
@@ -1805,107 +1360,8 @@
         }
         function saveFlashSetting() { localStorage.setItem('cfg_flash_enable', document.getElementById('cfg-flash-enable').checked ? "true" : "false"); }
 
-        /* ==========================================================================
-           9.1 新增：暗黑風格主題切換核心邏輯
-           ========================================================================== */
-        function initDarkThemeSetting() {
-            const isDark = localStorage.getItem('cfg_dark_enable') === 'true';
-            const isAuto = localStorage.getItem('cfg_dark_auto') === 'true';
-            
-            const darkCheckbox = document.getElementById('cfg-dark-enable');
-            const autoCheckbox = document.getElementById('cfg-dark-auto');
-            
-            // 還原自動切換開關狀態
-            if (autoCheckbox) autoCheckbox.checked = isAuto;
-            
-            if (isAuto) {
-                // 如果開啟了自動切換，手動開關改為禁用狀態，並執行自動時間檢查
-                if (darkCheckbox) darkCheckbox.disabled = true;
-                checkAutoDarkTheme();
-            } else {
-                // 如果沒開啟自動切換，走原本的手動設定
-                if (darkCheckbox) {
-                    darkCheckbox.checked = isDark;
-                    darkCheckbox.disabled = false;
-                }
-                if (isDark) {
-                    document.body.classList.add('dark-mode');
-                } else {
-                    document.body.classList.remove('dark-mode');
-                }
-            }
-        }
-        
-        function toggleDarkTheme() {
-            const darkCheckbox = document.getElementById('cfg-dark-enable');
-            if (!darkCheckbox || darkCheckbox.disabled) return; // 如果被禁用就不執行
-        
-            const isChecked = darkCheckbox.checked;
-            if (isChecked) {
-                document.body.classList.add('dark-mode');
-            } else {
-                document.body.classList.remove('dark-mode');
-            }
-            localStorage.setItem('cfg_dark_enable', isChecked);
-            
-            // 重新渲染日曆
-            if (typeof calendar !== 'undefined' && calendar) {
-                setTimeout(() => { calendar.render(); }, 150);
-            }
-        }
-        
-        /* 自動切換日夜間模式邏輯（採用免權限、流暢的固定時間制 18:00~06:00） */
-        function toggleAutoDarkTheme() {
-            const autoCheckbox = document.getElementById('cfg-dark-auto');
-            const darkCheckbox = document.getElementById('cfg-dark-enable');
-            if (!autoCheckbox) return;
-        
-            const isAutoChecked = autoCheckbox.checked;
-            localStorage.setItem('cfg_dark_auto', isAutoChecked);
-        
-            if (isAutoChecked) {
-                // 啟用自動：禁用手動開關，並立即執行時間判定
-                if (darkCheckbox) darkCheckbox.disabled = true;
-                checkAutoDarkTheme();
-            } else {
-                // 關閉自動：恢復手動開關，並還原手動開關原本紀錄的狀態
-                if (darkCheckbox) {
-                    darkCheckbox.disabled = false;
-                    const lastDarkState = localStorage.getItem('cfg_dark_enable') === 'true';
-                    darkCheckbox.checked = lastDarkState;
-                    
-                    if (lastDarkState) {
-                        document.body.classList.add('dark-mode');
-                    } else {
-                        document.body.classList.remove('dark-mode');
-                    }
-                }
-            }
-        
-            if (typeof calendar !== 'undefined' && calendar) {
-                setTimeout(() => { calendar.render(); }, 150);
-            }
-        }
-        
-        // 核心時間判斷：檢查目前時間是否處於夜間（18:00 到隔天 06:00）
-        function checkAutoDarkTheme() {
-            const now = new Date();
-            const currentHour = now.getHours();
-            const darkCheckbox = document.getElementById('cfg-dark-enable');
-        
-            // 判斷是否為晚上 6 點到早上 6 點之間
-            if (currentHour >= 18 || currentHour < 6) {
-                document.body.classList.add('dark-mode');
-                if (darkCheckbox) darkCheckbox.checked = true;
-            } else {
-                document.body.classList.remove('dark-mode');
-                if (darkCheckbox) darkCheckbox.checked = false;
-            }
-        }
-        
         // 資料庫匯出：將所有訓練紀錄、自訂動作與暫存重量完整打包匯出
         function exportHistory() {
-            // 打包所有需要備份的 LocalStorage 資料
             var backupData = {
                 gym_history: JSON.parse(localStorage.getItem('gym_history') || "[]"),
                 custom_exercises: JSON.parse(localStorage.getItem('custom_exercises') || "null"),
@@ -1918,20 +1374,13 @@
             };
             
             // 檢查是否真的完全沒有任何資料
-            if (backupData.gym_history.length === 0 && !backupData.custom_exercises) {
-                showNotice("沒有資料", "目前沒有任何訓練紀錄或自訂動作可以匯出", false);
-                return;
-            }
+            if (backupData.gym_history.length === 0 && !backupData.custom_exercises) { showNotice("沒有資料", "目前沒有任何訓練紀錄或自訂動作可以匯出", false); return; }
             
             var blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json;charset=utf-8;" });
             var url = URL.createObjectURL(blob);
             var a = document.createElement("a");
-            a.href = url;
-            a.download = "gym_complete_backup_" + new Date().toISOString().slice(0, 10) + ".json";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            a.href = url; a.download = "gym_complete_backup_" + new Date().toISOString().slice(0, 10) + ".json";
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
             showNotice("匯出完成", "訓練紀錄已下載成 JSON 備份檔", false);
         }
         
@@ -1952,43 +1401,22 @@
                     }
                     // 新版完整打包格式
                     else if (importedData && importedData.gym_history) {
-                        // 1. 還原日曆紀錄
                         localStorage.setItem('gym_history', JSON.stringify(importedData.gym_history));
-                        calendar.removeAllEvents();
-                        importedData.gym_history.forEach(function(ev) { calendar.addEvent(ev); });
+                        calendar.removeAllEvents(); importedData.gym_history.forEach(function(ev) { calendar.addEvent(ev); });
                         
-                        // 2. 還原自訂動作庫
-                        if (importedData.custom_exercises) {
-                            localStorage.setItem('custom_exercises', JSON.stringify(importedData.custom_exercises));
-                        }
-                        
-                        // 3. 還原暫存重量
-                        if (importedData.current_weights) {
-                            localStorage.setItem('current_weights', JSON.stringify(importedData.current_weights));
-                        }
-                        
-                        // 4. 還原系統與計時器設定
+                        if (importedData.custom_exercises) localStorage.setItem('custom_exercises', JSON.stringify(importedData.custom_exercises));
+                        if (importedData.current_weights) localStorage.setItem('current_weights', JSON.stringify(importedData.current_weights));
                         if (importedData.cfg_rest_min) localStorage.setItem('cfg_rest_min', importedData.cfg_rest_min);
                         if (importedData.cfg_switch_min) localStorage.setItem('cfg_switch_min', importedData.cfg_switch_min);
                         if (importedData.cfg_sound_enable) localStorage.setItem('cfg_sound_enable', importedData.cfg_sound_enable);
                         if (importedData.cfg_flash_enable) localStorage.setItem('cfg_flash_enable', importedData.cfg_flash_enable);
                         if (importedData.cfg_dark_enable) localStorage.setItem('cfg_dark_enable', importedData.cfg_dark_enable);
-                    } else {
-                        throw new Error("格式錯誤");
-                    }
+                    } else { throw new Error("格式錯誤"); }
                     
                     // 重新渲染介面，確保畫面上看到的動作和重量立刻更新
-                    renderAllExerciseLists();
-                    loadAllWeights();
-                    initTimerSettings();
-                    initSoundSetting();
-                    initFlashSetting();
-                    initDarkThemeSetting();
-                    
+                    renderAllExerciseLists(); loadAllWeights(); initTimerSettings(); initSoundSetting(); initFlashSetting(); initDarkThemeSetting();
                     showNotice("匯入成功", "訓練紀錄已成功還原 🎉", false);
-                } catch (err) {
-                    showNotice("匯入失敗", "檔案格式錯誤或不是有效的紀錄檔", false);
-                }
+                } catch (err) { showNotice("匯入失敗", "檔案格式錯誤或不是有效的紀錄檔", false); }
             };
             reader.readAsText(file);
         }
@@ -1997,46 +1425,90 @@
         function triggerImport() { document.getElementById('import-file').value = ""; document.getElementById('import-file').click(); }
 
         /* ==========================================================================
-           10. 共用 Modal 彈出視窗與對話盒顯示控制
+           12. 日夜間模式切換邏輯 (Theme Management)
            ========================================================================== */
-        // 開啟共用 Modal 對話視窗並設定內容樣態與刪除按鈕顯隱狀態
-        function showNotice(title, content, showDelete) {
-            isNoticeOpen = true; // 🌟 關鍵：卡片跳出時，將狀態設定為 true
+        // 初始化載入暗黑主題相關設定
+        function initDarkThemeSetting() {
+            const isDark = localStorage.getItem('cfg_dark_enable') === 'true';
+            const isAuto = localStorage.getItem('cfg_dark_auto') === 'true';
+            const darkCheckbox = document.getElementById('cfg-dark-enable');
+            const autoCheckbox = document.getElementById('cfg-dark-auto');
             
-            document.getElementById('modal-title').innerText = title;
-            var detailsEl = document.getElementById('modal-details');
-            if (content && content.trim() !== "") { detailsEl.innerText = content;
-                detailsEl.style.display = 'block'; } else { detailsEl.style.display = 'none'; }
-            document.getElementById('confirm-delete').style.display = showDelete ? 'block' : 'none';
-            document.getElementById('modal-close-btn').innerText = showDelete ? '關閉' : '確定';
-            document.getElementById('delete-modal').style.display = 'flex';
+            if (autoCheckbox) autoCheckbox.checked = isAuto;
+            
+            if (isAuto) {
+                // 若開啟自動切換，手動開關禁用並執行時間檢查
+                if (darkCheckbox) darkCheckbox.disabled = true;
+                checkAutoDarkTheme();
+            } else {
+                if (darkCheckbox) { darkCheckbox.checked = isDark; darkCheckbox.disabled = false; }
+                if (isDark) { document.body.classList.add('dark-mode'); } 
+                else { document.body.classList.remove('dark-mode'); }
+            }
         }
-
-        // 關閉 Modal 提示視窗，並確保強制停止正在大響的計時鬧鈴與閃動圖層，釋放導覽鎖定
-        function closeModal() {
-            isNoticeOpen = false; // 卡片關閉時，將狀態設定回 false
+        
+        // 手動觸發切換暗黑風格模式
+        function toggleDarkTheme() {
+            const darkCheckbox = document.getElementById('cfg-dark-enable');
+            if (!darkCheckbox || darkCheckbox.disabled) return; 
+        
+            const isChecked = darkCheckbox.checked;
+            if (isChecked) { document.body.classList.add('dark-mode'); } 
+            else { document.body.classList.remove('dark-mode'); }
+            localStorage.setItem('cfg_dark_enable', isChecked);
             
-            var alarm = document.getElementById('alarm-sound');
-            if (alarm) { alarm.pause();
-                alarm.currentTime = 0; }
-            
-            document.getElementById('flash-screen').classList.remove('flash-active');
-            document.getElementById('delete-modal').style.display = 'none';
-            currentEventInfo = null;
-            
-            // 修正重點：確實移除鎖定樣式與遮罩
-            document.getElementById('tour-mask').style.display = 'none'; // 隱藏導覽黑底
-            document.getElementById('delete-modal').style.zIndex = "2000";
-            document.body.classList.remove('tour-locked');
-            document.body.style.overflow = '';
-            document.body.style.height = '';
-            document.body.style.touchAction = '';
-            document.removeEventListener('touchmove', preventTourScroll, { passive: false });
+            if (typeof calendar !== 'undefined' && calendar) { setTimeout(() => { calendar.render(); }, 150); }
+        }
+        
+        // 啟用或關閉自動日夜間切換機制
+        function toggleAutoDarkTheme() {
+            const autoCheckbox = document.getElementById('cfg-dark-auto');
+            const darkCheckbox = document.getElementById('cfg-dark-enable');
+            if (!autoCheckbox) return;
+        
+            const isAutoChecked = autoCheckbox.checked;
+            localStorage.setItem('cfg_dark_auto', isAutoChecked);
+        
+            if (isAutoChecked) {
+                if (darkCheckbox) darkCheckbox.disabled = true;
+                checkAutoDarkTheme();
+            } else {
+                if (darkCheckbox) {
+                    darkCheckbox.disabled = false;
+                    const lastDarkState = localStorage.getItem('cfg_dark_enable') === 'true';
+                    darkCheckbox.checked = lastDarkState;
+                    if (lastDarkState) { document.body.classList.add('dark-mode'); } 
+                    else { document.body.classList.remove('dark-mode'); }
+                }
+            }
+        
+            if (typeof calendar !== 'undefined' && calendar) { setTimeout(() => { calendar.render(); }, 150); }
+        }
+        
+        // 核心時間判斷：檢查目前時間是否處於夜間（18:00 到隔天 06:00）並執行畫面渲染
+        function checkAutoDarkTheme() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const darkCheckbox = document.getElementById('cfg-dark-enable');
+            const bodyHasDark = document.body.classList.contains('dark-mode');
+            const isNight = (currentHour >= 18 || currentHour < 6);
+        
+            // 只有當「目前頁面狀態」與「時間應該呈現的狀態」不同時，才觸發切換
+            if (isNight && !bodyHasDark) {
+                document.body.classList.add('dark-mode');
+                if (darkCheckbox) darkCheckbox.checked = true;
+                if (typeof calendar !== 'undefined' && calendar) { setTimeout(() => { calendar.render(); }, 150); }
+            } else if (!isNight && bodyHasDark) {
+                document.body.classList.remove('dark-mode');
+                if (darkCheckbox) darkCheckbox.checked = false;
+                if (typeof calendar !== 'undefined' && calendar) { setTimeout(() => { calendar.render(); }, 150); }
+            }
         }
 
         /* ==========================================================================
-           11. 磅 (lbs) 與 公斤 (kg) 即時雙向精準單位換算器
-           ========================================================================= */
+           13. 小工具 (Utilities)
+           ========================================================================== */
+        // 磅 (lbs) 與 公斤 (kg) 即時雙向精準單位換算器
         function convertUnit(source) {
             const lbsInput = document.getElementById('input-lbs');
             const kgsInput = document.getElementById('input-kgs');
@@ -2049,25 +1521,21 @@
         }
 
         /* ==========================================================================
-           12. 手機版原生滑動手勢偵測功能 (左右側滑 快速呼叫/關閉側邊選單)
+           14. 背景服務與滑動手勢執行 (Background Services & IIFE)
            ========================================================================== */
+        // 手機版原生滑動手勢偵測功能 (左右側滑 快速呼叫/關閉側邊選單)
         (function() {
-            let touchStartX = 0;
-            let touchStartY = 0;
-            let touchEndX = 0;
-            let touchEndY = 0;
-            const SWIPE_MIN_DISTANCE = 70; // 判定手勢成立的最少水平滑行距離 (像素像素)
+            let touchStartX = 0; let touchStartY = 0; let touchEndX = 0; let touchEndY = 0;
+            const SWIPE_MIN_DISTANCE = 70; // 判定手勢成立的最少水平滑行距離 (像素)
 
             window.addEventListener('touchstart', function(e) {
                 if (document.body.classList.contains('tour-locked')) return; 
-                touchStartX = e.touches[0].clientX;
-                touchStartY = e.touches[0].clientY;
+                touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
             }, { passive: true });
 
             window.addEventListener('touchmove', function(e) {
                 if (document.body.classList.contains('tour-locked')) return; 
-                touchEndX = e.touches[0].clientX;
-                touchEndY = e.touches[0].clientY;
+                touchEndX = e.touches[0].clientX; touchEndY = e.touches[0].clientY;
             }, { passive: true });
 
             window.addEventListener('touchend', function(e) {
@@ -2078,111 +1546,27 @@
 
                 const isSidebarActive = sidebar.classList.contains('active');
                 
-                // 🌟 關鍵核心攔截：如果提示卡片開著，且側邊欄目前是關閉的，就禁止透過右滑叫出側邊欄
-                // (但如果側邊欄原本就開著，仍允許左滑關閉側邊欄，確保體驗順暢)
-                if (isNoticeOpen && !isSidebarActive) {
-                    return; 
-                }
+                // 如果提示卡片開著，且側邊欄目前是關閉的，就禁止透過右滑叫出側邊欄
+                if (isNoticeOpen && !isSidebarActive) { return; }
 
                 const deltaX = touchEndX - touchStartX;
                 const deltaY = Math.abs(touchEndY - touchStartY);
 
                 if (!isSidebarActive) {
                     // 由左向右劃過 且 水平滑移大於垂直滑移 -> 展開選單
-                    if (deltaX > SWIPE_MIN_DISTANCE && deltaX > deltaY) {
-                        toggleSidebar();
-                    }
+                    if (deltaX > SWIPE_MIN_DISTANCE && deltaX > deltaY) { toggleSidebar(); }
                 } else {
                     // 選單開啟時由右向左劃過 -> 收合選單
-                    if (deltaX < -SWIPE_MIN_DISTANCE && Math.abs(deltaX) > deltaY) {
-                        toggleSidebar();
-                    }
+                    if (deltaX < -SWIPE_MIN_DISTANCE && Math.abs(deltaX) > deltaY) { toggleSidebar(); }
                 }
-                // 清空歸零座標
                 touchStartX = 0; touchStartY = 0; touchEndX = 0; touchEndY = 0;
             }, { passive: true });
         })();
         
-        /* 13.新增：依太陽下山時間自動切換暗黑模式（地理位置 API 版） */
-        function autoCheckSunsetMode() {
-            // 如果使用者在設定頁面「手動」設定過暗黑模式，就尊重使用者的決定，不進行自動覆蓋
-            if (localStorage.getItem('cfg_dark_enable') !== null) {
-                return; 
-            }
-        
-            // 檢查瀏覽器是否支援定位
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    
-                    // 呼叫免費的日出日落 API (回傳格式為 UTC 時間)
-                    fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lng}&formatted=0`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status === "OK") {
-                                const sunsetTime = new Date(data.results.sunset); // 自動轉換為當地時區
-                                const sunriseTime = new Date(data.results.sunrise);
-                                const now = new Date();
-        
-                                // 如果現在時間大於日落時間，或者小於隔天的日出時間，就開啟暗黑模式
-                                if (now >= sunsetTime || now < sunriseTime) {
-                                    document.body.classList.add('dark-mode');
-                                    const checkbox = document.getElementById('cfg-dark-enable');
-                                    if (checkbox) checkbox.checked = true;
-                                } else {
-                                    document.body.classList.remove('dark-mode');
-                                    const checkbox = document.getElementById('cfg-dark-enable');
-                                    if (checkbox) checkbox.checked = false;
-                                }
-                                if (calendar) { setTimeout(() => { calendar.render(); }, 150); }
-                            }
-                        })
-                        .catch(err => {
-                            console.log("無法取得日落時間，改用時間估算", err);
-                            fallbackTimeCheck(); // API 失敗時，走備用時間制
-                        });
-                }, function(error) {
-                    console.log("使用者拒絕定位，改用時間估算");
-                    fallbackTimeCheck(); // 使用者拒絕定位時，走備用時間制
-                });
-            } else {
-                fallbackTimeCheck();
-            }
-        }
-        
-        // 備用方案：如果無法定位，預設下午 6:00 (18:00) 到隔天早上 6:00 為暗黑模式
-        function fallbackTimeCheck() {
-            const now = new Date();
-            const hour = now.getHours();
-            const checkbox = document.getElementById('cfg-dark-enable');
-            
-            if (hour >= 18 || hour < 6) {
-                document.body.classList.add('dark-mode');
-                if (checkbox) checkbox.checked = true;
-            } else {
-                document.body.classList.remove('dark-mode');
-                if (checkbox) checkbox.checked = false;
-            }
-            if (calendar) { setTimeout(() => { calendar.render(); }, 150); }
-        }
-
-        // 1. 頁面初始化時，立刻鎖定 body 的點選與滑動捲動
+        // 頁面初始化時鎖定 body 點選與捲動
         document.body.classList.add('loading-locked');
         
-        // 2. 原有的關閉載入畫面函式微調
-        function hideLoadingScreen() {
-            const loadingScreen = document.getElementById('loading-screen');
-            if (loadingScreen) {
-                loadingScreen.style.opacity = '0';
-                loadingScreen.style.visibility = 'hidden';
-                
-                // 💡 關鍵新增：載入完成後，解除 body 的鎖定，恢復正常點選與滑動捲動
-                document.body.classList.remove('loading-locked');
-            }
-        }
-        
-        // 3. 原有的立即執行判斷暗黑/白天模式邏輯（保持不變）
+        // 載入畫面初期判斷暗黑/白天模式邏輯
         (function() {
             const screen = document.getElementById('loading-screen');
             if (screen) {
@@ -2192,17 +1576,18 @@
                 const isNight = (hour >= 18 || hour < 6);
                 
                 if (isAuto) {
-                    if (isNight) {
-                        screen.classList.add('dark-theme');
-                    }
+                    if (isNight) { screen.classList.add('dark-theme'); }
                 } else {
-                    if (savedDark === 'true' || (savedDark === null && isNight)) {
-                        screen.classList.add('dark-theme');
-                    }
+                    if (savedDark === 'true' || (savedDark === null && isNight)) { screen.classList.add('dark-theme'); }
                 }
             }
         })();
-
+        
+        // 背景定時檢查時間 (每 60 秒執行一次)，確保跨越 18:00 或 06:00 時能自動切換
+        setInterval(function() {
+            const isAuto = localStorage.getItem('cfg_dark_auto') === 'true';
+            if (isAuto) { checkAutoDarkTheme(); }
+        }, 60000);
 
         // 註冊 PWA 離線服務線程 (Service Worker) 確保應用程式可以離線開啟
         if ("serviceWorker" in navigator) { navigator.serviceWorker.register("service-worker.js"); }
