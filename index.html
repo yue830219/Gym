@@ -384,6 +384,11 @@
         #loading-screen.dark-theme #prep-text { color: #aeaeb2; }
         #loading-screen.dark-theme #app-text { color: #ffffff; }
         #loading-screen.dark-theme #home-indicator { background: #ffffff; opacity: 0.7; }
+        
+        /* 鎖定頁面滑動的類別 */
+        .scroll-locked {
+            height: 105vh !important;
+        }        
     </style>
 </head>
 <body>
@@ -640,6 +645,8 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/zh-tw.global.min.js"></script>
     <script>
+        // 頁面初始化時，確保沒有不必要的滑動
+        document.body.classList.add('scroll-locked');
         /* ==========================================================================
            1. 全域變數與預設資料 (Global Variables & Defaults)
            ========================================================================== */
