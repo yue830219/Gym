@@ -649,8 +649,8 @@
 </label></div>
             </div>
             <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn-record" style="background:#5856D6; flex: 1; padding: 10px; font-size: 14px; margin-top: 0;" onclick="triggerImport()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>匯入紀錄</button>                
                 <button class="btn-record" style="background:#007AFF; flex: 1; padding: 10px; font-size: 14px; margin-top: 0;" onclick="exportHistory()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>匯出紀錄</button>
-                <button class="btn-record" style="background:#5856D6; flex: 1; padding: 10px; font-size: 14px; margin-top: 0;" onclick="triggerImport()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>匯入紀錄</button>
             </div>
             <input type="file" id="import-file" accept=".json" style="display:none" onchange="importHistory(event)">
             <p style="font-size: 0.85rem; color: #666; text-align: center;">建議定期匯出備份，避免數據遺失。</p>
