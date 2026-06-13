@@ -385,14 +385,36 @@
         #loading-screen.dark-theme #app-text { color: #ffffff; }
         #loading-screen.dark-theme #home-indicator { background: #ffffff; opacity: 0.7; }
         
+        /* ==========================================================================
+           10. 螢幕翻轉提示 (Orientation Lock)
+           ========================================================================== */
+        @media screen and (orientation: landscape) {
+            #landscape-blocker { display: flex !important; }
+        }
+        #landscape-blocker {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--bg); z-index: 100000;
+            flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; color: var(--primary); font-weight: bold; padding: 20px; box-sizing: border-box;
+            transition: background 0.3s, color 0.3s;
+        }
+        #landscape-blocker svg { width: 60px; height: 60px; margin-bottom: 15px; }
+        
         /* 鎖定頁面滑動的類別 */
         .scroll-locked {
             height: 100vh !important;
-        }        
+        }       
     </style>
 </head>
 <body>
     <audio id="alarm-sound" src="https://github.com/yue830219/Gym/raw/refs/heads/main/music.mp3" preload="auto"></audio>
+        <div id="landscape-blocker">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
+            <rect x="10.5" y="3.5" width="3" height="1" rx="0.5" ry="0.5" fill="currentColor"></rect>
+        </svg>
+        <span style="font-size: 1.2rem;">為了獲得最佳體驗<br>請將手機轉為直向使用</span>
+    </div>
     <div id="flash-screen" class="flash-overlay"></div>
     
     <div id="loading-screen">
@@ -767,6 +789,12 @@
 
             updateCardioStats(); 
             initTimerSettings();
+            // 嘗試呼叫原生 API 強制鎖定直向 (部分安裝為 PWA 的手機瀏覽器支援)
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('portrait').catch(function(error) { 
+                    console.log('裝置不支援主動鎖定螢幕:', error); 
+                });
+            }
             setTimeout(hideLoadingScreen, 2500); // 載入完成後關閉雙模態加載螢幕
         };
 
@@ -1326,33 +1354,59 @@
             var orderWeight = (type === '練胸') ? 1 : (type === '練肩') ? 2 : (type === '練臂') ? 3 : (type === '練腹') ? 4 : (type === '練腿') ? 5 : (type === '有氧') ? 6 : (type === 'HIIT') ? 7 : 99;
             var details = "";
 
+            var hasData = false; // 追蹤是否有大於 0 的實際數據
+
             // 編碼有氧卡片資料
             if (type === '有氧') {
-                var dist = card.querySelector('[data-id="leg_1"]').value || "0";
+                var distStr = card.querySelector('[data-id="leg_1"]').value || "0";
+                var dist = parseFloat(distStr);
                 var hr = parseInt(card.querySelector('[data-id="leg_hr"]').value) || 0;
                 var min = parseInt(card.querySelector('[data-id="leg_min"]').value) || 0;
                 var sec = parseInt(card.querySelector('[data-id="leg_sec"]').value) || 0;
-                var inclineEl = document.getElementById('input-incline');
-                var inclineText = inclineEl ? inclineEl.value : "0";
-                details += "● 距離: " + dist + " km\n● 坡度: " + inclineText + "%\n● 時間: " + (hr > 0 ? hr + " 時 " + (min < 10 ? '0' + min : min) : min) + " 分 " + (sec < 10 ? '0' + sec : sec) + " 秒\n● 配速: " + document.getElementById('display-pace').innerText + "\n● 消耗: " + document.getElementById('display-calories').innerText + "\n";
+                
+                if (dist > 0 || hr > 0 || min > 0 || sec > 0) {
+                    var inclineEl = document.getElementById('input-incline');
+                    var inclineText = inclineEl ? inclineEl.value : "0";
+                    details += "● 距離: " + distStr + " km\n● 坡度: " + inclineText + "%\n● 時間: " + (hr > 0 ? hr + " 時 " + (min < 10 ? '0' + min : min) : min) + " 分 " + (sec < 10 ? '0' + sec : sec) + " 秒\n● 配速: " + document.getElementById('display-pace').innerText + "\n● 消耗: " + document.getElementById('display-calories').innerText + "\n";
+                    hasData = true;
+                }
             } else if (type === 'HIIT') { // 編碼 HIIT 資料
-                var m = document.getElementById('hiit-min').value || "0";
-                var s = document.getElementById('hiit-sec').value || "0";
-                details += "● 時間: " + m + " 分 " + s + " 秒\n● 消耗: " + document.getElementById('display-hiit-calories').innerText + "\n";
+                var mStr = document.getElementById('hiit-min').value || "0";
+                var sStr = document.getElementById('hiit-sec').value || "0";
+                if (parseInt(mStr) > 0 || parseInt(sStr) > 0) {
+                    details += "● 時間: " + mStr + " 分 " + sStr + " 秒\n● 消耗: " + document.getElementById('display-hiit-calories').innerText + "\n";
+                    hasData = true;
+                }
             } else { // 編碼重量訓練卡片動作資料
                 card.querySelectorAll('.exercise-item').forEach(function(item) {
                     var name = item.querySelector('.exercise-name').innerText; 
-                    var weight = item.querySelector('.weight-input').value || "0"; 
-                    var unitSelect = item.querySelector('.unit-select');
-                    var unit = unitSelect ? unitSelect.value : "kg"; 
-                    details += "● " + name + ": " + weight + " " + unit + "\n";
+                    var weightStr = item.querySelector('.weight-input').value || "0"; 
+                    var weight = parseFloat(weightStr);
+                    
+                    // 💡 只有當數值大於 0 時，這行動作才會被寫入日曆
+                    if (weight > 0) {
+                        var unitSelect = item.querySelector('.unit-select');
+                        var unit = unitSelect ? unitSelect.value : "kg"; 
+                        details += "● " + name + ": " + weightStr + " " + unit + "\n";
+                        hasData = true;
+                    }
                 });
             }
 
             // 擷取並寫入備註資訊
             var noteInput = card.querySelector('.card-note');
             var noteVal = noteInput ? noteInput.value.trim() : "";
-            if (noteVal !== "") { details += "\n【備註】: " + noteVal; }
+            if (noteVal !== "") { 
+                details += (hasData ? "\n" : "") + "【備註】: " + noteVal; 
+                hasData = true; 
+            }
+
+            // 💡 如果沒有任何有效數據(全為0)且沒有備註，則阻擋儲存並彈出提示
+            if (!hasData) {
+                showNotice("提示", "無紀錄任何數據，不儲存。", false);
+                return;
+            }
+
 
             var history = JSON.parse(localStorage.getItem('gym_history') || "[]");
             // 查詢同日期、同訓練項目是否早已存在，存在即採用覆蓋策略 (Update)，不存在則追加 (Create)
