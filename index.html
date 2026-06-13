@@ -397,7 +397,11 @@
             flex-direction: column; justify-content: center; align-items: center;
             text-align: center; color: var(--primary); font-weight: bold; padding: 20px; box-sizing: border-box;
             transition: background 0.3s, color 0.3s;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
         }
+
         #landscape-blocker svg { width: 60px; height: 60px; margin-bottom: 15px; }
         
         /* 鎖定頁面滑動的類別 */
@@ -794,6 +798,17 @@
                 screen.orientation.lock('portrait').catch(function(error) { 
                     console.log('裝置不支援主動鎖定螢幕:', error); 
                 });
+            }
+            var blocker = document.getElementById('landscape-blocker');
+            if (blocker) {
+                ['touchstart', 'touchmove', 'touchend', 'mousedown', 'mouseup', 'click'].forEach(function(eventType) {
+                    blocker.addEventListener(eventType, function(e) {
+                        e.stopPropagation();
+                    }, { passive: false });
+                });
+                blocker.addEventListener('touchmove', function(e) {
+                    if (e.cancelable) e.preventDefault(); 
+                }, { passive: false });
             }
             setTimeout(hideLoadingScreen, 2500); // 載入完成後關閉雙模態加載螢幕
         };
