@@ -45,6 +45,12 @@
         /* ==========================================================================
            2. 側邊欄與選單 (Sidebar & Tabs)
            ========================================================================== */
+        /* 當側邊欄開啟時，鎖定底層背景不讓使用者滑動 */
+        body.sidebar-locked {
+            overflow: hidden !important;
+            height: 100vh !important;
+            touch-action: none !important; /* 防止 iOS 上的橡皮筋捲動效應 */
+        }        
         /* 側邊欄抽屜面板 */
         .sidebar { 
             position: fixed; 
@@ -76,8 +82,20 @@
 
         /* 主畫面訓練部位分頁選單 */
         .tab-menu { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 0px; }
-        .tab-btn { flex: 1 1 17%; min-width: 70px; padding: 12px 5px; border-radius: 12px; border: none; font-size: 0.9rem; font-weight: bold; color: white; opacity: 0.4; transition: 0.3s; margin-bottom: 5px; cursor: pointer; }
+        .tab-btn { flex: 1 1 17%; min-width: 70px; padding: 12px 5px; border-radius: 12px; border: none; font-size: 0.9rem; font-weight: bold; color: white; opacity: 0.4; transition: 0.3s; margin-bottom: 5px; cursor: pointer;display: flex;flex-direction: column;align-items: center;gap: 4px; }
         .tab-btn.active { opacity: 1; transform: translateY(-2px); } /* 被選中的分頁會完全顯示並稍微往上浮動 */
+        
+        /* 讓按鈕內的 SVG 與文字水平居中對齊 */
+        button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px; /* 圖示與文字的間距 */
+        }
+        /* 右上角編輯按鈕不需要間距，重置它 */
+        .btn-manage-toggle {
+            gap: 0;
+        }
 
         /* ==========================================================================
            3. 卡片結構與輸入欄位 (Cards & Inputs)
@@ -404,11 +422,24 @@
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header" onclick="handleMenuClick('add')">健身助手 Pro</div>
-        <div class="sidebar-item" onclick="handleMenuClick('add')"><span>🏠</span> 主畫面</div>
-        <div class="sidebar-item" onclick="handleMenuClick('calendar')"><span>📅</span> 訓練日曆</div>
-        <div class="sidebar-item" onclick="handleMenuClick('converter')"><span>⚖️</span> 單位換算</div>
-        <div class="sidebar-item" onclick="handleMenuClick('settings')"><span>⚙️</span> 系統設定</div>
+        <div class="sidebar-item" onclick="handleMenuClick('add')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            主畫面
+        </div>
+        <div class="sidebar-item" onclick="handleMenuClick('calendar')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+            訓練日曆
+        </div>
+        <div class="sidebar-item" onclick="handleMenuClick('converter')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+            單位換算
+        </div>
+        <div class="sidebar-item" onclick="handleMenuClick('settings')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            系統設定
+        </div>
     </div>
+
 
     <div id="timer-title" style="margin: 0 0 10px 0;"><h3 style="color:var(--primary); margin:0;">計時器</h3></div>
     <div class="timer-panel">
@@ -419,7 +450,13 @@
         <div class="btn-group">
             <button style="background:var(--primary);color:white;font-size:0.8rem;" id="btn-rest-timer" onclick="startRestTimer()">組間間隔</button>
             <button style="background:#5856D6;color:white;font-size:0.8rem;" id="btn-switch-timer" onclick="startSwitchTimer()">動作間隔</button>
-            <button style="background:#E5E5EA; flex: 0.4;font-size:1.2rem;" onclick="resetTimer()">↺</button>
+            
+            <button style="background:#E5E5EA; color:#1c1c1e; flex: 0.4; display:flex; align-items:center; justify-content:center;" onclick="resetTimer()">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                </svg>
+            </button>
         </div>
     </div>
 
@@ -437,7 +474,7 @@
     <div class="card active" id="card-chest" data-type="chest">
         <div class="card-header">
             <h3 style="color:var(--chest);margin:0;">練胸內容</h3>
-            <button class="btn-manage-toggle" onclick="toggleManageMode(this)">✏️</button>
+            <button class="btn-manage-toggle" onclick="toggleManageMode(this)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
             <input type="date" class="date-input" onchange="syncDate(this)">
         </div>
         <div class="exercise-list"></div> <div class="bottom-manage-bar">
@@ -446,13 +483,13 @@
             <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
         </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>
-        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練胸', this, '#FF3B30')">💾 儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練胸', this, '#FF3B30')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>儲存到日曆</button>
     </div>
 
     <div class="card" id="card-shoulder" data-type="shoulder">
         <div class="card-header">
             <h3 style="color:var(--shoulder);margin:0;">練肩內容</h3>
-            <button class="btn-manage-toggle" onclick="toggleManageMode(this)">✏️</button>
+            <button class="btn-manage-toggle" onclick="toggleManageMode(this)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
             <input type="date" class="date-input" onchange="syncDate(this)">
         </div>
         <div class="exercise-list"></div>
@@ -462,13 +499,13 @@
             <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
         </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>        
-        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練肩', this, '#FF9500')">💾 儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練肩', this, '#FF9500')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>儲存到日曆</button>
     </div>
 
     <div class="card" id="card-arm" data-type="arm">
         <div class="card-header">
             <h3 style="color:var(--arm);margin:0;">練臂內容</h3>
-            <button class="btn-manage-toggle" onclick="toggleManageMode(this)">✏️</button>
+            <button class="btn-manage-toggle" onclick="toggleManageMode(this)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
             <input type="date" class="date-input" onchange="syncDate(this)">
         </div>
         <div class="exercise-list"></div>
@@ -478,13 +515,13 @@
             <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
         </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>        
-        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練臂', this, '#4CD964')">💾 儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練臂', this, '#4CD964')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>儲存到日曆</button>
     </div>
 
     <div class="card" id="card-abs" data-type="abs">
         <div class="card-header">
             <h3 style="color:var(--abs);margin:0;">練腹內容</h3>
-            <button class="btn-manage-toggle" onclick="toggleManageMode(this)">✏️</button>
+            <button class="btn-manage-toggle" onclick="toggleManageMode(this)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
             <input type="date" class="date-input" onchange="syncDate(this)">
         </div>
         <div class="exercise-list"></div>
@@ -494,13 +531,13 @@
             <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
         </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>    
-        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練腹', this, '#AF52DE')">💾 儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練腹', this, '#AF52DE')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>儲存到日曆</button>
     </div>
 
     <div class="card" id="card-leg-strength" data-type="leg-strength">
         <div class="card-header">
             <h3 style="color:#008080;margin:0;">練腿內容</h3>
-            <button class="btn-manage-toggle" onclick="toggleManageMode(this)">✏️</button>
+            <button class="btn-manage-toggle" onclick="toggleManageMode(this)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
             <input type="date" class="date-input" onchange="syncDate(this)">
         </div>
         <div class="exercise-list"></div>
@@ -510,7 +547,7 @@
             <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
         </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>        
-        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練腿', this, '#008080')">💾 儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練腿', this, '#008080')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>儲存到日曆</button>
     </div>
 
     <div class="card" id="card-leg" data-type="leg">
@@ -524,7 +561,7 @@
             <div style="width: 1px; height: 30px; background: #ddd; margin: 0 10px;"></div>
             <div style="flex: 1; text-align: center;"><div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">預估燃燒</div><div id="display-calories" style="font-weight: 800; color: #FF9500; font-size: 1.2rem;">0 kcal</div></div>
         </div>
-        <button class="btn-record btn-calendar-only" onclick="saveToHistory('有氧', this, '#5AC8FA')">💾 儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('有氧', this, '#5AC8FA')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>儲存到日曆</button>
     </div>
 
     <div class="card" id="card-hiit" data-type="hiit">
@@ -539,7 +576,7 @@
         <div class="exercise-item" style="background: #f5f3ff; border-radius: 12px; margin-top: 10px; padding: 12px; border-bottom: none;">
             <div style="flex: 1; text-align: center;"><div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">預估燃燒</div><div id="display-hiit-calories" style="font-weight: 800; color: #5856D6; font-size: 1.2rem;">0 kcal</div></div>
         </div>
-        <button class="btn-record btn-calendar-only" onclick="saveToHistory('HIIT', this, '#5856D6')">💾 儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('HIIT', this, '#5856D6')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>儲存到日曆</button>
     </div>
 
     <div class="card" id="card-converter">
@@ -570,7 +607,7 @@
                 <h4 style="margin:0 0 10px 0; color:#333;">自定義計時器 (分鐘)</h4>
                 <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;"><span style="font-size:0.9rem; flex:1; text-align:right;">組間間隔：</span><input type="number" id="cfg-rest-min" class="weight-input" style="width:40px;" onfocus="this.dataset.oldVal=this.value; this.value='';" onblur="if(this.value===''){this.value=this.dataset.oldVal;}" placeholder="2"><span class="unit-text">分</span></div>
                 <div style="display:flex; gap:10px; align-items:center;"><span style="font-size:0.9rem; flex:1; text-align:right;">動作間隔：</span><input type="number" id="cfg-switch-min" class="weight-input" style="width:40px;" onfocus="this.dataset.oldVal=this.value; this.value='';" onblur="if(this.value===''){this.value=this.dataset.oldVal;}" placeholder="4"><span class="unit-text">分</span></div>
-                <button class="btn-record" style="background:var(--primary); padding:8px; margin-top:10px; font-size:14px;" onclick="saveTimerSettings()">✅ 儲存計時設定</button>
+                <button class="btn-record" style="background:var(--primary); padding:8px; margin-top:10px; font-size:14px;" onclick="saveTimerSettings()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> 儲存計時設定</button>
             </div>
             <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee; margin-top:15px;">
                 <h4 style="margin:0 0 10px 0; color:#333;">提醒方式設定</h4>
@@ -581,8 +618,8 @@
 </label></div>
             </div>
             <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button class="btn-record" style="background:#007AFF; flex: 1; padding: 10px; font-size: 14px; margin-top: 0;" onclick="exportHistory()">📤 匯出紀錄</button>
-                <button class="btn-record" style="background:#5856D6; flex: 1; padding: 10px; font-size: 14px; margin-top: 0;" onclick="triggerImport()">📥 匯入紀錄</button>
+                <button class="btn-record" style="background:#007AFF; flex: 1; padding: 10px; font-size: 14px; margin-top: 0;" onclick="exportHistory()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>匯出紀錄</button>
+                <button class="btn-record" style="background:#5856D6; flex: 1; padding: 10px; font-size: 14px; margin-top: 0;" onclick="triggerImport()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>匯入紀錄</button>
             </div>
             <input type="file" id="import-file" accept=".json" style="display:none" onchange="importHistory(event)">
             <p style="font-size: 0.85rem; color: #666; text-align: center;">建議定期匯出備份，避免數據遺失。</p>
@@ -651,13 +688,18 @@
         let isNoticeOpen = false; // 追蹤提示卡片是否正開啟中
 
         // 新手功能亮點引導的文案與網頁目標 DOM 節點設定
+        // 定義一個產生內聯 SVG 的小工具
+        const getIcon = (svgPath) => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -4px; margin-right: 6px;">${svgPath}</svg>`;
+        
+        // 新的導覽文案與 SVG
         const tourSteps = [
-            { target: '.timer-panel', title: "⏱️ 專業間隔計時器", desc: "點擊【組間】或【動作】間隔，時間到會自動播放鈴聲與閃爍畫面，幫你精準掌控休息時間！" },
-            { target: '.tab-menu', title: "🔥 切換訓練部位", desc: "在這裡快速切換不同部位的紀錄卡片，有氧與 HIIT 分類還會幫你自動計算消耗熱量喔！" },
-            { target: '.card.active .card-header .btn-manage-toggle', title: "✏️ 自訂你的專屬動作", desc: "點擊這裡可以進入編輯模式。你可以自由更換動作名稱、修改計重單位，或是新增、刪除動作！" },
-            { target: '.card.active .card-note', title: "📝 紀錄訓練心得", desc: "每張卡片底部都有備註欄，可以寫下今天訓練的狀態、遞減組資訊或心情。" },
-            { target: '.card.active .btn-record', title: "📅 儲存到訓練日曆", desc: "輸入完數據後，點擊這裡就會將今日成果永久儲存。你可以隨時到側邊欄的「訓練日曆」查看歷史紀錄！" }
+            { target: '.timer-panel', title: `${getIcon('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/>')} 專業間隔計時器`, desc: "點擊【組間】或【動作】間隔，時間到會自動播放鈴聲與閃爍畫面，幫你精準掌控休息時間！" },
+            { target: '.tab-menu', title: `${getIcon('<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>')} 切換訓練部位`, desc: "在這裡快速切換不同部位的紀錄卡片，有氧與 HIIT 分類還會幫你自動計算消耗熱量喔！" },
+            { target: '.card.active .card-header .btn-manage-toggle', title: `${getIcon('<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>')} 自訂你的專屬動作`, desc: "點擊這裡可以進入編輯模式。你可以自由更換動作名稱、修改計重單位，或是新增、刪除動作！" },
+            { target: '.card.active .card-note', title: `${getIcon('<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/><path d="M8 12h8"/><path d="M8 16h8"/>')} 紀錄訓練心得`, desc: "每張卡片底部都有備註欄，可以寫下今天訓練的狀態、遞減組資訊或心情。" },
+            { target: '.card.active .btn-record', title: `${getIcon('<rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>')} 儲存到訓練日曆`, desc: "輸入完數據後，點擊這裡就會將今日成果永久儲存。你可以隨時到側邊欄的「訓練日曆」查看歷史紀錄！" }
         ];
+
 
         /* ==========================================================================
            2. 系統初始化與生命週期 (Initialization & Lifecycle)
@@ -738,9 +780,20 @@
            ========================================================================== */
         // 切換側邊欄抽屜選單展開或縮回
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('overlay');
-            if (sidebar.classList.contains('active')) { sidebar.classList.remove('active'); overlay.classList.remove('active'); } 
-            else { sidebar.classList.add('active'); overlay.classList.add('active'); }
+            const sidebar = document.getElementById('sidebar'); 
+            const overlay = document.getElementById('overlay');
+            
+            if (sidebar.classList.contains('active')) { 
+                // 收合側邊欄
+                sidebar.classList.remove('active'); 
+                overlay.classList.remove('active'); 
+                document.body.classList.remove('sidebar-locked'); // 解除背景鎖定
+            } else { 
+                // 展開側邊欄
+                sidebar.classList.add('active'); 
+                overlay.classList.add('active'); 
+                document.body.classList.add('sidebar-locked'); // 鎖定背景不給滑
+            }
         }
 
         // 處理由側邊欄選單點擊後的主面板頁面流轉切換
@@ -788,9 +841,9 @@
         // 開啟共用 Modal 對話視窗並設定內容樣態與刪除按鈕顯隱狀態
         function showNotice(title, content, showDelete) {
             isNoticeOpen = true; // 狀態設定為 true 攔截右滑手勢
-            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-title').innerHTML = title;
             var detailsEl = document.getElementById('modal-details');
-            if (content && content.trim() !== "") { detailsEl.innerText = content; detailsEl.style.display = 'block'; } 
+            if (content && content.trim() !== "") { detailsEl.innerHTML = content; detailsEl.style.display = 'block'; } 
             else { detailsEl.style.display = 'none'; }
             document.getElementById('confirm-delete').style.display = showDelete ? 'block' : 'none';
             document.getElementById('modal-close-btn').innerText = showDelete ? '關閉' : '確定';
@@ -849,7 +902,8 @@
             document.removeEventListener('touchmove', preventTourScroll);
             
             localStorage.setItem('has_seen_tour_v2', 'true'); // 在瀏覽器標記已看過教學
-            showNotice("🎉 導覽結束！", "開始記錄今天的訓練吧！", false);
+            const sparklesSVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -4px; margin-right: 5px;"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.2 1.2L3 12l5.8 1.9a2 2 0 0 1 1.2 1.2L12 21l1.9-5.8a2 2 0 0 1-1.2-1.2L21 12l-5.8-1.9a2 2 0 0 1-1.2-1.2L12 3Z"/></svg>`;showNotice(`${sparklesSVG} 導覽結束！`, "開始記錄今天的訓練吧！", false);
+
             document.getElementById('delete-modal').style.zIndex = "99999";
         }
 
@@ -883,8 +937,8 @@
 
                     // 置換對話盒文案
                     document.getElementById('tour-step-idx').innerText = `${currentTourStep + 1} / ${tourSteps.length}`;
-                    document.getElementById('tour-title').innerText = step.title;
-                    document.getElementById('tour-body').innerText = step.desc;
+                    document.getElementById('tour-title').innerHTML = step.title;
+                    document.getElementById('tour-body').innerHTML = step.desc;
 
                     // 動態計算對話盒的最佳顯示位置，防止超出螢幕邊界
                     let dialogTop = bottom + 12;
@@ -1225,7 +1279,7 @@
                     // 時間到！觸發聲音與畫面閃爍機制
                     if (localStorage.getItem('cfg_sound_enable') === "true") { alarm.play(); }
                     if (localStorage.getItem('cfg_flash_enable') === "true") { document.getElementById('flash-screen').classList.add('flash-active'); }
-                    showNotice("計時結束", "時間到！該開始下一組了 🏋️", false); 
+                    showNotice("計時結束", "時間到！開始下一組！", false); 
                     return;
                 }
                 var m = Math.floor(left / 60); var rs = left % 60;
@@ -1415,7 +1469,7 @@
                     
                     // 重新渲染介面，確保畫面上看到的動作和重量立刻更新
                     renderAllExerciseLists(); loadAllWeights(); initTimerSettings(); initSoundSetting(); initFlashSetting(); initDarkThemeSetting();
-                    showNotice("匯入成功", "訓練紀錄已成功還原 🎉", false);
+                    showNotice("匯入成功", "訓練紀錄已成功還原！", false);
                 } catch (err) { showNotice("匯入失敗", "檔案格式錯誤或不是有效的紀錄檔", false); }
             };
             reader.readAsText(file);
