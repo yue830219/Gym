@@ -471,7 +471,6 @@
         </div>
     </div>
 
-
     <div id="timer-title" style="margin: 0 0 10px 0;"><h3 style="color:var(--primary); margin:0;">計時器</h3></div>
     <div class="timer-panel">
         <div class="timer-header">
@@ -481,7 +480,6 @@
         <div class="btn-group">
             <button style="background:var(--primary);color:white;font-size:0.8rem;" id="btn-rest-timer" onclick="startRestTimer()">組間間隔</button>
             <button style="background:#5856D6;color:white;font-size:0.8rem;" id="btn-switch-timer" onclick="startSwitchTimer()">動作間隔</button>
-            
             <button style="background:#E5E5EA; color:#1c1c1e; flex: 0.4; display:flex; align-items:center; justify-content:center;" onclick="resetTimer()">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
@@ -644,6 +642,9 @@
                 <h4 style="margin:0 0 10px 0; color:#333;">提醒方式設定</h4>
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 15px;"><span style="font-size:1rem; font-weight:bold;">計時結束播放鈴聲</span><label class="switch"><input type="checkbox" id="cfg-sound-enable" onchange="saveSoundSetting()"><span class="slider"></span></label></div>
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 15px;"><span style="font-size:1rem; font-weight:bold;">計時結束畫面閃爍</span><label class="switch"><input type="checkbox" id="cfg-flash-enable" onchange="saveFlashSetting()"><span class="slider"></span></label></div>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 15px;">
+                    <span style="font-size:1rem; font-weight:bold;">保持螢幕常亮</span>
+                    <label class="switch"><input type="checkbox" id="cfg-wake-enable" onchange="toggleWakeLockSetting()"><span class="slider"></span></label></div>
                 <div style="display:flex; align-items:center; justify-content:space-between; border-top:1px solid rgba(0,0,0,0.05); padding-top:15px; margin-top:5px;"><span style="font-size:1rem; font-weight:bold;">暗黑風格模式</span><label class="switch"><input type="checkbox" id="cfg-dark-enable" onchange="toggleDarkTheme()"><span class="slider"></span></label><label class="setting-item"><span>自動切換</span>
     <input type="checkbox" id="cfg-dark-auto" onchange="toggleAutoDarkTheme()">
 </label></div>
@@ -751,6 +752,7 @@
             initSoundSetting();       // 載入聲音提醒開關狀態
             initFlashSetting();       // 載入畫面閃爍提醒開關狀態
             initDarkThemeSetting();   // 載入原有的暗黑狀態
+            initNewSettings();        // 重新整理時記住常亮狀態
             
             // 綁定「HIIT 卡片」數值的連動監聽（體重連動有氧卡片、即時算卡路里）
             var hiitIds = ['hiit_weight', 'hiit_weight_min', 'hiit_weight_sec'];
@@ -1313,29 +1315,39 @@
             document.getElementById('set-counter').innerText = ""; 
         }
         
-        // 計時器秒數倒數驅動引擎 (採用 Date 修正法，避免手機背景運行導致的失準與嚴重秒差)
+         // 計時器秒數倒數驅動引擎 (採用 Date 修正法，並整合倒數 10 秒震動 3 下提示)
         function startTimer(s) {
-            clearInterval(countdown); 
-            var display = document.querySelector('#timer-display'); 
-            var alarm = document.getElementById('alarm-sound'); 
+            clearInterval(countdown);
+            var display = document.querySelector('#timer-display');
+            var alarm = document.getElementById('alarm-sound');
             alarm.load(); // 預載音訊，防止移動端瀏覽器因安全阻擋而無法播放
             var then = Date.now() + s * 1000;
             
             function updateDisplay() {
                 var left = Math.round((then - Date.now()) / 1000);
                 if (left <= 0) {
-                    clearInterval(countdown); 
+                    clearInterval(countdown);
                     display.innerText = "00:00";
                     // 時間到！觸發聲音與畫面閃爍機制
                     if (localStorage.getItem('cfg_sound_enable') === "true") { alarm.play(); }
                     if (localStorage.getItem('cfg_flash_enable') === "true") { document.getElementById('flash-screen').classList.add('flash-active'); }
-                    showNotice("計時結束", "時間到！開始下一組！", false); 
+                    showNotice("計時結束", "時間到！開始下一組！", false);
                     return;
                 }
-                var m = Math.floor(left / 60); var rs = left % 60;
+                
+                // 🕒 核心需求：倒計時剛好剩 10 秒時，震動三下提示
+                if (left === 10) {
+                    if ('vibrate' in navigator) {
+                        // 震動 200ms -> 停 100ms -> 震動 200ms -> 停 100ms -> 震動 200ms
+                        navigator.vibrate([200, 100, 200, 100, 200]);
+                    }
+                }
+                
+                var m = Math.floor(left / 60);
+                var rs = left % 60;
                 display.innerText = (m < 10 ? '0' + m : m) + ":" + (rs < 10 ? '0' + rs : rs);
             }
-            updateDisplay(); 
+            updateDisplay();
             countdown = setInterval(updateDisplay, 1000);
         }
 
@@ -1454,6 +1466,7 @@
                 closeModal();
             }
         };
+
 
         /* ==========================================================================
            11. 系統設定與資料匯入匯出 (Settings, Export/Import)
@@ -1712,6 +1725,65 @@
                 }
             }
         })();
+
+        /* ==========================================================================
+           強制螢幕常亮邏輯 (Wake Lock API)
+           ========================================================================== */
+        let wakeLock = null;
+        
+        // 初始化常亮設定（與你的 window.onload 連動）
+        function initNewSettings() {
+            const wakeEnable = localStorage.getItem('cfg_wake_enable') === 'true';
+            const checkbox = document.getElementById('cfg-wake-enable');
+            if (checkbox) checkbox.checked = wakeEnable;
+            if (wakeEnable) {
+                requestWakeLock();
+            }
+        }
+        
+        // 監聽螢幕常亮開關切換
+        async function toggleWakeLockSetting() {
+            const isChecked = document.getElementById('cfg-wake-enable').checked;
+            localStorage.setItem('cfg_wake_enable', isChecked);
+            
+            if (isChecked) {
+                await requestWakeLock();
+            } else {
+                releaseWakeLock();
+            }
+        }
+        
+        // 請求啟用螢幕常亮
+        async function requestWakeLock() {
+            if ('wakeLock' in navigator) {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('螢幕常亮模式已啟動');
+                } catch (err) {
+                    console.log(`無法啟動螢幕常亮: ${err.message}`);
+                }
+            } else {
+                console.log('當前瀏覽器/裝置不支援螢幕常亮 API');
+            }
+        }
+        
+        // 釋放螢幕常亮
+        function releaseWakeLock() {
+            if (wakeLock !== null) {
+                wakeLock.release().then(() => {
+                    wakeLock = null;
+                    console.log('螢幕常亮模式已解除');
+                });
+            }
+        }
+        
+        // 當使用者切換分頁或手機螢幕亮暗時，依據設定重新自動綁定常亮
+        document.addEventListener('visibilitychange', async () => {
+            const wakeEnable = localStorage.getItem('cfg_wake_enable') === 'true';
+            if (wakeLock !== null && document.visibilityState === 'visible' && wakeEnable) {
+                await requestWakeLock();
+            }
+        });
         
         // 背景定時檢查時間 (每 60 秒執行一次)，確保跨越 18:00 或 06:00 時能自動切換
         setInterval(function() {
