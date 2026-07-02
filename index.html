@@ -855,9 +855,9 @@
             const tabMenu = document.querySelector('.tab-menu');
             const mainTitle = document.getElementById('main-title');
             const timerTitle = document.getElementById('timer-title');
-
+        
             document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
-
+        
             if (action === 'add') { // 回到主畫面紀錄模式
                 timerPanel.style.display = 'block'; tabMenu.style.display = 'flex';
                 if(mainTitle) mainTitle.style.display = 'block';
@@ -867,13 +867,17 @@
                 timerPanel.style.display = 'none'; tabMenu.style.display = 'none';
                 if(mainTitle) mainTitle.style.display = 'none';
                 if(timerTitle) timerTitle.style.display = 'none';
-
-                if (action === 'converter') { document.getElementById('card-converter').classList.add('active'); } 
+        
+                if (action === 'converter') { 
+                    document.getElementById('card-converter').classList.add('active'); 
+                    document.getElementById('input-lbs').focus();
+                } 
                 else if (action === 'calendar') { document.getElementById('card-calendar').classList.add('active'); setTimeout(() => { calendar.render(); }, 100); } 
                 else if (action === 'settings') { document.getElementById('card-settings').classList.add('active'); }
             }
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // 自動回到最頂端
+            window.scrollTo({ top: 0, behavior: 'auto' }); 
         }
+
 
         // 點選訓練部位分頁 (Tab) 切換特定紀錄卡片展示
         function switchTab(index) {
