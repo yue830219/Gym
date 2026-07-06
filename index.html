@@ -407,7 +407,55 @@
         /* 鎖定頁面滑動的類別 */
         .scroll-locked {
             height: 105vh !important;
-        }       
+        }
+
+        /* ==========================================================================
+           11. 拖曳排序相關樣式 (Drag & Drop)
+        ========================================================================== */
+        .drag-handle {
+            display: none; /* 預設隱藏，只有編輯模式才顯示 */
+            cursor: grab;
+            color: #AEAEB2;
+            touch-action: none; /* 防止手機觸控與網頁滾動衝突 */
+        }
+
+        /* 進入編輯模式時，顯示拖曳把手 */
+        .editing-mode .drag-handle {
+            display: flex;
+            align-items: center;
+        }
+
+        /* 正在被拖曳的項目外觀 */
+        .exercise-item.dragging {
+            opacity: 0.6;
+            background: #f2f2f7;
+            transform: scale(0.98); /* 微微縮小，增加立體浮動感 */
+            transition: transform 0.1s, opacity 0.1s;
+            border-radius: 10px;
+            z-index: 100;
+        }
+
+        /* 正在被拖曳的項目 (暗黑模式相容) */
+        body.dark-mode .exercise-item.dragging {
+            background: #2C2C2E;
+        }
+
+        /* ==========================================================================
+           12. 禁用全域文字選取與 iOS 長按提示（模擬原生 App 體驗）
+        ========================================================================== */
+        body {
+            -webkit-touch-callout: none; /* 禁用 iOS 長按連結或圖片時跳出的選單 */
+            -webkit-user-select: none;   /* Safari */
+            -moz-user-select: none;      /* Firefox */
+            -ms-user-select: none;       /* IE / Edge */
+            user-select: none;           /* 標準瀏覽器 */
+        }
+
+        /* ⚠️ 非常重要：必須允許輸入框、文字區域及可編輯節點能夠正常選取文字，否則無法輸入重量！ */
+        input, textarea, [contenteditable="true"], .exercise-name {
+            -webkit-user-select: text !important;
+            user-select: text !important;
+        }                       
     </style>
 </head>
 <body>
@@ -1037,7 +1085,7 @@
             });
         }
 
-        // 生成單一動作項目的 HTML 結構（包含動作名稱、重量輸入、單位選單、刪除按鈕）
+        // 生成單一動作項目的 HTML 結構（包含把手、動作名稱、重量輸入、單位選單、刪除按鈕）
         function createExerciseItemHTML(name, id, unit) {
             const div = document.createElement('div');
             div.className = 'exercise-item';
@@ -1048,19 +1096,34 @@
                 optionsHTML += `<option value="${u}" ${selected}>${u}</option>`;
             });
 
+            // 將拖曳把手與動作名稱包在一起，維持版面置左
             div.innerHTML = `
-                <span class="exercise-name" data-placeholder="自訂新動作" oninput="checkEmptyName(this)">${name}</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="drag-handle">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="8" x2="20" y2="8"></line><line x1="4" y1="16" x2="20" y2="16"></line></svg>
+                    </div>
+                    <span class="exercise-name" data-placeholder="自訂新動作" oninput="checkEmptyName(this)">${name}</span>
+                </div>
                 <div class="input-group">
-                <input type="number" step="any" inputmode="decimal" class="weight-input" data-id="${id}" placeholder="0" value="0"
-                       onfocus="this.dataset.oldVal = this.value; this.value = '';" 
-                       onblur="if(this.value.trim() === '') { this.value = this.dataset.oldVal; } else { saveCurrentWeight(this); }"
-                       oninput="saveCurrentWeight(this)">
+                    <input type="number" step="any" inputmode="decimal" class="weight-input" data-id="${id}" placeholder="0" value="0"
+                        onfocus="this.dataset.oldVal = this.value; this.value = '';" 
+                        onblur="if(this.value.trim() === '') { this.value = this.dataset.oldVal; } else { saveCurrentWeight(this); }"
+                        oninput="saveCurrentWeight(this)">
                     <select class="unit-select" disabled style="border:none; background:transparent; font-size:0.9rem; color:#666; font-weight:bold; width:45px; -webkit-appearance:none; appearance:none; text-align:center; cursor:pointer;">
                         ${optionsHTML}
                     </select>
                     <button class="btn-delete-exercise" onclick="deleteExerciseItem(this)">×</button>
                 </div>
             `;
+
+            // 為新建立的把手綁定拖曳事件 (支援手機觸控)
+            const handle = div.querySelector('.drag-handle');
+            handle.addEventListener('touchstart', handleDragStart, { passive: false });
+            handle.addEventListener('touchmove', handleDragMove, { passive: false });
+            handle.addEventListener('touchend', handleDragEnd);
+            // (支援電腦滑鼠)
+            handle.addEventListener('mousedown', handleDragStart);
+
             return div;
         }
 
@@ -1159,6 +1222,74 @@
             });
             loadAllWeights();
         }
+        
+        /* ==========================================================================
+        拖曳排序核心邏輯 (Drag & Drop Logic)
+        ========================================================================== */
+        let activeDragItem = null;
+
+        function handleDragStart(e) {
+            // 確保只有左鍵或觸控能啟動
+            if (e.type === 'mousedown' && e.button !== 0) return; 
+            
+            // 如果該卡片不是編輯模式，則禁止拖曳
+            if (!this.closest('.card').classList.contains('editing-mode')) return;
+            
+            activeDragItem = this.closest('.exercise-item');
+            activeDragItem.classList.add('dragging');
+            
+            // 如果是手機觸控，強制停止背景畫面跟著捲動
+            if (e.type === 'touchstart') {
+                e.preventDefault(); 
+            }
+        }
+
+        function handleDragMove(e) {
+            if (!activeDragItem) return;
+            
+            // 滑動時阻擋預設滾動行為，確保拖曳順暢
+            if (e.type === 'touchmove') e.preventDefault(); 
+
+            // 取得當前 Y 座標 (自動相容滑鼠與觸控)
+            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            const list = activeDragItem.closest('.exercise-list');
+            
+            // 計算應該插入在哪個元素之前
+            const afterElement = getDragAfterElement(list, clientY);
+            
+            if (afterElement == null) {
+                list.appendChild(activeDragItem);
+            } else {
+                list.insertBefore(activeDragItem, afterElement);
+            }
+        }
+
+        function handleDragEnd(e) {
+            if (!activeDragItem) return;
+            activeDragItem.classList.remove('dragging');
+            activeDragItem = null;
+        }
+
+        // 數學運算：判斷目前座標在清單中的哪個項目的「上方」或「下方」
+        function getDragAfterElement(container, y) {
+            // 取得所有尚未被拖曳的項目節點
+            const draggableElements = [...container.querySelectorAll('.exercise-item:not(.dragging)')];
+
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                // 算出游標距離目標元素中心點的距離
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        // 綁定全域滑鼠移動與釋放事件 (防止滑鼠離開把手範圍時拖曳卡住)
+        document.addEventListener('mousemove', handleDragMove);
+        document.addEventListener('mouseup', handleDragEnd);
 
         /* ==========================================================================
            7. 有氧與 HIIT 運算邏輯 (Cardio & HIIT Calculations)
@@ -1798,6 +1929,22 @@
         // 註冊 PWA 離線服務線程 (Service Worker) 確保應用程式可以離線開啟
         if ("serviceWorker" in navigator) { navigator.serviceWorker.register("service-worker.js"); }
         
+        // ==========================================================================
+            禁用滑鼠右鍵與手機長按快顯選單
+        // ==========================================================================
+        document.addEventListener('contextmenu', function(e) {
+            // 檢查點擊的目標是不是輸入框或正在編輯的文字
+            const isInput = e.target.tagName === 'INPUT' || 
+                            e.target.tagName === 'TEXTAREA' || 
+                            e.target.classList.contains('exercise-name');
+                            
+            // 如果不是輸入框，就阻擋預設的右鍵/長按選單跳出
+            if (!isInput) {
+                e.preventDefault();
+            }
+        });        
+
     </script>
+
 </body>
 </html>
