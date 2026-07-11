@@ -1975,9 +1975,9 @@ function initCalendar() {
             document.body.appendChild(loading);
 
             try {
-                // 使用 html2canvas 進行截圖，scale: 3 確保 IG 顯示夠清晰
+                // 使用 html2canvas 進行截圖，scale: 0.8 確保 IG 顯示夠清晰
                 const canvas = await html2canvas(element, { 
-                    scale: 3, 
+                    scale: 0.8, 
                     backgroundColor: null, 
                     useCORS: true,
                     logging: false
