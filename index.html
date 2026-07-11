@@ -675,6 +675,16 @@
     <div class="card" id="card-calendar">
         <div class="card-header"><h3 style="color:var(--primary); margin:0;">訓練日曆</h3></div>
         <div id="calendar"></div>
+        
+        <!-- 新增：IG 分享按鈕區塊 -->
+        <div id="share-btns-container" style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn-record" style="background: linear-gradient(135deg, #FF2D55 0%, #FF375F 100%); flex: 1; padding: 12px; font-size: 14px; margin-top: 0;" onclick="shareDailyTraining()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> 分享本日訓練
+            </button>
+            <button class="btn-record" style="background: linear-gradient(135deg, #5856D6 0%, #AF52DE 100%); flex: 1; padding: 12px; font-size: 14px; margin-top: 0;" onclick="shareMonthlyTraining()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 分享當月日曆
+            </button>
+        </div>
     </div>
     
     <div class="card" id="card-settings">
@@ -719,6 +729,8 @@
     
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/zh-tw.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    
     <script>
         // 頁面初始化時，確保沒有不必要的滑動
         document.body.classList.add('scroll-locked');
@@ -1226,41 +1238,43 @@
         /* ==========================================================================
         拖曳排序核心邏輯 (Drag & Drop Logic)
         ========================================================================== */
-        let activeDragItem = null;
+         let activeDragItem = null;
 
         function handleDragStart(e) {
             // 確保只有左鍵或觸控能啟動
             if (e.type === 'mousedown' && e.button !== 0) return; 
             
-            // 如果該卡片不是編輯模式，則禁止拖曳
-            if (!this.closest('.card').classList.contains('editing-mode')) return;
-            
-            activeDragItem = this.closest('.exercise-item');
+            activeDragItem = e.target.closest('.exercise-item');
+            if (!activeDragItem) return;
+
+            // 加上 dragging class 觸發浮動特效
             activeDragItem.classList.add('dragging');
-            
-            // 如果是手機觸控，強制停止背景畫面跟著捲動
-            if (e.type === 'touchstart') {
-                e.preventDefault(); 
-            }
+
+            // 記錄初始 Y 座標
+            const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+            activeDragItem.dataset.startY = clientY;
         }
 
         function handleDragMove(e) {
             if (!activeDragItem) return;
-            
-            // 滑動時阻擋預設滾動行為，確保拖曳順暢
-            if (e.type === 'touchmove') e.preventDefault(); 
+            e.preventDefault(); // 防止手機滾動干擾拖曳
 
-            // 取得當前 Y 座標 (自動相容滑鼠與觸控)
-            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-            const list = activeDragItem.closest('.exercise-list');
-            
-            // 計算應該插入在哪個元素之前
-            const afterElement = getDragAfterElement(list, clientY);
-            
-            if (afterElement == null) {
-                list.appendChild(activeDragItem);
+            const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+            const list = activeDragItem.parentNode;
+            // 取得所有未在拖曳狀態的項目
+            const items = [...list.querySelectorAll('.exercise-item:not(.dragging)')];
+
+            // 尋找游標目前停留在哪個項目之上
+            const nextItem = items.find(item => {
+                const rect = item.getBoundingClientRect();
+                const offset = clientY - rect.top - rect.height / 2;
+                return offset < 0;
+            });
+
+            if (nextItem) {
+                list.insertBefore(activeDragItem, nextItem);
             } else {
-                list.insertBefore(activeDragItem, afterElement);
+                list.appendChild(activeDragItem);
             }
         }
 
@@ -1490,21 +1504,25 @@
            10. 日曆與歷史紀錄管理 (Calendar & History)
            ========================================================================== */
         // 初始化 FullCalendar 實例與參數
-        function initCalendar() {
-            var calendarEl = document.getElementById('calendar');
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth', locale: 'zh-tw', height: 'auto',
-                headerToolbar: { left: 'prev', center: 'title', right: 'next' },
-                dayCellContent: function(arg) { return arg.date.getDate(); }, // 簡化日期文字，只保留數字
-                eventOrder: "order", // 依自定義權重排序每日卡片顯示順序
-                events: JSON.parse(localStorage.getItem('gym_history') || "[]"),
-                eventClick: function(info) { 
-                    currentEventInfo = info; 
-                    showNotice(info.event.title + " (" + info.event.startStr + ")", info.event.extendedProps.note || "無詳細內容", true); 
-                }
-            });
-            calendar.render();
+function initCalendar() {
+    var calendarEl = document.getElementById('calendar');
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth', 
+        locale: 'zh-tw', 
+        height: 'auto',
+        fixedWeekCount: false,
+        headerToolbar: { left: 'prev', center: 'title', right: 'next' },
+        dayCellContent: function(arg) { return arg.date.getDate(); }, 
+        eventOrder: "order", 
+        events: JSON.parse(localStorage.getItem('gym_history') || "[]"),
+        eventClick: function(info) { 
+            currentEventInfo = info; 
+            showNotice(info.event.title + " (" + info.event.startStr + ")", info.event.extendedProps.note || "無詳細內容", true); 
         }
+    });
+    calendar.render();
+}
+
 
         // 把當前操作卡片上填寫的所有動作、重量、備註整合編碼，儲存或複寫回訓練日曆資料庫中
         function saveToHistory(type, btnElement, color) {
@@ -1943,6 +1961,230 @@
                 e.preventDefault();
             }
         });        
+
+        /* ==========================================================================
+           分享與截圖功能 (Share & Export to IG) - 完整打包版（支援自動日夜切換）
+           ========================================================================== */
+        
+        // 1. 核心邏輯：將指定的 DOM 節點轉為圖片並呼叫系統分享
+        async function processAndShare(element, filename) {
+            // 建立載入中提示
+            const loading = document.createElement('div');
+            loading.innerHTML = '正在產生高畫質圖片...';
+            loading.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.8); color:white; padding:15px 25px; border-radius:12px; z-index:99999; font-weight:bold; backdrop-filter:blur(5px); white-space: nowrap;';
+            document.body.appendChild(loading);
+
+            try {
+                // 使用 html2canvas 進行截圖，scale: 3 確保 IG 顯示夠清晰
+                const canvas = await html2canvas(element, { 
+                    scale: 3, 
+                    backgroundColor: null, 
+                    useCORS: true,
+                    logging: false
+                });
+                
+                const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                const file = new File([imageBlob], filename, { type: 'image/png' });
+
+                // 檢查裝置是否支援原生分享 (如 iOS/Android 的分享清單)
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: '健身助手 Pro',
+                        text: '分享我的訓練紀錄！ 💪'
+                    });
+                } else {
+                    // 電腦版或不支援的瀏覽器，降級為自動下載圖片
+                    const link = document.createElement('a');
+                    link.download = filename;
+                    link.href = URL.createObjectURL(imageBlob);
+                    link.click();
+                    showNotice("下載成功", "圖片已儲存至您的裝置，您可以手動發布至 Instagram！", false);
+                }
+            } catch (error) {
+                console.error('截圖失敗:', error);
+                showNotice("發生錯誤", "產生圖片失敗，請稍後再試。", false);
+            } finally {
+                loading.remove(); // 移除提示
+            }
+        }
+
+        // 2. 功能：分享本日訓練 (完美同步當月精緻風格，自動切換日夜模式)
+        function shareDailyTraining() {
+            if (!window.html2canvas) return alert('套件載入中，請稍後再試');
+        
+            // 取得今天的日期字串 (符合 FullCalendar 的 startStr 格式 YYYY-MM-DD)
+            const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+        
+            // 從日曆中過濾出今天的訓練項目
+            const todayEvents = calendar.getEvents().filter(e => e.startStr.includes(todayStr));
+        
+            if (todayEvents.length === 0) {
+                showNotice("沒有紀錄", "今天還沒有任何訓練紀錄喔！請先新增訓練。", false);
+                return;
+            }
+        
+            // 判斷當前是否為暗黑模式
+            const isDark = document.body.classList.contains('dark-mode');
+        
+            // 建立 IG 限動比例的隱藏美化畫布 (1080 x 1920)
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = `
+                position: absolute; left: -9999px; top: 0;
+                width: 1080px; height: 1920px;
+                background: ${isDark ? 'linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 50%, #000000 100%)' : 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)'};
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                font-family: -apple-system, system-ui, sans-serif;
+                box-sizing: border-box; padding: 100px;
+            `;
+        
+            let eventHtml = '';
+            todayEvents.forEach(e => {
+                // 抓取儲存在 extendedProps.note 的詳細動作清單
+                const noteText = e.extendedProps && e.extendedProps.note ? e.extendedProps.note.trim() : '';
+                let detailsHtml = '';
+                
+                if (noteText) {
+                    // 根據日夜模式動態調整分隔線與內文顏色
+                    detailsHtml = `<div style="font-size: 32px; font-weight: 500; text-align: left; margin-top: 20px; color: ${isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.7)'}; width: 100%; line-height: 1.7; border-top: 1px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'}; padding-top: 20px; box-sizing: border-box;">
+                        ${noteText.replace(/\n/g, '<br>')}
+                    </div>`;
+                }
+        
+                // 訓練項目小卡，同步改為毛玻璃微透質感
+                eventHtml += `<div style="background: ${isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.4)'}; border: 2px solid ${isDark ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.3)'}; border-radius: 35px; padding: 45px; margin-bottom: 30px; color: ${isDark ? '#fff' : '#1C1C1E'}; box-shadow: 0 15px 35px rgba(0,0,0,${isDark ? '0.25' : '0.05'}); backdrop-filter: blur(15px); width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box;">
+                    <div style="font-size: 48px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%;">
+                        <span style="color:${e.backgroundColor || '#26E6A8'}">●</span> ${e.title}
+                    </div>
+                    ${detailsHtml}
+                </div>`;
+            });
+        
+            const dateStrFormatted = new Date().toLocaleDateString('zh-TW', { month: 'long', day: 'numeric' });
+        
+            // 主卡片架構完全對齊月紀錄的磨砂玻璃卡片樣式
+            wrapper.innerHTML = `
+                <div style="background: rgba(255,255,255,0.12); backdrop-filter: blur(30px); border: 3px solid rgba(255,255,255,0.3); border-radius: 50px; padding: 80px 60px; text-align: center; width: 100%; box-shadow: 0 30px 60px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
+                    <div style="font-size: 50px; font-weight: bold; color: ${isDark ? '#8E8E93' : 'rgba(0,0,0,0.5)'}; margin-bottom: 20px; letter-spacing: 2px;">Workout Complete</div>
+                    <div style="font-size: 90px; font-weight: 900; color: ${isDark ? '#FFFFFF' : '#1C1C1E'}; margin-bottom: 80px; text-shadow: 0 5px 15px rgba(0,0,0,0.1);">${dateStrFormatted} 訓練達成</div>
+                    <div style="width: 100%; display:flex; flex-direction: column; align-items: center;">
+                        ${eventHtml}
+                    </div>
+                </div>
+                <div style="position: absolute; bottom: 115px; font-size: 40px; color: #FFFFFF; font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">NO PAIN, NO GAIN.</div>
+                <div style="position: absolute; bottom: 70px; font-size: 36px; color: rgba(255,255,255,0.6); font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">每個流汗的瞬間，都在成就更好的自己。</div>
+            `;
+        
+            document.body.appendChild(wrapper);
+            processAndShare(wrapper, `Daily_Workout_${todayStr}.png`).then(() => {
+                wrapper.remove(); // 完成後將隱藏的元素移除
+            });
+        }
+
+        // 3. 功能：訓練日曆 IG 專屬分享截圖功能 (今日僅保留邊框版)
+        function shareMonthlyTraining() {
+            if (!window.html2canvas) return alert('套件載入中，請稍後再試');
+            
+            const currentDate = calendar.getDate();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth(); 
+            
+            const allEvents = calendar.getEvents();
+            const monthEvents = allEvents.filter(e => {
+                const eDate = new Date(e.start);
+                return eDate.getFullYear() === year && eDate.getMonth() === month;
+            });
+        
+            const isDark = document.body.classList.contains('dark-mode');
+        
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = `
+                position: absolute; left: -9999px; top: 0;
+                width: 1080px; height: 1920px;
+                background: ${isDark ? 'linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 50%, #000000 100%)' : 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)'};
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                font-family: -apple-system, system-ui, sans-serif;
+                box-sizing: border-box; padding: 80px;
+            `;
+        
+            const monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+            const monthTitle = `${year}年 ${monthNames[month]}`;
+        
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            let gridHtml = `
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; width: 100%; text-align: center; margin-bottom: 20px;">
+                    ${['日', '一', '二', '三', '四', '五', '六'].map(d => `<div style="font-size: 28px; font-weight: bold; color: ${isDark ? '#AEAEB2' : 'rgba(0,0,0,0.5)'};">${d}</div>`).join('')}
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; width: 100%; grid-auto-rows: 200px;">
+            `;
+        
+            for (let i = 0; i < firstDay; i++) {
+                gridHtml += `<div style="background: rgba(255,255,255,0.05); border-radius: 20px;"></div>`;
+            }
+        
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayEvents = monthEvents.filter(e => new Date(e.start).getDate() === d);
+                
+                let eventsHtml = '';
+                dayEvents.slice(0, 4).forEach(e => {
+                    eventsHtml += `
+                        <div style="background: ${e.backgroundColor}; color: #fff; font-size: 16px; font-weight: bold; padding: 6px; border-radius: 8px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 85%; text-align: center;">
+                            ${e.title}
+                        </div>
+                    `;
+                });
+                if (dayEvents.length > 4) {
+                     eventsHtml += `<div style="color: ${isDark ? '#8E8E93' : 'rgba(0,0,0,0.5)'}; font-size: 16px; margin-top: 4px; font-weight: bold; text-align: center;">+${dayEvents.length - 4}</div>`;
+                }
+        
+                const today = new Date();
+                const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
+                const dayNumColor = isDark ? (isToday ? '#FFF' : '#E5E5EA') : (isToday ? '#1C1C1E' : '#1C1C1E');
+                const dayBg = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)';
+                
+                // 核心修改：移除了 span 上的 background 與 border-radius 樣式，今日僅由父層 border 顯示
+                gridHtml += `
+                    <div style="background: ${dayBg}; border-radius: 20px; padding: 10px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.03); border: ${isToday ? '3px solid #007AFF' : '1px solid rgba(255,255,255,0.2)'};">
+                        <div style="text-align: center; margin-bottom: 5px;">
+                            <span style="font-size: 26px; font-weight: 800; color: ${dayNumColor};">${d}</span>
+                        </div>
+                        <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                            ${eventsHtml}
+                        </div>
+                    </div>
+                `;
+            }
+            gridHtml += `</div>`;
+        
+            const totalWorkouts = monthEvents.length;
+        
+            wrapper.innerHTML = `
+                <div style="background: rgba(255,255,255,0.12); backdrop-filter: blur(30px); border: 3px solid rgba(255,255,255,0.3); border-radius: 50px; padding: 60px; width: 100%; box-shadow: 0 30px 60px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+                        <div style="text-align: left;">
+                            <div style="font-size: 36px; font-weight: bold; color: ${isDark ? '#8E8E93' : 'rgba(0,0,0,0.5)'}; letter-spacing: 2px;">Monthly Summary</div>
+                            <div style="font-size: 64px; font-weight: 900; color: ${isDark ? '#FFFFFF' : '#1C1C1E'}; text-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-top: 10px;">${monthTitle} 紀錄</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #FF3B30 0%, #FF9500 100%); width: 130px; height: 130px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 15px 30px rgba(255,59,48,0.4); color: white;">
+                            <div style="font-size: 52px; font-weight: 900; line-height: 1;">${totalWorkouts}</div>
+                            <div style="font-size: 18px; font-weight: bold; margin-top: 4px;">次訓練</div>
+                        </div>
+                    </div>
+                    ${gridHtml}
+                </div>
+                <div style="position: absolute; bottom: 115px; font-size: 40px; color: #FFFFFF; font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">TRUST THE PROCESS.</div>
+                <div style="position: absolute; bottom: 70px; font-size: 36px; color: rgba(255,255,255,0.5); font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">沒有天生的完美，只有日復一日的堅持。</div>
+            `;
+        
+            document.body.appendChild(wrapper);
+            
+            processAndShare(wrapper, `Monthly_Workout_${year}_${month+1}.png`).then(() => {
+                wrapper.remove();
+            });
+        }
+
 
     </script>
 
