@@ -729,7 +729,8 @@
     
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/zh-tw.global.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@2.8.0/dist/dom-to-image-more.min.js"></script>
+
     
     <script>
         // 頁面初始化時，確保沒有不必要的滑動
@@ -1961,112 +1962,105 @@ function initCalendar() {
             }
         });
 
-        /* ==========================================================================
-           分享與截圖功能 (Share & Export to IG) - 穩定優化完整版
-           ========================================================================== */
-        
-        // 語錄資料庫
-        function getRandomQuotes() {
-            const zhQuotes = [
-                "痛就對了，代表肌肉正在成長。", "今天的痛苦，就是明天的力量。", "你不必極端，只要始終如一就行。",
-                "汗水只是脂肪的哭泣。", "渴望一個好身體，不如努力去鍛鍊。", "想要和實現的區別在於紀律。",
-                "你唯一的極限就是你。", "一小時的鍛鍊佔你一天的4%。沒有藉口。", "訓練瘋狂或保持不變。",
-                "力量不是來自體能，而是來自不屈不撓的意志。", "成功是小努力的總和，日復一日地重複。",
-                "當你想退出的時候，想想你為什麼開始。", "這將是一段旅程。不是為了保持身材而衝刺。",
-                "創造健康的習慣，而不是限制。", "你的健康是一種投資，而不是支出。", "照照鏡子。那是你的競爭對手。"
-            ];
-        
-            const enQuotes = [
-                "NO PAIN, NO GAIN.", "EXCUSES DON'T BURN CALORIES.", "RISE AND GRIND.",
-                "SWEAT IS JUST FAT CRYING.", "JUST SHOW UP.", "DISCIPLINE OVER MOTIVATION.",
-                "EARN YOUR BODY.", "TRAIN LIKE A BEAST.", "ONE WORKOUT AT A TIME.",
-                "DON'T QUIT.", "PROGRESS, NOT PERFECTION.", "BELIEVE IN YOURSELF.",
-                "STRONGER EVERY DAY.", "PUSH YOUR LIMITS.", "FOCUS ON YOUR GOALS.",
-                "EAT CLEAN, TRAIN MEAN.", "YOUR BODY, YOUR TEMPLE.", "MAKE IT HAPPEN.",
-                "BE YOUR OWN HERO.", "CONSISTENCY IS KEY."
-            ];
-        
-            return {
-                en: enQuotes[Math.floor(Math.random() * enQuotes.length)],
-                zh: zhQuotes[Math.floor(Math.random() * zhQuotes.length)]
-            };
-        }
-        
-        // UI 提示控制器 (傳統宣告，避免 Initialization 錯誤)
-        var shareLoadingEl = null;
-        
-        function showShareLoading() {
-            if (shareLoadingEl) return;
-            shareLoadingEl = document.createElement('div');
-            shareLoadingEl.innerHTML = `
-                <div style="margin-bottom: 8px;"> 正在產生圖片...</div>
-                <div style="font-size: 14px; font-weight: normal; opacity: 0.8;">請稍候，這可能需要幾秒鐘</div>
-            `;
-            shareLoadingEl.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.85); color:white; padding:20px 30px; border-radius:16px; z-index:99999; font-weight:bold; backdrop-filter:blur(10px); text-align:center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); white-space: nowrap; transition: opacity 0.3s;';
-            document.body.appendChild(shareLoadingEl);
-        }
-        
-        function hideShareLoading() {
-            if (shareLoadingEl) {
-                shareLoadingEl.remove();
-                shareLoadingEl = null;
-            }
-        }
-        
-// 1. 核心邏輯優化：降低 scale，減輕記憶體負擔
+/* ==========================================================================
+   分享與截圖功能 (Share & Export to IG) - dom-to-image-more 終極穩定版
+   ========================================================================== */
+
+// 語錄資料庫
+function getRandomQuotes() {
+    const zhQuotes = [
+        "痛就對了，代表肌肉正在成長。", "今天的痛苦，就是明天的力量。", "你不必極端，只要始終如一就行。",
+        "汗水只是脂肪的哭泣。", "渴望一個好身體，不如努力去鍛鍊。", "想要和實現的區別在於紀律。",
+        "你唯一的極限就是你。", "一小時的鍛鍊佔你一天的4%。沒有藉口。", "訓練瘋狂或保持不變。",
+        "力量不是來自體能，而是來自不屈不撓的意志。", "成功是小努力的總和，日復一日地重複。",
+        "當你想退出的時候，想想你為什麼開始。", "這將是一段旅程。不是為了保持身材而衝刺。",
+        "創造健康的習慣，而不是限制。", "你的健康是一種投資，而不是支出。", "照照鏡子。那是你的競爭對手。"
+    ];
+
+    const enQuotes = [
+        "NO PAIN, NO GAIN.", "EXCUSES DON'T BURN CALORIES.", "RISE AND GRIND.",
+        "SWEAT IS JUST FAT CRYING.", "JUST SHOW UP.", "DISCIPLINE OVER MOTIVATION.",
+        "EARN YOUR BODY.", "TRAIN LIKE A BEAST.", "ONE WORKOUT AT A TIME.",
+        "DON'T QUIT.", "PROGRESS, NOT PERFECTION.", "BELIEVE IN YOURSELF.",
+        "STRONGER EVERY DAY.", "PUSH YOUR LIMITS.", "FOCUS ON YOUR GOALS.",
+        "EAT CLEAN, TRAIN MEAN.", "YOUR BODY, YOUR TEMPLE.", "MAKE IT HAPPEN.",
+        "BE YOUR OWN HERO.", "CONSISTENCY IS KEY."
+    ];
+
+    return {
+        en: enQuotes[Math.floor(Math.random() * enQuotes.length)],
+        zh: zhQuotes[Math.floor(Math.random() * zhQuotes.length)]
+    };
+}
+
+// UI 提示控制器
+var shareLoadingEl = null;
+
+function showShareLoading() {
+    if (shareLoadingEl) return;
+    shareLoadingEl = document.createElement('div');
+    shareLoadingEl.innerHTML = `
+        <div style="margin-bottom: 8px;"> 正在產生圖片...</div>
+        <div style="font-size: 14px; font-weight: normal; opacity: 0.8;">請稍候，這可能需要幾秒鐘</div>
+    `;
+    shareLoadingEl.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.85); color:white; padding:20px 30px; border-radius:16px; z-index:99999; font-weight:bold; text-align:center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); white-space: nowrap; transition: opacity 0.3s;';
+    document.body.appendChild(shareLoadingEl);
+}
+
+function hideShareLoading() {
+    if (shareLoadingEl) {
+        shareLoadingEl.remove();
+        shareLoadingEl = null;
+    }
+}
+
 async function processAndShare(element, filename) {
     try {
-        // 給予瀏覽器稍微多一點時間確保 DOM 長好
-        await new Promise(resolve => setTimeout(resolve, 400));
+        // 1. 強制讓元素進入 DOM 並顯示在螢幕可見區域 (這是解決空白的關鍵)
+        element.style.position = 'fixed';
+        element.style.left = '0';
+        element.style.top = '0';
+        element.style.zIndex = '999999';
+        element.style.opacity = '1'; // 確保透明度沒問題
+        
+        // 2. 給瀏覽器一點渲染時間 (不可省略)
+        await new Promise(resolve => setTimeout(resolve, 500));
 
-        // 使用 html2canvas 進行截圖
-        const canvas = await html2canvas(element, { 
-            scale: 1.1, // 【優化】降回 1，1080x1920 已經夠清晰，避免記憶體溢位
-            backgroundColor: null, 
-            useCORS: true,
-            allowTaint: true,
-            logging: false
+        // 3. 使用 dom-to-image-more 進行截圖
+        // 增加 filter 確保會去掃描 DOM 節點
+        const imageBlob = await domtoimage.toBlob(element, { 
+            width: 1080,
+            height: 1920,
+            bgcolor: '#000000', // 給定背景顏色避免透明背景導致的異常
+            quality: 0.95
         });
         
-        const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
         const file = new File([imageBlob], filename, { type: 'image/png' });
 
+        // 4. 分享邏輯
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-                files: [file],
-                title: '健身助手 Pro',
-                text: '分享我的訓練紀錄！ 💪'
-            });
+            await navigator.share({ files: [file] });
         } else {
             const link = document.createElement('a');
             link.download = filename;
             link.href = URL.createObjectURL(imageBlob);
             link.click();
-            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-            
-            if(typeof showNotice === 'function') {
-                showNotice("下載成功", "圖片已儲存至您的裝置，您可以手動發布至 Instagram！", false);
-            } else {
-                alert("圖片下載成功！");
-            }
+            URL.revokeObjectURL(link.href);
         }
     } catch (error) {
-        if (error.name === 'AbortError' || (error.message && error.message.toLowerCase().includes('abort'))) {
-            console.log('使用者手動取消了分享，不顯示錯誤提示。');
-            return; 
-        }
         console.error('截圖失敗:', error);
-        if(typeof showNotice === 'function') {
-            showNotice("發生錯誤", "產生圖片失敗，請稍後再試。", false);
-        } else {
-            alert("產生圖片失敗，請稍後再試。");
-        }
+        alert("產生失敗，請檢查是否網頁上有圖片或字體載入尚未完成。");
+    } finally {
+        // 5. 截完圖後，無論成功失敗，都要移除該元素
+        element.remove();
+        hideShareLoading();
     }
 }
 
-// 2. 每日分享優化：拔除毛玻璃、限制資料筆數、備註截斷
+
+// 2. 功能：分享本日訓練
 async function shareDailyTraining() {
-    if (!window.html2canvas) return alert('套件載入中，請稍後再試');
+    if (typeof domtoimage === 'undefined') return alert('套件載入中，請稍後再試');
 
     const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
     const todayEvents = calendar.getEvents().filter(e => e.startStr.includes(todayStr));
@@ -2095,7 +2089,6 @@ async function shareDailyTraining() {
         `;
 
         let eventHtml = '';
-        // 【優化】限制最多渲染 6 筆，避免畫面擠爆卡死
         const maxDisplay = 6;
         const displayEvents = todayEvents.slice(0, maxDisplay);
         
@@ -2104,15 +2097,13 @@ async function shareDailyTraining() {
             let detailsHtml = '';
             
             if (noteText) {
-                // 【優化】如果備註太長，自動截斷
                 if (noteText.length > 60) noteText = noteText.substring(0, 60) + '...';
                 detailsHtml = `<div style="font-size: 30px; font-weight: 500; text-align: left; margin-top: 15px; color: ${isDark ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.7)'}; width: 100%; line-height: 1.5; border-top: 1px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'}; padding-top: 15px; box-sizing: border-box;">
                     ${noteText.replace(/\n/g, '<br>')}
                 </div>`;
             }
 
-            // 【優化】拔除 backdrop-filter，改用純 RGBA 背景
-            const itemBg = isDark ? 'rgba(44, 44, 46, 0.9)' : 'rgba(255, 255, 255, 0.7)';
+            const itemBg = isDark ? 'rgba(44, 44, 46, 0.95)' : 'rgba(255, 255, 255, 0.85)';
             eventHtml += `<div style="background: ${itemBg}; border: 2px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)'}; border-radius: 30px; padding: 35px; margin-bottom: 25px; color: ${isDark ? '#fff' : '#1C1C1E'}; box-shadow: 0 10px 20px rgba(0,0,0,${isDark ? '0.3' : '0.05'}); width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box;">
                 <div style="font-size: 42px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%;">
                     <span style="color:${e.backgroundColor || '#26E6A8'}">●</span> ${e.title}
@@ -2121,18 +2112,15 @@ async function shareDailyTraining() {
             </div>`;
         });
 
-        // 提示還有更多紀錄
         if (todayEvents.length > maxDisplay) {
-            eventHtml += `<div style="font-size: 32px; font-weight: bold; color: ${isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)'}; margin-top: 10px;">
+            eventHtml += `<div style="font-size: 32px; font-weight: bold; color: ${isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'}; margin-top: 10px;">
                 ... 還有 ${todayEvents.length - maxDisplay} 項訓練 ...
             </div>`;
         }
 
         const dateStrFormatted = new Date().toLocaleDateString('zh-TW', { month: 'long', day: 'numeric' });
         const quotes = getRandomQuotes();
-        
-        // 【優化】主外框拔除 backdrop-filter
-        const mainBg = isDark ? 'rgba(28, 28, 30, 0.8)' : 'rgba(255, 255, 255, 0.3)';
+        const mainBg = isDark ? 'rgba(28, 28, 30, 0.9)' : 'rgba(255, 255, 255, 0.5)';
 
         wrapper.innerHTML = `
             <div style="background: ${mainBg}; border: 3px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 80px 60px; text-align: center; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
@@ -2155,9 +2143,9 @@ async function shareDailyTraining() {
     }
 }
 
-// 3. 每月分享優化：拔除毛玻璃，簡化 DOM 樣式負擔
+// 3. 功能：分享本月訓練
 async function shareMonthlyTraining() {
-    if (!window.html2canvas) return alert('套件載入中，請稍後再試');
+    if (typeof domtoimage === 'undefined') return alert('套件載入中，請稍後再試');
     
     showShareLoading();
     await new Promise(resolve => setTimeout(resolve, 50));
@@ -2223,7 +2211,7 @@ async function shareMonthlyTraining() {
             const today = new Date();
             const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
             const dayNumColor = isDark ? (isToday ? '#FFF' : '#E5E5EA') : (isToday ? '#1C1C1E' : '#1C1C1E');
-            const dayBg = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.4)';
+            const dayBg = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.6)';
             
             gridHtml += `
                 <div style="background: ${dayBg}; border-radius: 20px; padding: 10px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; border: ${isToday ? '3px solid #007AFF' : '1px solid rgba(255,255,255,0.1)'};">
@@ -2240,9 +2228,7 @@ async function shareMonthlyTraining() {
 
         const totalWorkouts = monthEvents.length;
         const quotes = getRandomQuotes();
-        
-        // 【優化】主外框拔除 backdrop-filter
-        const mainBg = isDark ? 'rgba(28, 28, 30, 0.8)' : 'rgba(255, 255, 255, 0.3)';
+        const mainBg = isDark ? 'rgba(28, 28, 30, 0.9)' : 'rgba(255, 255, 255, 0.5)';
 
         wrapper.innerHTML = `
             <div style="background: ${mainBg}; border: 3px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 60px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
@@ -2270,10 +2256,6 @@ async function shareMonthlyTraining() {
         hideShareLoading();
     }
 }
-
-
-
-
 
     </script>
 
