@@ -1947,8 +1947,7 @@ function initCalendar() {
         // 註冊 PWA 離線服務線程 (Service Worker) 確保應用程式可以離線開啟
         if ("serviceWorker" in navigator) { navigator.serviceWorker.register("service-worker.js"); }
         
-        // ==========================================================================
-            禁用滑鼠右鍵與手機長按快顯選單
+        // ===========================================================================禁用滑鼠右鍵與手機長按快顯選單
         // ==========================================================================
         document.addEventListener('contextmenu', function(e) {
             // 檢查點擊的目標是不是輸入框或正在編輯的文字
@@ -1960,7 +1959,7 @@ function initCalendar() {
             if (!isInput) {
                 e.preventDefault();
             }
-        });        
+        });
 
         /* ==========================================================================
            分享與截圖功能 (Share & Export to IG) - 穩定優化完整版
@@ -1993,7 +1992,7 @@ function initCalendar() {
             };
         }
         
-        // UI 提示控制器 (傳統宣告，避免 Initialization 錯誤)
+        // UI 提示控制器
         var shareLoadingEl = null;
         
         function showShareLoading() {
@@ -2001,7 +2000,7 @@ function initCalendar() {
             shareLoadingEl = document.createElement('div');
             shareLoadingEl.innerHTML = `
                 <div style="margin-bottom: 8px;"> 正在產生圖片...</div>
-                <div style="font-size: 14px; font-weight: normal; opacity: 0.8;">請稍候，這可能需要幾秒鐘</div>
+                <div style="font-size: 14px; font-weight: normal; opacity: 0.8;">請稍候，資料量較大時需幾秒鐘</div>
             `;
             shareLoadingEl.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.85); color:white; padding:20px 30px; border-radius:16px; z-index:99999; font-weight:bold; backdrop-filter:blur(10px); text-align:center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); white-space: nowrap; transition: opacity 0.3s;';
             document.body.appendChild(shareLoadingEl);
@@ -2017,12 +2016,11 @@ function initCalendar() {
         // 1. 核心邏輯：將指定的 DOM 節點轉為圖片並呼叫系統分享
         async function processAndShare(element, filename) {
             try {
-                // 等待 300ms，讓瀏覽器有足夠時間把龐大的 DOM 與毛玻璃特效渲染完畢
-                await new Promise(resolve => setTimeout(resolve, 300));
+                await new Promise(resolve => setTimeout(resolve, 400)); // 多給點時間讓大量節點渲染
         
-                // 使用 html2canvas 進行截圖
                 const canvas = await html2canvas(element, { 
-                    scale: 0.8, // 確保 IG 顯示夠清晰且不佔用過多記憶體
+                    // 【關鍵修復1】降低 scale 到 1.2。原本的 2 會產生 4K 圖，在資料多時會導致手機記憶體不足直接閃退卡死
+                    scale: 1.2, 
                     backgroundColor: null, 
                     useCORS: true,
                     allowTaint: true,
@@ -2032,22 +2030,17 @@ function initCalendar() {
                 const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                 const file = new File([imageBlob], filename, { type: 'image/png' });
         
-                // 檢查裝置是否支援原生分享
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     await navigator.share({
                         files: [file],
                         title: '健身助手 Pro',
                         text: '分享我的訓練紀錄！ 💪'
                     });
-                    // 若成功分享，不用特別跳提示，因為系統UI已經給了回饋
                 } else {
-                    // 電腦版或不支援的瀏覽器，降級為自動下載
                     const link = document.createElement('a');
                     link.download = filename;
                     link.href = URL.createObjectURL(imageBlob);
                     link.click();
-                    
-                    // 釋放記憶體
                     setTimeout(() => URL.revokeObjectURL(link.href), 1000);
                     
                     if(typeof showNotice === 'function') {
@@ -2057,10 +2050,9 @@ function initCalendar() {
                     }
                 }
             } catch (error) {
-                // 【關鍵修改】：判斷是否為使用者關閉分享選單 (AbortError)
                 if (error.name === 'AbortError' || (error.message && error.message.toLowerCase().includes('abort'))) {
                     console.log('使用者手動取消了分享，不顯示錯誤提示。');
-                    return; // 靜默離開
+                    return; 
                 }
         
                 console.error('截圖失敗:', error);
@@ -2076,8 +2068,15 @@ function initCalendar() {
         async function shareDailyTraining() {
             if (!window.html2canvas) return alert('套件載入中，請稍後再試');
         
-            const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
-            const todayEvents = calendar.getEvents().filter(e => e.startStr.includes(todayStr));
+            // 【關鍵修復2】改用原生 Date 物件精確比對，避免 e.startStr 遺失時導致的錯誤
+            const today = new Date();
+            const todayEvents = calendar.getEvents().filter(e => {
+                if (!e.start) return false;
+                const d = new Date(e.start);
+                return d.getFullYear() === today.getFullYear() && 
+                       d.getMonth() === today.getMonth() && 
+                       d.getDate() === today.getDate();
+            });
         
             if (todayEvents.length === 0) {
                 if(typeof showNotice === 'function') showNotice("沒有紀錄", "今天還沒有任何訓練紀錄喔！", false);
@@ -2085,7 +2084,6 @@ function initCalendar() {
                 return;
             }
         
-            // 第一時間叫出 UI 提示，並讓出執行緒讓畫面更新
             showShareLoading();
             await new Promise(resolve => setTimeout(resolve, 50)); 
         
@@ -2094,9 +2092,9 @@ function initCalendar() {
         
             try {
                 wrapper = document.createElement('div');
-                // 改用 position: fixed 且遠離畫面，避免撐開網頁引發捲軸跳動
+                // 【關鍵修復3】改為 position: absolute 並放在左側，避免 fixed 在手機版觸發不渲染的 Bug
                 wrapper.style.cssText = `
-                    position: fixed; left: -9999px; top: -9999px;
+                    position: absolute; left: -5000px; top: 0;
                     width: 1080px; height: 1920px;
                     background: ${isDark ? 'linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 50%, #000000 100%)' : 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)'};
                     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -2123,8 +2121,9 @@ function initCalendar() {
                     </div>`;
                 });
         
-                const dateStrFormatted = new Date().toLocaleDateString('zh-TW', { month: 'long', day: 'numeric' });
+                const dateStrFormatted = today.toLocaleDateString('zh-TW', { month: 'long', day: 'numeric' });
                 const quotes = getRandomQuotes();
+                const todayStr = today.toLocaleDateString('sv-SE');
         
                 wrapper.innerHTML = `
                     <div style="background: rgba(255,255,255,0.12); backdrop-filter: blur(30px); border: 3px solid rgba(255,255,255,0.3); border-radius: 50px; padding: 80px 60px; text-align: center; width: 100%; box-shadow: 0 30px 60px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
@@ -2142,7 +2141,6 @@ function initCalendar() {
                 await processAndShare(wrapper, `Daily_Workout_${todayStr}.png`);
                 
             } finally {
-                // 確保無論成功失敗，都會清理畫面並關閉提示
                 if (wrapper) wrapper.remove();
                 hideShareLoading();
             }
@@ -2152,7 +2150,6 @@ function initCalendar() {
         async function shareMonthlyTraining() {
             if (!window.html2canvas) return alert('套件載入中，請稍後再試');
             
-            // 第一時間叫出 UI 提示
             showShareLoading();
             await new Promise(resolve => setTimeout(resolve, 50));
         
@@ -2164,6 +2161,7 @@ function initCalendar() {
                 
                 const allEvents = calendar.getEvents();
                 const monthEvents = allEvents.filter(e => {
+                    if (!e.start) return false;
                     const eDate = new Date(e.start);
                     return eDate.getFullYear() === year && eDate.getMonth() === month;
                 });
@@ -2171,8 +2169,9 @@ function initCalendar() {
                 const isDark = document.body.classList.contains('dark-mode');
         
                 wrapper = document.createElement('div');
+                // 【關鍵修復3】同步修改為 position: absolute
                 wrapper.style.cssText = `
-                    position: fixed; left: -9999px; top: -9999px;
+                    position: absolute; left: -5000px; top: 0;
                     width: 1080px; height: 1920px;
                     background: ${isDark ? 'linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 50%, #000000 100%)' : 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)'};
                     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -2198,18 +2197,21 @@ function initCalendar() {
                 }
         
                 for (let d = 1; d <= daysInMonth; d++) {
-                    const dayEvents = monthEvents.filter(e => new Date(e.start).getDate() === d);
-                    
+                    const dayEvents = monthEvents.filter(e => e.start && new Date(e.start).getDate() === d);
+                    const itemPadding = dayEvents.length > 3 ? '4.7px' : '6px';
+        
                     let eventsHtml = '';
-                    dayEvents.slice(0, 4).forEach(e => {
+                    dayEvents.slice(0, 3).forEach(e => {
+                        // 【關鍵修復4】加入 e.backgroundColor 的防呆 || '#007AFF'，避免出現 background: undefined 導致崩潰
                         eventsHtml += `
-                            <div style="background: ${e.backgroundColor}; color: #fff; font-size: 16px; font-weight: bold; padding: 6px; border-radius: 8px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 85%; text-align: center;">
+                            <div style="background: ${e.backgroundColor || '#007AFF'}; color: #fff; font-size: 24px; font-weight: bold; padding: ${itemPadding}; border-radius: 8px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 85%; text-align: center;">
                                 ${e.title}
                             </div>
                         `;
                     });
-                    if (dayEvents.length > 4) {
-                         eventsHtml += `<div style="color: ${isDark ? '#8E8E93' : 'rgba(0,0,0,0.5)'}; font-size: 16px; margin-top: 4px; font-weight: bold; text-align: center;">+${dayEvents.length - 4}</div>`;
+                    
+                    if (dayEvents.length > 3) {
+                         eventsHtml += `<div style="color: ${isDark ? '#8E8E93' : 'rgba(0,0,0,0.5)'}; font-size: 20px; margin-top: -2px; font-weight: bold; text-align: center;">+${dayEvents.length - 3}</div>`;
                     }
         
                     const today = new Date();
@@ -2259,6 +2261,7 @@ function initCalendar() {
                 hideShareLoading();
             }
         }
+
 
 
 
