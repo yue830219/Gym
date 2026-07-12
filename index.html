@@ -1992,7 +1992,7 @@ function initCalendar() {
             };
         }
         
-        // UI 提示控制器
+        // UI 提示控制器 (傳統宣告，避免 Initialization 錯誤)
         var shareLoadingEl = null;
         
         function showShareLoading() {
@@ -2000,7 +2000,7 @@ function initCalendar() {
             shareLoadingEl = document.createElement('div');
             shareLoadingEl.innerHTML = `
                 <div style="margin-bottom: 8px;"> 正在產生圖片...</div>
-                <div style="font-size: 14px; font-weight: normal; opacity: 0.8;">請稍候，資料量較大時需幾秒鐘</div>
+                <div style="font-size: 14px; font-weight: normal; opacity: 0.8;">請稍候，這可能需要幾秒鐘</div>
             `;
             shareLoadingEl.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.85); color:white; padding:20px 30px; border-radius:16px; z-index:99999; font-weight:bold; backdrop-filter:blur(10px); text-align:center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); white-space: nowrap; transition: opacity 0.3s;';
             document.body.appendChild(shareLoadingEl);
@@ -2013,254 +2013,264 @@ function initCalendar() {
             }
         }
         
-        // 1. 核心邏輯：將指定的 DOM 節點轉為圖片並呼叫系統分享
-        async function processAndShare(element, filename) {
-            try {
-                await new Promise(resolve => setTimeout(resolve, 400)); // 多給點時間讓大量節點渲染
+// 1. 核心邏輯優化：降低 scale，減輕記憶體負擔
+async function processAndShare(element, filename) {
+    try {
+        // 給予瀏覽器稍微多一點時間確保 DOM 長好
+        await new Promise(resolve => setTimeout(resolve, 400));
+
+        // 使用 html2canvas 進行截圖
+        const canvas = await html2canvas(element, { 
+            scale: 1.1, // 【優化】降回 1，1080x1920 已經夠清晰，避免記憶體溢位
+            backgroundColor: null, 
+            useCORS: true,
+            allowTaint: true,
+            logging: false
+        });
         
-                const canvas = await html2canvas(element, { 
-                    // 【關鍵修復1】降低 scale 到 1.2。原本的 2 會產生 4K 圖，在資料多時會導致手機記憶體不足直接閃退卡死
-                    scale: 1.2, 
-                    backgroundColor: null, 
-                    useCORS: true,
-                    allowTaint: true,
-                    logging: false
-                });
-                
-                const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                const file = new File([imageBlob], filename, { type: 'image/png' });
-        
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        files: [file],
-                        title: '健身助手 Pro',
-                        text: '分享我的訓練紀錄！ 💪'
-                    });
-                } else {
-                    const link = document.createElement('a');
-                    link.download = filename;
-                    link.href = URL.createObjectURL(imageBlob);
-                    link.click();
-                    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-                    
-                    if(typeof showNotice === 'function') {
-                        showNotice("下載成功", "圖片已儲存至您的裝置，您可以手動發布至 Instagram！", false);
-                    } else {
-                        alert("圖片下載成功！");
-                    }
-                }
-            } catch (error) {
-                if (error.name === 'AbortError' || (error.message && error.message.toLowerCase().includes('abort'))) {
-                    console.log('使用者手動取消了分享，不顯示錯誤提示。');
-                    return; 
-                }
-        
-                console.error('截圖失敗:', error);
-                if(typeof showNotice === 'function') {
-                    showNotice("發生錯誤", "產生圖片失敗，請稍後再試。", false);
-                } else {
-                    alert("產生圖片失敗，請稍後再試。");
-                }
-            }
-        }
-        
-        // 2. 功能：分享本日訓練
-        async function shareDailyTraining() {
-            if (!window.html2canvas) return alert('套件載入中，請稍後再試');
-        
-            // 【關鍵修復2】改用原生 Date 物件精確比對，避免 e.startStr 遺失時導致的錯誤
-            const today = new Date();
-            const todayEvents = calendar.getEvents().filter(e => {
-                if (!e.start) return false;
-                const d = new Date(e.start);
-                return d.getFullYear() === today.getFullYear() && 
-                       d.getMonth() === today.getMonth() && 
-                       d.getDate() === today.getDate();
+        const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        const file = new File([imageBlob], filename, { type: 'image/png' });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+                files: [file],
+                title: '健身助手 Pro',
+                text: '分享我的訓練紀錄！ 💪'
             });
-        
-            if (todayEvents.length === 0) {
-                if(typeof showNotice === 'function') showNotice("沒有紀錄", "今天還沒有任何訓練紀錄喔！", false);
-                else alert("今天還沒有任何訓練紀錄喔！");
-                return;
-            }
-        
-            showShareLoading();
-            await new Promise(resolve => setTimeout(resolve, 50)); 
-        
-            const isDark = document.body.classList.contains('dark-mode');
-            let wrapper;
-        
-            try {
-                wrapper = document.createElement('div');
-                // 【關鍵修復3】改為 position: absolute 並放在左側，避免 fixed 在手機版觸發不渲染的 Bug
-                wrapper.style.cssText = `
-                    position: absolute; left: -5000px; top: 0;
-                    width: 1080px; height: 1920px;
-                    background: ${isDark ? 'linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 50%, #000000 100%)' : 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)'};
-                    display: flex; flex-direction: column; align-items: center; justify-content: center;
-                    font-family: -apple-system, system-ui, sans-serif;
-                    box-sizing: border-box; padding: 100px;
-                `;
-        
-                let eventHtml = '';
-                todayEvents.forEach(e => {
-                    const noteText = e.extendedProps && e.extendedProps.note ? e.extendedProps.note.trim() : '';
-                    let detailsHtml = '';
-                    
-                    if (noteText) {
-                        detailsHtml = `<div style="font-size: 32px; font-weight: 500; text-align: left; margin-top: 20px; color: ${isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.7)'}; width: 100%; line-height: 1.7; border-top: 1px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'}; padding-top: 20px; box-sizing: border-box;">
-                            ${noteText.replace(/\n/g, '<br>')}
-                        </div>`;
-                    }
-        
-                    eventHtml += `<div style="background: ${isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.4)'}; border: 2px solid ${isDark ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.3)'}; border-radius: 35px; padding: 45px; margin-bottom: 30px; color: ${isDark ? '#fff' : '#1C1C1E'}; box-shadow: 0 15px 35px rgba(0,0,0,${isDark ? '0.25' : '0.05'}); backdrop-filter: blur(15px); width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box;">
-                        <div style="font-size: 48px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%;">
-                            <span style="color:${e.backgroundColor || '#26E6A8'}">●</span> ${e.title}
-                        </div>
-                        ${detailsHtml}
-                    </div>`;
-                });
-        
-                const dateStrFormatted = today.toLocaleDateString('zh-TW', { month: 'long', day: 'numeric' });
-                const quotes = getRandomQuotes();
-                const todayStr = today.toLocaleDateString('sv-SE');
-        
-                wrapper.innerHTML = `
-                    <div style="background: rgba(255,255,255,0.12); backdrop-filter: blur(30px); border: 3px solid rgba(255,255,255,0.3); border-radius: 50px; padding: 80px 60px; text-align: center; width: 100%; box-shadow: 0 30px 60px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
-                        <div style="font-size: 50px; font-weight: bold; color: ${isDark ? '#8E8E93' : 'rgba(0,0,0,0.5)'}; margin-bottom: 20px; letter-spacing: 2px;">Workout Complete</div>
-                        <div style="font-size: 90px; font-weight: 900; color: ${isDark ? '#FFFFFF' : '#1C1C1E'}; margin-bottom: 80px; text-shadow: 0 5px 15px rgba(0,0,0,0.1);">${dateStrFormatted} 訓練達成</div>
-                        <div style="width: 100%; display:flex; flex-direction: column; align-items: center;">
-                            ${eventHtml}
-                        </div>
-                    </div>
-                    <div style="position: absolute; bottom: 115px; font-size: 40px; color: #FFFFFF; font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">${quotes.en}</div>
-                    <div style="position: absolute; bottom: 70px; font-size: 36px; color: rgba(255,255,255,0.6); font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">${quotes.zh}</div>
-                `;
-        
-                document.body.appendChild(wrapper);
-                await processAndShare(wrapper, `Daily_Workout_${todayStr}.png`);
-                
-            } finally {
-                if (wrapper) wrapper.remove();
-                hideShareLoading();
-            }
-        }
-        
-        // 3. 功能：分享本月訓練
-        async function shareMonthlyTraining() {
-            if (!window.html2canvas) return alert('套件載入中，請稍後再試');
+        } else {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = URL.createObjectURL(imageBlob);
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
             
-            showShareLoading();
-            await new Promise(resolve => setTimeout(resolve, 50));
-        
-            let wrapper;
-            try {
-                const currentDate = calendar.getDate();
-                const year = currentDate.getFullYear();
-                const month = currentDate.getMonth(); 
-                
-                const allEvents = calendar.getEvents();
-                const monthEvents = allEvents.filter(e => {
-                    if (!e.start) return false;
-                    const eDate = new Date(e.start);
-                    return eDate.getFullYear() === year && eDate.getMonth() === month;
-                });
-        
-                const isDark = document.body.classList.contains('dark-mode');
-        
-                wrapper = document.createElement('div');
-                // 【關鍵修復3】同步修改為 position: absolute
-                wrapper.style.cssText = `
-                    position: absolute; left: -5000px; top: 0;
-                    width: 1080px; height: 1920px;
-                    background: ${isDark ? 'linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 50%, #000000 100%)' : 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)'};
-                    display: flex; flex-direction: column; align-items: center; justify-content: center;
-                    font-family: -apple-system, system-ui, sans-serif;
-                    box-sizing: border-box; padding: 80px;
-                `;
-        
-                const monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
-                const monthTitle = `${year}年 ${monthNames[month]}`;
-        
-                const firstDay = new Date(year, month, 1).getDay();
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-                
-                let gridHtml = `
-                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; width: 100%; text-align: center; margin-bottom: 20px;">
-                        ${['日', '一', '二', '三', '四', '五', '六'].map(d => `<div style="font-size: 28px; font-weight: bold; color: ${isDark ? '#AEAEB2' : 'rgba(0,0,0,0.5)'};">${d}</div>`).join('')}
-                    </div>
-                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; width: 100%; grid-auto-rows: 200px;">
-                `;
-        
-                for (let i = 0; i < firstDay; i++) {
-                    gridHtml += `<div style="background: rgba(255,255,255,0.05); border-radius: 20px;"></div>`;
-                }
-        
-                for (let d = 1; d <= daysInMonth; d++) {
-                    const dayEvents = monthEvents.filter(e => e.start && new Date(e.start).getDate() === d);
-                    const itemPadding = dayEvents.length > 3 ? '4.7px' : '6px';
-        
-                    let eventsHtml = '';
-                    dayEvents.slice(0, 3).forEach(e => {
-                        // 【關鍵修復4】加入 e.backgroundColor 的防呆 || '#007AFF'，避免出現 background: undefined 導致崩潰
-                        eventsHtml += `
-                            <div style="background: ${e.backgroundColor || '#007AFF'}; color: #fff; font-size: 24px; font-weight: bold; padding: ${itemPadding}; border-radius: 8px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 85%; text-align: center;">
-                                ${e.title}
-                            </div>
-                        `;
-                    });
-                    
-                    if (dayEvents.length > 3) {
-                         eventsHtml += `<div style="color: ${isDark ? '#8E8E93' : 'rgba(0,0,0,0.5)'}; font-size: 20px; margin-top: -2px; font-weight: bold; text-align: center;">+${dayEvents.length - 3}</div>`;
-                    }
-        
-                    const today = new Date();
-                    const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
-                    const dayNumColor = isDark ? (isToday ? '#FFF' : '#E5E5EA') : (isToday ? '#1C1C1E' : '#1C1C1E');
-                    const dayBg = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)';
-                    
-                    gridHtml += `
-                        <div style="background: ${dayBg}; border-radius: 20px; padding: 10px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.03); border: ${isToday ? '3px solid #007AFF' : '1px solid rgba(255,255,255,0.2)'};">
-                            <div style="text-align: center; margin-bottom: 5px;">
-                                <span style="font-size: 26px; font-weight: 800; color: ${dayNumColor};">${d}</span>
-                            </div>
-                            <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-                                ${eventsHtml}
-                            </div>
-                        </div>
-                    `;
-                }
-                gridHtml += `</div>`;
-        
-                const totalWorkouts = monthEvents.length;
-                const quotes = getRandomQuotes();
-        
-                wrapper.innerHTML = `
-                    <div style="background: rgba(255,255,255,0.12); backdrop-filter: blur(30px); border: 3px solid rgba(255,255,255,0.3); border-radius: 50px; padding: 60px; width: 100%; box-shadow: 0 30px 60px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-                            <div style="text-align: left;">
-                                <div style="font-size: 36px; font-weight: bold; color: ${isDark ? '#8E8E93' : 'rgba(0,0,0,0.5)'}; letter-spacing: 2px;">Monthly Summary</div>
-                                <div style="font-size: 64px; font-weight: 900; color: ${isDark ? '#FFFFFF' : '#1C1C1E'}; text-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-top: 10px;">${monthTitle} 紀錄</div>
-                            </div>
-                            <div style="background: linear-gradient(135deg, #FF3B30 0%, #FF9500 100%); width: 130px; height: 130px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 15px 30px rgba(255,59,48,0.4); color: white;">
-                                <div style="font-size: 52px; font-weight: 900; line-height: 1;">${totalWorkouts}</div>
-                                <div style="font-size: 18px; font-weight: bold; margin-top: 4px;">次訓練</div>
-                            </div>
-                        </div>
-                        ${gridHtml}
-                    </div>
-                    <div style="position: absolute; bottom: 115px; font-size: 40px; color: #FFFFFF; font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">${quotes.en}</div>
-                    <div style="position: absolute; bottom: 70px; font-size: 36px; color: rgba(255,255,255,0.5); font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">${quotes.zh}</div>
-                `;
-        
-                document.body.appendChild(wrapper);
-                await processAndShare(wrapper, `Monthly_Workout_${year}_${month+1}.png`);
-                
-            } finally {
-                if (wrapper) wrapper.remove();
-                hideShareLoading();
+            if(typeof showNotice === 'function') {
+                showNotice("下載成功", "圖片已儲存至您的裝置，您可以手動發布至 Instagram！", false);
+            } else {
+                alert("圖片下載成功！");
             }
         }
+    } catch (error) {
+        if (error.name === 'AbortError' || (error.message && error.message.toLowerCase().includes('abort'))) {
+            console.log('使用者手動取消了分享，不顯示錯誤提示。');
+            return; 
+        }
+        console.error('截圖失敗:', error);
+        if(typeof showNotice === 'function') {
+            showNotice("發生錯誤", "產生圖片失敗，請稍後再試。", false);
+        } else {
+            alert("產生圖片失敗，請稍後再試。");
+        }
+    }
+}
+
+// 2. 每日分享優化：拔除毛玻璃、限制資料筆數、備註截斷
+async function shareDailyTraining() {
+    if (!window.html2canvas) return alert('套件載入中，請稍後再試');
+
+    const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const todayEvents = calendar.getEvents().filter(e => e.startStr.includes(todayStr));
+
+    if (todayEvents.length === 0) {
+        if(typeof showNotice === 'function') showNotice("沒有紀錄", "今天還沒有任何訓練紀錄喔！", false);
+        else alert("今天還沒有任何訓練紀錄喔！");
+        return;
+    }
+
+    showShareLoading();
+    await new Promise(resolve => setTimeout(resolve, 50)); 
+
+    const isDark = document.body.classList.contains('dark-mode');
+    let wrapper;
+
+    try {
+        wrapper = document.createElement('div');
+        wrapper.style.cssText = `
+            position: fixed; left: -9999px; top: -9999px;
+            width: 1080px; height: 1920px;
+            background: ${isDark ? 'linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 50%, #000000 100%)' : 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)'};
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-family: -apple-system, system-ui, sans-serif;
+            box-sizing: border-box; padding: 100px;
+        `;
+
+        let eventHtml = '';
+        // 【優化】限制最多渲染 6 筆，避免畫面擠爆卡死
+        const maxDisplay = 6;
+        const displayEvents = todayEvents.slice(0, maxDisplay);
+        
+        displayEvents.forEach(e => {
+            let noteText = e.extendedProps && e.extendedProps.note ? e.extendedProps.note.trim() : '';
+            let detailsHtml = '';
+            
+            if (noteText) {
+                // 【優化】如果備註太長，自動截斷
+                if (noteText.length > 60) noteText = noteText.substring(0, 60) + '...';
+                detailsHtml = `<div style="font-size: 30px; font-weight: 500; text-align: left; margin-top: 15px; color: ${isDark ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.7)'}; width: 100%; line-height: 1.5; border-top: 1px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'}; padding-top: 15px; box-sizing: border-box;">
+                    ${noteText.replace(/\n/g, '<br>')}
+                </div>`;
+            }
+
+            // 【優化】拔除 backdrop-filter，改用純 RGBA 背景
+            const itemBg = isDark ? 'rgba(44, 44, 46, 0.9)' : 'rgba(255, 255, 255, 0.7)';
+            eventHtml += `<div style="background: ${itemBg}; border: 2px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)'}; border-radius: 30px; padding: 35px; margin-bottom: 25px; color: ${isDark ? '#fff' : '#1C1C1E'}; box-shadow: 0 10px 20px rgba(0,0,0,${isDark ? '0.3' : '0.05'}); width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box;">
+                <div style="font-size: 42px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%;">
+                    <span style="color:${e.backgroundColor || '#26E6A8'}">●</span> ${e.title}
+                </div>
+                ${detailsHtml}
+            </div>`;
+        });
+
+        // 提示還有更多紀錄
+        if (todayEvents.length > maxDisplay) {
+            eventHtml += `<div style="font-size: 32px; font-weight: bold; color: ${isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)'}; margin-top: 10px;">
+                ... 還有 ${todayEvents.length - maxDisplay} 項訓練 ...
+            </div>`;
+        }
+
+        const dateStrFormatted = new Date().toLocaleDateString('zh-TW', { month: 'long', day: 'numeric' });
+        const quotes = getRandomQuotes();
+        
+        // 【優化】主外框拔除 backdrop-filter
+        const mainBg = isDark ? 'rgba(28, 28, 30, 0.8)' : 'rgba(255, 255, 255, 0.3)';
+
+        wrapper.innerHTML = `
+            <div style="background: ${mainBg}; border: 3px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 80px 60px; text-align: center; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
+                <div style="font-size: 50px; font-weight: bold; color: ${isDark ? '#8E8E93' : 'rgba(0,0,0,0.5)'}; margin-bottom: 20px; letter-spacing: 2px;">Workout Complete</div>
+                <div style="font-size: 90px; font-weight: 900; color: ${isDark ? '#FFFFFF' : '#1C1C1E'}; margin-bottom: 60px; text-shadow: 0 5px 15px rgba(0,0,0,0.1);">${dateStrFormatted} 訓練達成</div>
+                <div style="width: 100%; display:flex; flex-direction: column; align-items: center;">
+                    ${eventHtml}
+                </div>
+            </div>
+            <div style="position: absolute; bottom: 115px; font-size: 40px; color: #FFFFFF; font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); text-align: center; width: 100%;">${quotes.en}</div>
+            <div style="position: absolute; bottom: 70px; font-size: 36px; color: rgba(255,255,255,0.6); font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); text-align: center; width: 100%;">${quotes.zh}</div>
+        `;
+
+        document.body.appendChild(wrapper);
+        await processAndShare(wrapper, `Daily_Workout_${todayStr}.png`);
+        
+    } finally {
+        if (wrapper) wrapper.remove();
+        hideShareLoading();
+    }
+}
+
+// 3. 每月分享優化：拔除毛玻璃，簡化 DOM 樣式負擔
+async function shareMonthlyTraining() {
+    if (!window.html2canvas) return alert('套件載入中，請稍後再試');
+    
+    showShareLoading();
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    let wrapper;
+    try {
+        const currentDate = calendar.getDate();
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth(); 
+        
+        const allEvents = calendar.getEvents();
+        const monthEvents = allEvents.filter(e => {
+            const eDate = new Date(e.start);
+            return eDate.getFullYear() === year && eDate.getMonth() === month;
+        });
+
+        const isDark = document.body.classList.contains('dark-mode');
+
+        wrapper = document.createElement('div');
+        wrapper.style.cssText = `
+            position: fixed; left: -9999px; top: -9999px;
+            width: 1080px; height: 1920px;
+            background: ${isDark ? 'linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 50%, #000000 100%)' : 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)'};
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-family: -apple-system, system-ui, sans-serif;
+            box-sizing: border-box; padding: 80px;
+        `;
+
+        const monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+        const monthTitle = `${year}年 ${monthNames[month]}`;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        let gridHtml = `
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; width: 100%; text-align: center; margin-bottom: 20px;">
+                ${['日', '一', '二', '三', '四', '五', '六'].map(d => `<div style="font-size: 28px; font-weight: bold; color: ${isDark ? '#AEAEB2' : 'rgba(0,0,0,0.5)'};">${d}</div>`).join('')}
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; width: 100%; grid-auto-rows: 200px;">
+        `;
+
+        for (let i = 0; i < firstDay; i++) {
+            gridHtml += `<div style="background: rgba(255,255,255,0.05); border-radius: 20px;"></div>`;
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dayEvents = monthEvents.filter(e => new Date(e.start).getDate() === d);
+            const itemPadding = dayEvents.length > 3 ? '4.7px' : '6px';
+
+            let eventsHtml = '';
+            dayEvents.slice(0, 3).forEach(e => {
+                eventsHtml += `
+                    <div style="background: ${e.backgroundColor}; color: #fff; font-size: 24px; font-weight: bold; padding: ${itemPadding}; border-radius: 8px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 85%; text-align: center;">
+                        ${e.title}
+                    </div>
+                `;
+            });
+            
+            if (dayEvents.length > 3) {
+                 eventsHtml += `<div style="color: ${isDark ? '#8E8E93' : 'rgba(0,0,0,0.5)'}; font-size: 20px; margin-top: -2px; font-weight: bold; text-align: center;">+${dayEvents.length - 3}</div>`;
+            }
+
+            const today = new Date();
+            const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
+            const dayNumColor = isDark ? (isToday ? '#FFF' : '#E5E5EA') : (isToday ? '#1C1C1E' : '#1C1C1E');
+            const dayBg = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.4)';
+            
+            gridHtml += `
+                <div style="background: ${dayBg}; border-radius: 20px; padding: 10px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; border: ${isToday ? '3px solid #007AFF' : '1px solid rgba(255,255,255,0.1)'};">
+                    <div style="text-align: center; margin-bottom: 5px;">
+                        <span style="font-size: 26px; font-weight: 800; color: ${dayNumColor};">${d}</span>
+                    </div>
+                    <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                        ${eventsHtml}
+                    </div>
+                </div>
+            `;
+        }
+        gridHtml += `</div>`;
+
+        const totalWorkouts = monthEvents.length;
+        const quotes = getRandomQuotes();
+        
+        // 【優化】主外框拔除 backdrop-filter
+        const mainBg = isDark ? 'rgba(28, 28, 30, 0.8)' : 'rgba(255, 255, 255, 0.3)';
+
+        wrapper.innerHTML = `
+            <div style="background: ${mainBg}; border: 3px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 60px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+                    <div style="text-align: left;">
+                        <div style="font-size: 36px; font-weight: bold; color: ${isDark ? '#8E8E93' : 'rgba(0,0,0,0.5)'}; letter-spacing: 2px;">Monthly Summary</div>
+                        <div style="font-size: 64px; font-weight: 900; color: ${isDark ? '#FFFFFF' : '#1C1C1E'}; text-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-top: 10px;">${monthTitle} 紀錄</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #FF3B30 0%, #FF9500 100%); width: 130px; height: 130px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(255,59,48,0.3); color: white;">
+                        <div style="font-size: 52px; font-weight: 900; line-height: 1;">${totalWorkouts}</div>
+                        <div style="font-size: 18px; font-weight: bold; margin-top: 4px;">次訓練</div>
+                    </div>
+                </div>
+                ${gridHtml}
+            </div>
+            <div style="position: absolute; bottom: 115px; font-size: 40px; color: #FFFFFF; font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); text-align: center; width: 100%;">${quotes.en}</div>
+            <div style="position: absolute; bottom: 70px; font-size: 36px; color: rgba(255,255,255,0.5); font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); text-align: center; width: 100%;">${quotes.zh}</div>
+        `;
+
+        document.body.appendChild(wrapper);
+        await processAndShare(wrapper, `Monthly_Workout_${year}_${month+1}.png`);
+        
+    } finally {
+        if (wrapper) wrapper.remove();
+        hideShareLoading();
+    }
+}
+
 
 
 
