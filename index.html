@@ -455,7 +455,15 @@
         input, textarea, [contenteditable="true"], .exercise-name {
             -webkit-user-select: text !important;
             user-select: text !important;
-        }                       
+        }
+        
+        /* 新增：編輯模式下組數(x3)的輸入框樣式 */
+        .sets-input { outline: none; transition: color 0.3s, border-color 0.3s; }
+        .editing-mode .sets-input { border-bottom: 1px dashed #007AFF !important; background: transparent !important; cursor: text; }
+        .sets-input:disabled { color: #666 !important; opacity: 1 !important; background: transparent !important; cursor: default; }
+        body.dark-mode .sets-input:disabled { color: #AEAEB2 !important; }
+        body.dark-mode .editing-mode .sets-input { border-bottom: 1px dashed #3094FF !important; color: #3094FF !important; }
+        
     </style>
 </head>
 <body>
@@ -679,7 +687,7 @@
         <!-- 新增：IG 分享按鈕區塊 -->
         <div id="share-btns-container" style="display: flex; gap: 10px; margin-top: 20px;">
             <button class="btn-record" style="background: linear-gradient(135deg, #FF2D55 0%, #FF375F 100%); flex: 1; padding: 12px; font-size: 14px; margin-top: 0;" onclick="shareDailyTraining()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> 分享本日訓練
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> 分享訓練紀錄
             </button>
             <button class="btn-record" style="background: linear-gradient(135deg, #5856D6 0%, #AF52DE 100%); flex: 1; padding: 12px; font-size: 14px; margin-top: 0;" onclick="shareMonthlyTraining()">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 分享當月日曆
@@ -729,7 +737,7 @@
     
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/zh-tw.global.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@2.8.0/dist/dom-to-image-more.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@2.8.0/dist/dom-to-image-more.min.js"></script>
 
     
     <script>
@@ -1092,14 +1100,16 @@
                 
                 container.innerHTML = ''; // 清空舊內容
                 savedExercises[type].forEach(ex => {
-                    const item = createExerciseItemHTML(ex.name, ex.id, ex.unit);
+                    // 修改處：將原本呼叫的參數加上 ex.sets || 3
+                    const item = createExerciseItemHTML(ex.name, ex.id, ex.unit, ex.sets || 3);
                     container.appendChild(item);
                 });
             });
         }
 
-        // 生成單一動作項目的 HTML 結構（包含把手、動作名稱、重量輸入、單位選單、刪除按鈕）
-        function createExerciseItemHTML(name, id, unit) {
+
+        // 生成單一動作項目的 HTML 結構 (新增 sets 參數，預設 3)
+        function createExerciseItemHTML(name, id, unit, sets = 3) {
             const div = document.createElement('div');
             div.className = 'exercise-item';
             const units = ['kg', 'lbs', 'reps', 'sec'];
@@ -1108,8 +1118,7 @@
                 const selected = (u === unit) ? 'selected' : '';
                 optionsHTML += `<option value="${u}" ${selected}>${u}</option>`;
             });
-
-            // 將拖曳把手與動作名稱包在一起，維持版面置左
+            
             div.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div class="drag-handle">
@@ -1118,27 +1127,36 @@
                     <span class="exercise-name" data-placeholder="自訂新動作" oninput="checkEmptyName(this)">${name}</span>
                 </div>
                 <div class="input-group">
+                    <!-- 👉 調整這裡的 margin-left: 15px; 可以把整個重量方塊往右推 -->
                     <input type="number" step="any" inputmode="decimal" class="weight-input" data-id="${id}" placeholder="0" value="0"
+                        style="margin-left: 15px;"
                         onfocus="this.dataset.oldVal = this.value; this.value = '';" 
                         onblur="if(this.value.trim() === '') { this.value = this.dataset.oldVal; } else { saveCurrentWeight(this); }"
                         oninput="saveCurrentWeight(this)">
+                    
                     <select class="unit-select" disabled style="border:none; background:transparent; font-size:0.9rem; color:#666; font-weight:bold; width:45px; -webkit-appearance:none; appearance:none; text-align:center; cursor:pointer;">
                         ${optionsHTML}
                     </select>
+        
+                    <div style="display: flex; align-items: center; margin-left: -7px;">
+                        <span class="unit-text">x</span>
+                        <input type="number" inputmode="decimal" class="sets-input" value="${sets}" disabled style="margin-left: -10px; width:10px; border:none; background:transparent; border-bottom: 1px solid transparent; font-size:1rem; font-weight:bold; color:#007AFF; text-align:left; padding:0; -webkit-appearance:none;">
+                    </div>
+        
+                    
                     <button class="btn-delete-exercise" onclick="deleteExerciseItem(this)">×</button>
                 </div>
             `;
-
-            // 為新建立的把手綁定拖曳事件 (支援手機觸控)
+            
             const handle = div.querySelector('.drag-handle');
             handle.addEventListener('touchstart', handleDragStart, { passive: false });
             handle.addEventListener('touchmove', handleDragMove, { passive: false });
             handle.addEventListener('touchend', handleDragEnd);
-            // (支援電腦滑鼠)
             handle.addEventListener('mousedown', handleDragStart);
-
+            
             return div;
         }
+
 
         // 防止 contenteditable 在被使用者刪光文字時留下遺留節點（如 <br>），維持 placeholder 正常運作
         function checkEmptyName(element) {
@@ -1146,25 +1164,27 @@
             if (text === "" || element.innerHTML === "<br>") { element.innerHTML = ""; }
         }
 
-        // 儲存目前卡片內所有動作的排列順序與單位，寫入 localStorage 快取
+        // 儲存目前卡片內所有動作的排列順序與單位 (追加 sets)
         function saveCurrentExerciseLayout(cardElement) {
             const type = cardElement.dataset.type;
             if (!type || type === 'leg' || type === 'hiit') return; 
-
+        
             const savedExercises = JSON.parse(localStorage.getItem('custom_exercises')) || defaultExercises;
             const currentLayout = [];
-
+        
             cardElement.querySelectorAll('.exercise-list .exercise-item').forEach(item => {
                 const name = item.querySelector('.exercise-name').innerText.trim();
                 const id = item.querySelector('.weight-input').dataset.id;
                 const unit = item.querySelector('.unit-select').value; 
-                currentLayout.push({ id, name, unit });
+                const sets = item.querySelector('.sets-input').value || 3; // 抓取當下設定的次數
+                currentLayout.push({ id, name, unit, sets });
             });
-
+        
             savedExercises[type] = currentLayout;
             localStorage.setItem('custom_exercises', JSON.stringify(savedExercises));
         }
 
+        
         // 於編輯模式下「新增動作」按鈕的實作邏輯
         function addExercise(btnElement, prefix) {
             var card = btnElement.closest('.card');
@@ -1172,7 +1192,8 @@
             var uniqueId = prefix + '_custom_' + Date.now(); // 使用時間戳記生成唯一的資料辨識 ID
             var unit = (prefix === 'abs') ? 'reps' : 'kg';
             
-            var newItem = createExerciseItemHTML("", uniqueId, unit);
+            // 修改處：將原本呼叫的參數加上 3 作為預設次數
+            var newItem = createExerciseItemHTML("", uniqueId, unit, 3);
             container.appendChild(newItem);
             
             const newInput = newItem.querySelector('.weight-input');
@@ -1183,40 +1204,45 @@
                 newItem.querySelector('.exercise-name').setAttribute('contenteditable', 'true');
                 newItem.querySelector('.weight-input').disabled = true; 
                 newItem.querySelector('.unit-select').disabled = false; 
+                newItem.querySelector('.sets-input').disabled = false; // 修改處：新增時一併解鎖組數編輯
             }
         }
 
         // 刪除按鈕 (紅叉叉) 觸發：移除該筆動作節點
         function deleteExerciseItem(btn) { btn.closest('.exercise-item').remove(); }
 
-        // 切換進入/離開動作的自定義編輯模式 (管理模式切換)
+        // 切換進入/離開動作的自定義編輯模式 (加入禁用儲存按鈕機制)
         function toggleManageMode(btnElement) {
             var card = btnElement.closest('.card');
             card.classList.toggle('editing-mode');
             var exerciseNames = card.querySelectorAll('.exercise-name');
             var weightInputs = card.querySelectorAll('.weight-input'); 
             var unitSelects = card.querySelectorAll('.unit-select'); 
+            var setsInputs = card.querySelectorAll('.sets-input'); // 抓取乘數欄位
+            var recordBtn = card.querySelector('.btn-record'); // 儲存到日曆按鈕
             
             if (card.classList.contains('editing-mode')) {
-                // 開啟編輯：允許改文字、允許改單位、鎖定數值輸入欄位避免衝突
                 exerciseNames.forEach(function(el) { el.setAttribute('contenteditable', 'true'); });
                 weightInputs.forEach(function(input) { input.disabled = true; }); 
                 unitSelects.forEach(function(select) { select.disabled = false; }); 
+                setsInputs.forEach(function(input) { input.disabled = false; }); // 開放編輯 x3
+                if (recordBtn) { recordBtn.disabled = true; recordBtn.style.opacity = '0.4'; } // 變灰且不可按
             } else {
-                // 結束編輯並儲存：關閉文字修改權限、釋放重量輸入、鎖定單位、回存排版設定
                 exerciseNames.forEach(function(el) { el.removeAttribute('contenteditable'); });
                 weightInputs.forEach(function(input) { input.disabled = false; }); 
                 unitSelects.forEach(function(select) { select.disabled = true; }); 
+                setsInputs.forEach(function(input) { input.disabled = true; }); // 關閉編輯
+                if (recordBtn) { recordBtn.disabled = false; recordBtn.style.opacity = '1'; } // 恢復按鈕
                 saveCurrentExerciseLayout(card);
             }
         }
 
-        // 取消目前正處於動作編輯狀態之卡片，捨棄更動，並恢復成原始排版配置
+        // 取消目前正處於動作編輯狀態之卡片 (恢復儲存按鈕與舊設定)
         function cancelAllEditing() {
             const editingCards = document.querySelectorAll('.card.editing-mode');
             if (editingCards.length === 0) return;
             const savedExercises = JSON.parse(localStorage.getItem('custom_exercises')) || defaultExercises;
-        
+            
             editingCards.forEach(card => {
                 card.classList.remove('editing-mode');
                 const type = card.dataset.type;
@@ -1224,14 +1250,18 @@
                 if (!originalList) return;
                 const container = card.querySelector('.exercise-list');
                 if (container) {
-                    container.innerHTML = ''; 
+                    container.innerHTML = '';
                     originalList.forEach(ex => {
-                        const item = createExerciseItemHTML(ex.name, ex.id, ex.unit);
+                        const item = createExerciseItemHTML(ex.name, ex.id, ex.unit, ex.sets || 3);
                         container.appendChild(item);
                     });
                 }
                 card.querySelectorAll('.weight-input').forEach(input => { input.disabled = false; });
                 card.querySelectorAll('.unit-select').forEach(select => { select.disabled = true; });
+                card.querySelectorAll('.sets-input').forEach(input => { input.disabled = true; });
+                var recordBtn = card.querySelector('.btn-record');
+                if (recordBtn) { recordBtn.disabled = false;
+                    recordBtn.style.opacity = '1'; }
             });
             loadAllWeights();
         }
@@ -1505,25 +1535,24 @@
            10. 日曆與歷史紀錄管理 (Calendar & History)
            ========================================================================== */
         // 初始化 FullCalendar 實例與參數
-function initCalendar() {
-    var calendarEl = document.getElementById('calendar');
-    calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth', 
-        locale: 'zh-tw', 
-        height: 'auto',
-        fixedWeekCount: false,
-        headerToolbar: { left: 'prev', center: 'title', right: 'next' },
-        dayCellContent: function(arg) { return arg.date.getDate(); }, 
-        eventOrder: "order", 
-        events: JSON.parse(localStorage.getItem('gym_history') || "[]"),
-        eventClick: function(info) { 
-            currentEventInfo = info; 
-            showNotice(info.event.title + " (" + info.event.startStr + ")", info.event.extendedProps.note || "無詳細內容", true); 
+        function initCalendar() {
+            var calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth', 
+                locale: 'zh-tw', 
+                height: 'auto',
+                fixedWeekCount: false,
+                headerToolbar: { left: 'prev', center: 'title', right: 'next' },
+                dayCellContent: function(arg) { return arg.date.getDate(); }, 
+                eventOrder: "order", 
+                events: JSON.parse(localStorage.getItem('gym_history') || "[]"),
+                eventClick: function(info) { 
+                    currentEventInfo = info; 
+                    showNotice(info.event.title + " (" + info.event.startStr + ")", info.event.extendedProps.note || "無詳細內容", true); 
+                }
+            });
+            calendar.render();
         }
-    });
-    calendar.render();
-}
-
 
         // 把當前操作卡片上填寫的所有動作、重量、備註整合編碼，儲存或複寫回訓練日曆資料庫中
         function saveToHistory(type, btnElement, color) {
@@ -1531,83 +1560,84 @@ function initCalendar() {
             var dateVal = card.querySelector('.date-input').value;
             if (!dateVal) { showNotice("警告", "請選擇日期", false); return; }
             
-            // 定義日曆上項目的上下排序優先順序 (練胸 -> 練肩 -> ... -> HIIT)
             var orderWeight = (type === '練胸') ? 1 : (type === '練肩') ? 2 : (type === '練臂') ? 3 : (type === '練腹') ? 4 : (type === '練腿') ? 5 : (type === '有氧') ? 6 : (type === 'HIIT') ? 7 : 99;
             var details = "";
-
-            var hasData = false; // 追蹤是否有大於 0 的實際數據
-
-            // 編碼有氧卡片資料
+            var hasData = false;
+            var totalWeight = 0; // 新增：用於記錄卡片總重量
+            var totalReps = 0;   // 新增：用於記錄卡片總次數
+        
             if (type === '有氧') {
                 var distStr = card.querySelector('[data-id="leg_1"]').value || "0";
                 var dist = parseFloat(distStr);
                 var hr = parseInt(card.querySelector('[data-id="leg_hr"]').value) || 0;
                 var min = parseInt(card.querySelector('[data-id="leg_min"]').value) || 0;
                 var sec = parseInt(card.querySelector('[data-id="leg_sec"]').value) || 0;
-                
                 if (dist > 0 || hr > 0 || min > 0 || sec > 0) {
                     var inclineEl = document.getElementById('input-incline');
                     var inclineText = inclineEl ? inclineEl.value : "0";
                     details += "● 距離: " + distStr + " km\n● 坡度: " + inclineText + "%\n● 時間: " + (hr > 0 ? hr + " 時 " + (min < 10 ? '0' + min : min) : min) + " 分 " + (sec < 10 ? '0' + sec : sec) + " 秒\n● 配速: " + document.getElementById('display-pace').innerText + "\n● 消耗: " + document.getElementById('display-calories').innerText + "\n";
                     hasData = true;
                 }
-            } else if (type === 'HIIT') { // 編碼 HIIT 資料
+            } else if (type === 'HIIT') {
                 var mStr = document.getElementById('hiit-min').value || "0";
                 var sStr = document.getElementById('hiit-sec').value || "0";
                 if (parseInt(mStr) > 0 || parseInt(sStr) > 0) {
                     details += "● 時間: " + mStr + " 分 " + sStr + " 秒\n● 消耗: " + document.getElementById('display-hiit-calories').innerText + "\n";
                     hasData = true;
                 }
-            } else { // 編碼重量訓練卡片動作資料
+            } else {
                 card.querySelectorAll('.exercise-item').forEach(function(item) {
                     var name = item.querySelector('.exercise-name').innerText; 
                     var weightStr = item.querySelector('.weight-input').value || "0"; 
                     var weight = parseFloat(weightStr);
                     
-                    // 💡 只有當數值大於 0 時，這行動作才會被寫入日曆
                     if (weight > 0) {
                         var unitSelect = item.querySelector('.unit-select');
                         var unit = unitSelect ? unitSelect.value : "kg"; 
-                        details += "● " + name + ": " + weightStr + " " + unit + "\n";
+                        var setsInput = item.querySelector('.sets-input');
+                        var sets = setsInput ? (parseFloat(setsInput.value) || 1) : 1;
+                        
+                        details += "● " + name + ": " + weightStr + " " + unit + " x" + sets + "\n";
                         hasData = true;
+                        
+                        // 運算加總：重量 * x數值
+                        if (unit === 'kg') { totalWeight += weight * sets; }
+                        else if (unit === 'lbs') { totalWeight += weight * sets * 0.45359; } // 磅轉公斤計算
+                        else if (unit === 'reps') { totalReps += weight * sets; }
                     }
                 });
             }
-
-            // 擷取並寫入備註資訊
+        
             var noteInput = card.querySelector('.card-note');
             var noteVal = noteInput ? noteInput.value.trim() : "";
-            if (noteVal !== "") { 
-                details += (hasData ? "\n" : "") + "【備註】: " + noteVal; 
-                hasData = true; 
-            }
-
-            // 💡 如果沒有任何有效數據(全為0)且沒有備註，則阻擋儲存並彈出提示
-            if (!hasData) {
-                showNotice("提示", "無紀錄任何數據，不儲存。", false);
-                return;
-            }
-
-
+            if (noteVal !== "") { details += (hasData ? "\n" : "") + "【備註】: " + noteVal; hasData = true; }
+            if (!hasData) { showNotice("提示", "無紀錄任何數據，不儲存。", false); return; }
+        
             var history = JSON.parse(localStorage.getItem('gym_history') || "[]");
-            // 查詢同日期、同訓練項目是否早已存在，存在即採用覆蓋策略 (Update)，不存在則追加 (Create)
             var existingIndex = history.findIndex(function(item) { return item.start === dateVal && item.title === type; });
             
             if (existingIndex > -1) {
                 history[existingIndex].extendedProps.note = details; 
+                history[existingIndex].extendedProps.totalWeight = totalWeight; 
+                history[existingIndex].extendedProps.totalReps = totalReps; 
                 history[existingIndex].order = orderWeight;
                 var oldEvent = calendar.getEvents().find(function(e) { return e.startStr === dateVal && e.title === type; });
-                if (oldEvent) oldEvent.setExtendedProp('note', details); 
+                if (oldEvent) {
+                    oldEvent.setExtendedProp('note', details); 
+                    oldEvent.setExtendedProp('totalWeight', totalWeight); 
+                    oldEvent.setExtendedProp('totalReps', totalReps); 
+                }
                 showNotice("訓練紀錄已更新", "", false);
             } else {
                 var newRecord = { 
-                    id: "id_" + Date.now(), title: type, start: dateVal, backgroundColor: color, borderColor: color, order: orderWeight, extendedProps: { note: details } 
+                    id: "id_" + Date.now(), title: type, start: dateVal, backgroundColor: color, borderColor: color, order: orderWeight, 
+                    extendedProps: { note: details, totalWeight: totalWeight, totalReps: totalReps } 
                 };
                 history.push(newRecord); 
                 calendar.addEvent(newRecord); 
                 showNotice("訓練紀錄已儲存", "", false);
             }
-            localStorage.setItem('gym_history', JSON.stringify(history)); // 寫入本機永久快取庫
+            localStorage.setItem('gym_history', JSON.stringify(history));
         }
 
         // 點擊 Modal 視窗內的「刪除本筆紀錄」按鈕時的實作
@@ -2078,18 +2108,209 @@ async function processAndShare(element, filename) {
     }
 }
 
-// 2. 功能：分享本日訓練
+// 彈出日期選擇器的輔助函式
+function promptDateSelection(recordedDates, dateMap) {
+    return new Promise((resolve) => {
+        const isDark = document.body.classList.contains('dark-mode');
+        
+        // 建立 Modal 遮罩
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 99999; animation: fadeIn 0.2s ease;
+        `;
+
+        // 構建下拉選單內容 (範例: 2026-07-22 (3 項訓練))
+        const optionsHtml = recordedDates.map(d => {
+            return `<option value="${d}">${d} (${dateMap[d]} 項訓練)</option>`;
+        }).join('');
+
+        modal.innerHTML = `
+            <div style="
+                background: ${isDark ? '#2C2C2E' : '#FFFFFF'};
+                color: ${isDark ? '#FFFFFF' : '#1C1C1E'};
+                padding: 24px; border-radius: 20px; width: 85%; max-width: 360px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center;
+                font-family: -apple-system, system-ui, sans-serif;
+            ">
+                <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: 600;">選擇分享日期</h3>
+                <p style="margin: 0 0 18px 0; font-size: 13px; color: ${isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'};">
+                    請選擇要生成分享圖卡的訓練紀錄
+                </p>
+                <select id="share-date-select" style="
+                    width: 100%; padding: 12px; border-radius: 12px;
+                    border: 1px solid ${isDark ? '#3A3A3C' : '#E5E5EA'};
+                    background: ${isDark ? '#1C1C1E' : '#F2F2F7'};
+                    color: ${isDark ? '#FFF' : '#000'}; font-size: 15px; outline: none;
+                    margin-bottom: 20px; box-sizing: border-box; appearance: auto;
+                ">
+                    ${optionsHtml}
+                </select>
+                <div style="display: flex; gap: 10px;">
+                    <button id="cancel-date-btn" style="
+                        flex: 1; padding: 10px; border-radius: 12px; border: none;
+                        background: ${isDark ? '#3A3A3C' : '#E5E5EA'};
+                        color: ${isDark ? '#FFF' : '#000'}; font-size: 15px; font-weight: 600; cursor: pointer;
+                    ">取消</button>
+                    <button id="confirm-date-btn" style="
+                        flex: 1; padding: 10px; border-radius: 12px; border: none;
+                        background: linear-gradient(135deg, #FF2D55 0%, #FF375F 100%);
+                        color: #FFF; font-size: 15px; font-weight: 600; cursor: pointer;
+                    ">確定</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const selectEl = modal.querySelector('#share-date-select');
+        const confirmBtn = modal.querySelector('#confirm-date-btn');
+        const cancelBtn = modal.querySelector('#cancel-date-btn');
+
+        confirmBtn.onclick = () => {
+            const val = selectEl.value;
+            modal.remove();
+            resolve(val);
+        };
+
+        cancelBtn.onclick = () => {
+            modal.remove();
+            resolve(null);
+        };
+    });
+}
+
+// 1. 彈出日期選擇器的輔助函式
+function promptDateSelection(recordedDates, dateMap, monthTitle) {
+    return new Promise((resolve) => {
+        const isDark = document.body.classList.contains('dark-mode');
+        
+        // 建立 Modal 遮罩
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 99999; animation: fadeIn 0.2s ease;
+        `;
+
+        // 構建下拉選單內容 (例如: 2026-07-22 (3 項訓練))
+        const optionsHtml = recordedDates.map(d => {
+            return `<option value="${d}">${d} (${dateMap[d]} 項訓練)</option>`;
+        }).join('');
+
+        modal.innerHTML = `
+            <div style="
+                background: ${isDark ? '#2C2C2E' : '#FFFFFF'};
+                color: ${isDark ? '#FFFFFF' : '#1C1C1E'};
+                padding: 24px; border-radius: 20px; width: 85%; max-width: 360px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center;
+                font-family: -apple-system, system-ui, sans-serif;
+            ">
+                <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: 600;">選擇分享日期</h3>
+                <p style="margin: 0 0 18px 0; font-size: 13px; color: ${isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'};">
+                    【${monthTitle}】中有紀錄的日期
+                </p>
+                <select id="share-date-select" style="
+                    width: 100%; padding: 12px; border-radius: 12px;
+                    border: 1px solid ${isDark ? '#3A3A3C' : '#E5E5EA'};
+                    background: ${isDark ? '#1C1C1E' : '#F2F2F7'};
+                    color: ${isDark ? '#FFF' : '#000'}; font-size: 15px; outline: none;
+                    margin-bottom: 20px; box-sizing: border-box; appearance: auto;
+                ">
+                    ${optionsHtml}
+                </select>
+                <div style="display: flex; gap: 10px;">
+                    <button id="cancel-date-btn" style="
+                        flex: 1; padding: 10px; border-radius: 12px; border: none;
+                        background: ${isDark ? '#3A3A3C' : '#E5E5EA'};
+                        color: ${isDark ? '#FFF' : '#000'}; font-size: 15px; font-weight: 600; cursor: pointer;
+                    ">取消</button>
+                    <button id="confirm-date-btn" style="
+                        flex: 1; padding: 10px; border-radius: 12px; border: none;
+                        background: linear-gradient(135deg, #FF2D55 0%, #FF375F 100%);
+                        color: #FFF; font-size: 15px; font-weight: 600; cursor: pointer;
+                    ">確定</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const selectEl = modal.querySelector('#share-date-select');
+        const confirmBtn = modal.querySelector('#confirm-date-btn');
+        const cancelBtn = modal.querySelector('#cancel-date-btn');
+
+        confirmBtn.onclick = () => {
+            const val = selectEl.value;
+            modal.remove();
+            resolve(val);
+        };
+
+        cancelBtn.onclick = () => {
+            modal.remove();
+            resolve(null);
+        };
+    });
+}
+
+// 2. 功能：選擇並分享日訓練紀錄 (抓取日曆「當前顯示月份」的紀錄)
 async function shareDailyTraining() {
     if (typeof domtoimage === 'undefined') return alert('套件載入中，請稍後再試');
 
-    const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
-    const todayEvents = calendar.getEvents().filter(e => e.startStr.includes(todayStr));
+    // 1. 從 calendar 取得目前日曆正在顯示的年份與月份
+    const currentDate = calendar.getDate();
+    const targetYear = currentDate.getFullYear();
+    const targetMonth = currentDate.getMonth(); // 0-11
+    
+    const monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+    const monthTitle = `${targetYear}年 ${monthNames[targetMonth]}`;
 
-    if (todayEvents.length === 0) {
-        if(typeof showNotice === 'function') showNotice("沒有紀錄", "今天還沒有任何訓練紀錄喔！", false);
-        else alert("今天還沒有任何訓練紀錄喔！");
+    // 2. 抓取「當前檢視月份」有訓練紀錄的日期與項目數量
+    const allEvents = calendar.getEvents();
+    const dateMap = {};
+
+    allEvents.forEach(e => {
+        if (e.start) {
+            const eDate = new Date(e.start);
+            if (eDate.getFullYear() === targetYear && eDate.getMonth() === targetMonth) {
+                // 格式化日期字串 (YYYY-MM-DD)
+                const y = eDate.getFullYear();
+                const m = String(eDate.getMonth() + 1).padStart(2, '0');
+                const d = String(eDate.getDate()).padStart(2, '0');
+                const dateStr = `${y}-${m}-${d}`;
+
+                dateMap[dateStr] = (dateMap[dateStr] || 0) + 1;
+            }
+        }
+    });
+
+    const recordedDates = Object.keys(dateMap).sort((a, b) => b.localeCompare(a)); // 由近到遠排序
+
+    // 若該月份完全沒有紀錄
+    if (recordedDates.length === 0) {
+        if (typeof showNotice === 'function') showNotice("沒有紀錄", `${monthTitle} 還沒有任何訓練紀錄喔！`, false);
+        else alert(`${monthTitle} 還沒有任何訓練紀錄喔！`);
         return;
     }
+
+    // 3. 跳出選擇視窗讓使用者選擇該月份的日期
+    const targetDateStr = await promptDateSelection(recordedDates, dateMap, monthTitle);
+    if (!targetDateStr) return; // 使用者點擊取消
+
+    // 4. 取得選擇日期的事件紀錄
+    const targetEvents = allEvents.filter(e => {
+        if (!e.start) return false;
+        const eDate = new Date(e.start);
+        const y = eDate.getFullYear();
+        const m = String(eDate.getMonth() + 1).padStart(2, '0');
+        const d = String(eDate.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}` === targetDateStr;
+    });
 
     showShareLoading();
     await new Promise(resolve => setTimeout(resolve, 50)); 
@@ -2110,7 +2331,7 @@ async function shareDailyTraining() {
 
         let eventHtml = '';
         const maxDisplay = 6;
-        const displayEvents = todayEvents.slice(0, maxDisplay);
+        const displayEvents = targetEvents.slice(0, maxDisplay);
         
         displayEvents.forEach(e => {
             let noteText = e.extendedProps && e.extendedProps.note ? e.extendedProps.note.trim() : '';
@@ -2118,35 +2339,70 @@ async function shareDailyTraining() {
             
             if (noteText) {
                 if (noteText.length > 120) noteText = noteText.substring(0, 120) + '...';
-                detailsHtml = `<div style="font-size: 30px; font-weight: 500; text-align: left; margin-top: 15px; color: ${isDark ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.7)'}; width: 100%; line-height: 1.5; border-top: 1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}; padding-top: 15px; box-sizing: border-box;">
+                detailsHtml = `<div style="font-size: 36px; font-weight: 500; text-align: left; margin-top: 18px; color: ${isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.75)'}; width: 100%; line-height: 1.5; border-top: 1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}; padding-top: 18px; box-sizing: border-box;">
                     ${noteText.replace(/\n/g, '<br>')}
                 </div>`;
             }
 
             const itemBg = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.85)';
             eventHtml += `<div style="background: ${itemBg}; border: 1px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.5)'}; border-radius: 30px; padding: 35px; margin-bottom: 25px; color: ${isDark ? '#fff' : '#1C1C1E'}; box-shadow: 0 10px 30px rgba(0,0,0,${isDark ? '0.2' : '0.05'}); width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); box-sizing: border-box;">
-                <div style="font-size: 42px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%;">
+                <div style="font-size: 50px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%;">
                     <span style="color:${e.backgroundColor || '#26E6A8'}">●</span> ${e.title}
                 </div>
                 ${detailsHtml}
             </div>`;
         });
 
-        if (todayEvents.length > maxDisplay) {
+        if (targetEvents.length > maxDisplay) {
             eventHtml += `<div style="font-size: 32px; font-weight: bold; color: ${isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)'}; margin-top: 10px;">
-                ... 還有 ${todayEvents.length - maxDisplay} 項訓練 ...
+                ... 還有 ${targetEvents.length - maxDisplay} 項訓練 ...
             </div>`;
         }
 
-        const dateStrFormatted = new Date().toLocaleDateString('zh-TW', { month: 'long', day: 'numeric' });
-        const quotes = getRandomQuotes();
+        // 格式化選取的日期顯示名稱（如：7月22日）
+        const [year, month, day] = targetDateStr.split('-').map(Number);
+        const dateObj = new Date(year, month - 1, day);
+        const dateStrFormatted = dateObj.toLocaleDateString('zh-TW', { month: 'long', day: 'numeric' });
         
+        const quotes = getRandomQuotes();
         const mainBg = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.5)';
+
+        let dayTotalWeight = 0;
+        let dayTotalReps = 0;
+        targetEvents.forEach(e => {
+            if(e.extendedProps && e.extendedProps.totalWeight) dayTotalWeight += parseFloat(e.extendedProps.totalWeight);
+            if(e.extendedProps && e.extendedProps.totalReps) dayTotalReps += parseFloat(e.extendedProps.totalReps);
+        });
+
+        let statsHtml = '';
+        let validCards = [];
+        
+        if (Math.round(dayTotalWeight) > 0) {
+            validCards.push(`
+                <div style="background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%); padding: 25px 30px; border-radius: 30px; box-shadow: 0 10px 20px rgba(0,122,255,0.3); color: white; text-align: center; flex: 1; max-width: 45%;">
+                    <div style="font-size: 22px; font-weight: bold; opacity: 0.9;">總重量</div>
+                    <div style="font-size: 48px; font-weight: 900; line-height: 1.1; margin-top: 10px;">${Math.round(dayTotalWeight)} <span style="font-size: 20px; font-weight: normal;">kg</span></div>
+                </div>
+            `);
+        }
+        if (Math.round(dayTotalReps) > 0) {
+            validCards.push(`
+                <div style="background: linear-gradient(135deg, #34C759 0%, #30B0C7 100%); padding: 25px 30px; border-radius: 30px; box-shadow: 0 10px 20px rgba(52,199,89,0.3); color: white; text-align: center; flex: 1; max-width: 45%;">
+                    <div style="font-size: 22px; font-weight: bold; opacity: 0.9;">總次數</div>
+                    <div style="font-size: 48px; font-weight: 900; line-height: 1.1; margin-top: 10px;">${Math.round(dayTotalReps)} <span style="font-size: 20px; font-weight: normal;">reps</span></div>
+                </div>
+            `);
+        }
+
+        if (validCards.length > 0) {
+            statsHtml = `<div style="display: flex; gap: 20px; justify-content: center; margin-bottom: 30px; width: 100%;">${validCards.join('')}</div>`;
+        }
 
         wrapper.innerHTML = `
             <div style="background: ${mainBg}; border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 80px 60px; text-align: center; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; flex-direction: column;">
                 <div style="font-size: 50px; font-weight: bold; color: ${isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'}; margin-bottom: 20px; letter-spacing: 2px;">Workout Complete</div>
-                <div style="font-size: 90px; font-weight: 900; color: ${isDark ? '#FFFFFF' : '#1C1C1E'}; margin-bottom: 60px; text-shadow: 0 5px 15px rgba(0,0,0,0.2);">${dateStrFormatted} 訓練達成</div>
+                <div style="font-size: 80px; font-weight: 900; color: ${isDark ? '#FFFFFF' : '#1C1C1E'}; margin-bottom: 30px; text-shadow: 0 5px 15px rgba(0,0,0,0.2);">${dateStrFormatted} 訓練達成</div>
+                ${statsHtml}
                 <div style="width: 100%; display:flex; flex-direction: column; align-items: center;">
                     ${eventHtml}
                 </div>
@@ -2156,13 +2412,14 @@ async function shareDailyTraining() {
         `;
 
         document.body.appendChild(wrapper);
-        await processAndShare(wrapper, `Daily_Workout_${todayStr}.png`);
+        await processAndShare(wrapper, `Daily_Workout_${targetDateStr}.png`);
         
     } finally {
         if (wrapper) wrapper.remove();
         hideShareLoading();
     }
 }
+
 
 // 3. 功能：分享本月訓練
 async function shareMonthlyTraining() {
@@ -2201,14 +2458,24 @@ async function shareMonthlyTraining() {
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         
+        // ----------------------------------------------------
+        // [新增計算]：計算日曆格子的總行數
+        // ----------------------------------------------------
+        const totalRows = Math.ceil((firstDay + daysInMonth) / 7);
+        const isSixRows = totalRows >= 6;
+        
+        // 如果是 6 行，將語錄的高度往下移動，並且讓網格高度稍微縮減避免超出畫面
+        const gridRowHeight = isSixRows ? 200 : 200;
+        const enQuoteBottom = isSixRows ? 68 : 115;
+        const zhQuoteBottom = isSixRows ? 33 : 70;
+
         let gridHtml = `
             <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; width: 100%; text-align: center; margin-bottom: 20px;">
                 ${['日', '一', '二', '三', '四', '五', '六'].map(d => `<div style="font-size: 28px; font-weight: bold; color: ${isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'};">${d}</div>`).join('')}
             </div>
-            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; width: 100%; grid-auto-rows: 200px;">
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; width: 100%; grid-auto-rows: ${gridRowHeight}px;">
         `;
 
-        // 留白的格子(月初沒日期的日子)，調低不透明度讓有日子的跳出來
         for (let i = 0; i < firstDay; i++) {
             gridHtml += `<div style="background: ${isDark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.2)'}; border-radius: 20px;"></div>`;
         }
@@ -2234,18 +2501,13 @@ async function shareMonthlyTraining() {
             const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
             const dayNumColor = isDark ? (isToday ? '#FFF' : '#E5E5EA') : (isToday ? '#1C1C1E' : '#1C1C1E');
             
-            // 【修改點】邊框改為較亮的淺色，移除陰影 (shadow 設為 none)
             const dayBg = isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.8)';
-            
-            // 邊框改為帶有透明度的白色 (isDark 時為 0.3 透明度，Light Mode 時則加深一點點以防太淡)
             const dayBorder = isToday 
                 ? '3px solid #007AFF' 
                 : `1px solid ${isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.2)'}`;
-            // 完全移除陰影
-            const dayShadow = 'none';
             
             gridHtml += `
-                <div style="background: ${dayBg}; border-radius: 20px; padding: 10px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; border: ${dayBorder}; box-shadow: ${dayShadow}; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
+                <div style="background: ${dayBg}; border-radius: 20px; padding: 10px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; border: ${dayBorder}; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
                     <div style="text-align: center; margin-bottom: 5px;">
                         <span style="font-size: 26px; font-weight: 800; color: ${dayNumColor};">${d}</span>
                     </div>
@@ -2262,22 +2524,58 @@ async function shareMonthlyTraining() {
         
         const mainBg = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.5)';
 
+        let monthTotalWeight = 0;
+        let monthTotalReps = 0;
+        monthEvents.forEach(e => {
+            if(e.extendedProps && e.extendedProps.totalWeight) monthTotalWeight += parseFloat(e.extendedProps.totalWeight);
+            if(e.extendedProps && e.extendedProps.totalReps) monthTotalReps += parseFloat(e.extendedProps.totalReps);
+        });
+
+        let monthCards = [];
+        monthCards.push(`
+            <div style="background: linear-gradient(135deg, #FF3B30 0%, #FF9500 100%); padding: 25px; border-radius: 30px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 20px rgba(255,59,48,0.3); color: white; flex: 1;">
+                <div style="font-size: 22px; font-weight: bold; opacity: 0.9;">總訓練次數</div>
+                <div style="font-size: 48px; font-weight: 900; line-height: 1.1; margin-top: 10px;">${totalWorkouts} <span style="font-size: 20px; font-weight: normal;">次</span></div>
+            </div>
+        `);
+
+        if (Math.round(monthTotalWeight) > 0) {
+            monthCards.push(`
+                <div style="background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%); padding: 25px; border-radius: 30px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 20px rgba(0,122,255,0.3); color: white; flex: 1.1;">
+                    <div style="font-size: 22px; font-weight: bold; opacity: 0.9;">總重量</div>
+                    <div style="font-size: 48px; font-weight: 900; line-height: 1.1; margin-top: 10px;">${Math.round(monthTotalWeight)} <span style="font-size: 20px; font-weight: normal;">kg</span></div>
+                </div>
+            `);
+        }
+
+        if (Math.round(monthTotalReps) > 0) {
+            monthCards.push(`
+                <div style="background: linear-gradient(135deg, #34C759 0%, #30B0C7 100%); padding: 25px; border-radius: 30px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 20px rgba(52,199,89,0.3); color: white; flex: 1.1;">
+                    <div style="font-size: 22px; font-weight: bold; opacity: 0.9;">總次數</div>
+                    <div style="font-size: 48px; font-weight: 900; line-height: 1.1; margin-top: 10px;">${Math.round(monthTotalReps)} <span style="font-size: 20px; font-weight: normal;">reps</span></div>
+                </div>
+            `);
+        }
+
         wrapper.innerHTML = `
             <div style="background: ${mainBg}; border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 60px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; flex-direction: column;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-                    <div style="text-align: left;">
+                
+                <div style="display: flex; flex-direction: column; margin-bottom: 40px;">
+                    <div style="text-align: left; margin-bottom: 25px;">
                         <div style="font-size: 36px; font-weight: bold; color: ${isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'}; letter-spacing: 2px;">Monthly Summary</div>
                         <div style="font-size: 64px; font-weight: 900; color: ${isDark ? '#FFFFFF' : '#1C1C1E'}; text-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-top: 10px;">${monthTitle} 紀錄</div>
                     </div>
-                    <div style="background: linear-gradient(135deg, #FF3B30 0%, #FF9500 100%); width: 130px; height: 130px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(255,59,48,0.3); color: white;">
-                        <div style="font-size: 52px; font-weight: 900; line-height: 1;">${totalWorkouts}</div>
-                        <div style="font-size: 18px; font-weight: bold; margin-top: 4px;">次訓練</div>
+                    
+                    <div style="display: flex; gap: 15px; width: 100%; justify-content: center;">
+                        ${monthCards.join('')}
                     </div>
                 </div>
+
                 ${gridHtml}
             </div>
-            <div style="position: absolute; bottom: 115px; font-size: 40px; color: rgba(255,255,255,0.9); font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); text-align: center; width: 100%;">${quotes.en}</div>
-            <div style="position: absolute; bottom: 70px; font-size: 36px; color: rgba(255,255,255,0.5); font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); text-align: center; width: 100%;">${quotes.zh}</div>
+            <!-- 套用動態 Bottom 的設定 -->
+            <div style="position: absolute; bottom: ${enQuoteBottom}px; font-size: 40px; color: rgba(255,255,255,0.9); font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); text-align: center; width: 100%;">${quotes.en}</div>
+            <div style="position: absolute; bottom: ${zhQuoteBottom}px; font-size: 36px; color: rgba(255,255,255,0.5); font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); text-align: center; width: 100%;">${quotes.zh}</div>
         `;
 
         document.body.appendChild(wrapper);
@@ -2288,7 +2586,6 @@ async function shareMonthlyTraining() {
         hideShareLoading();
     }
 }
-
 
     </script>
 
