@@ -2326,7 +2326,7 @@ async function shareDailyTraining() {
             background: ${isDark ? 'linear-gradient(135deg, #3A3A3C 0%, #1C1C1E 100%)' : 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)'};
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             font-family: -apple-system, system-ui, sans-serif;
-            box-sizing: border-box; padding: 100px;
+            box-sizing: border-box; padding: 80px;
         `;
 
         let eventHtml = '';
@@ -2367,6 +2367,7 @@ async function shareDailyTraining() {
         const quotes = getRandomQuotes();
         const mainBg = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.5)';
 
+        // 計算當日總量與總次數
         let dayTotalWeight = 0;
         let dayTotalReps = 0;
         targetEvents.forEach(e => {
@@ -2374,39 +2375,56 @@ async function shareDailyTraining() {
             if(e.extendedProps && e.extendedProps.totalReps) dayTotalReps += parseFloat(e.extendedProps.totalReps);
         });
 
-        let statsHtml = '';
-        let validCards = [];
-        
+        // 動態生成右上角的圓圈區域 (與月摘要邏輯同步)
+        const totalWorkouts = targetEvents.length;
+        let circlesHtml = `
+            <div style="background: linear-gradient(135deg, #FF3B30 0%, #FF9500 100%); width: 130px; height: 130px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(255,59,48,0.3); color: white; flex-shrink: 0;">
+                <div style="font-size: 52px; font-weight: 900; line-height: 1;">${totalWorkouts}</div>
+                <div style="font-size: 18px; font-weight: bold; margin-top: 4px;">項訓練</div>
+            </div>
+        `;
+
         if (Math.round(dayTotalWeight) > 0) {
-            validCards.push(`
-                <div style="background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%); padding: 25px 30px; border-radius: 30px; box-shadow: 0 10px 20px rgba(0,122,255,0.3); color: white; text-align: center; flex: 1; max-width: 45%;">
-                    <div style="font-size: 22px; font-weight: bold; opacity: 0.9;">總重量</div>
-                    <div style="font-size: 48px; font-weight: 900; line-height: 1.1; margin-top: 10px;">${Math.round(dayTotalWeight)} <span style="font-size: 20px; font-weight: normal;">kg</span></div>
+            let weightVal = Math.round(dayTotalWeight);
+            let fontSize = weightVal.toString().length >= 5 ? 32 : (weightVal.toString().length === 4 ? 42 : 52);
+            circlesHtml += `
+                <div style="background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%); width: 130px; height: 130px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(0,122,255,0.3); color: white; flex-shrink: 0;">
+                    <div style="font-size: ${fontSize}px; font-weight: 900; line-height: 1;">${weightVal}</div>
+                    <div style="font-size: 18px; font-weight: bold; margin-top: 4px;">總重量</div>
                 </div>
-            `);
-        }
-        if (Math.round(dayTotalReps) > 0) {
-            validCards.push(`
-                <div style="background: linear-gradient(135deg, #34C759 0%, #30B0C7 100%); padding: 25px 30px; border-radius: 30px; box-shadow: 0 10px 20px rgba(52,199,89,0.3); color: white; text-align: center; flex: 1; max-width: 45%;">
-                    <div style="font-size: 22px; font-weight: bold; opacity: 0.9;">總次數</div>
-                    <div style="font-size: 48px; font-weight: 900; line-height: 1.1; margin-top: 10px;">${Math.round(dayTotalReps)} <span style="font-size: 20px; font-weight: normal;">reps</span></div>
-                </div>
-            `);
+            `;
         }
 
-        if (validCards.length > 0) {
-            statsHtml = `<div style="display: flex; gap: 20px; justify-content: center; margin-bottom: 30px; width: 100%;">${validCards.join('')}</div>`;
+        if (Math.round(dayTotalReps) > 0) {
+            let repsVal = Math.round(dayTotalReps);
+            let fontSize = repsVal.toString().length >= 5 ? 32 : (repsVal.toString().length === 4 ? 42 : 52);
+            circlesHtml += `
+                <div style="background: linear-gradient(135deg, #34C759 0%, #30B0C7 100%); width: 130px; height: 130px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(52,199,89,0.3); color: white; flex-shrink: 0;">
+                    <div style="font-size: ${fontSize}px; font-weight: 900; line-height: 1;">${repsVal}</div>
+                    <div style="font-size: 18px; font-weight: bold; margin-top: 4px;">總次數</div>
+                </div>
+            `;
         }
 
         wrapper.innerHTML = `
-            <div style="background: ${mainBg}; border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 80px 60px; text-align: center; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; flex-direction: column;">
-                <div style="font-size: 50px; font-weight: bold; color: ${isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'}; margin-bottom: 20px; letter-spacing: 2px;">Workout Complete</div>
-                <div style="font-size: 80px; font-weight: 900; color: ${isDark ? '#FFFFFF' : '#1C1C1E'}; margin-bottom: 30px; text-shadow: 0 5px 15px rgba(0,0,0,0.2);">${dateStrFormatted} 訓練達成</div>
-                ${statsHtml}
-                <div style="width: 100%; display:flex; flex-direction: column; align-items: center;">
+            <div style="background: ${mainBg}; border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 60px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; flex-direction: column;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+                    <div style="text-align: left;">
+                        <div style="font-size: 36px; font-weight: bold; color: ${isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'}; letter-spacing: 2px;">Workout Complete</div>
+                        <div style="font-size: 64px; font-weight: 900; color: ${isDark ? '#FFFFFF' : '#1C1C1E'}; text-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-top: 10px;">${dateStrFormatted} 紀錄</div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                        ${circlesHtml}
+                    </div>
+                </div>
+
+                <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
                     ${eventHtml}
                 </div>
             </div>
+            
             <div style="position: absolute; bottom: 115px; font-size: 40px; color: rgba(255,255,255,0.9); font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); text-align: center; width: 100%;">${quotes.en}</div>
             <div style="position: absolute; bottom: 70px; font-size: 36px; color: rgba(255,255,255,0.5); font-weight: bold; letter-spacing: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); text-align: center; width: 100%;">${quotes.zh}</div>
         `;
@@ -2419,7 +2437,6 @@ async function shareDailyTraining() {
         hideShareLoading();
     }
 }
-
 
 // 3. 功能：分享本月訓練
 async function shareMonthlyTraining() {
@@ -2466,8 +2483,8 @@ async function shareMonthlyTraining() {
         
         // 如果是 6 行，將語錄的高度往下移動，並且讓網格高度稍微縮減避免超出畫面
         const gridRowHeight = isSixRows ? 200 : 200;
-        const enQuoteBottom = isSixRows ? 68 : 115;
-        const zhQuoteBottom = isSixRows ? 33 : 70;
+        const enQuoteBottom = isSixRows ? 108 : 115;
+        const zhQuoteBottom = isSixRows ? 63 : 70;
 
         let gridHtml = `
             <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; width: 100%; text-align: center; margin-bottom: 20px;">
@@ -2521,9 +2538,9 @@ async function shareMonthlyTraining() {
 
         const totalWorkouts = monthEvents.length;
         const quotes = getRandomQuotes();
-        
         const mainBg = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.5)';
 
+        // 計算總重量與總次數
         let monthTotalWeight = 0;
         let monthTotalReps = 0;
         monthEvents.forEach(e => {
@@ -2531,43 +2548,48 @@ async function shareMonthlyTraining() {
             if(e.extendedProps && e.extendedProps.totalReps) monthTotalReps += parseFloat(e.extendedProps.totalReps);
         });
 
-        let monthCards = [];
-        monthCards.push(`
-            <div style="background: linear-gradient(135deg, #FF3B30 0%, #FF9500 100%); padding: 25px; border-radius: 30px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 20px rgba(255,59,48,0.3); color: white; flex: 1;">
-                <div style="font-size: 22px; font-weight: bold; opacity: 0.9;">總訓練次數</div>
-                <div style="font-size: 48px; font-weight: 900; line-height: 1.1; margin-top: 10px;">${totalWorkouts} <span style="font-size: 20px; font-weight: normal;">次</span></div>
+        // 動態生成右上角的圓圈區域
+        let circlesHtml = `
+            <div style="background: linear-gradient(135deg, #FF3B30 0%, #FF9500 100%); width: 130px; height: 130px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(255,59,48,0.3); color: white; flex-shrink: 0;">
+                <div style="font-size: 52px; font-weight: 900; line-height: 1;">${totalWorkouts}</div>
+                <div style="font-size: 18px; font-weight: bold; margin-top: 4px;">次訓練</div>
             </div>
-        `);
+        `;
 
         if (Math.round(monthTotalWeight) > 0) {
-            monthCards.push(`
-                <div style="background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%); padding: 25px; border-radius: 30px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 20px rgba(0,122,255,0.3); color: white; flex: 1.1;">
-                    <div style="font-size: 22px; font-weight: bold; opacity: 0.9;">總重量</div>
-                    <div style="font-size: 48px; font-weight: 900; line-height: 1.1; margin-top: 10px;">${Math.round(monthTotalWeight)} <span style="font-size: 20px; font-weight: normal;">kg</span></div>
+            let weightVal = Math.round(monthTotalWeight);
+            // 當數字位數較長時縮小字體，避免文字超出圓圈
+            let fontSize = weightVal.toString().length >= 5 ? 32 : (weightVal.toString().length === 4 ? 42 : 52);
+            circlesHtml += `
+                <div style="background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%); width: 130px; height: 130px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(0,122,255,0.3); color: white; flex-shrink: 0;">
+                    <div style="font-size: ${fontSize}px; font-weight: 900; line-height: 1;">${weightVal}</div>
+                    <div style="font-size: 18px; font-weight: bold; margin-top: 4px;">總重量</div>
                 </div>
-            `);
+            `;
         }
 
         if (Math.round(monthTotalReps) > 0) {
-            monthCards.push(`
-                <div style="background: linear-gradient(135deg, #34C759 0%, #30B0C7 100%); padding: 25px; border-radius: 30px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 20px rgba(52,199,89,0.3); color: white; flex: 1.1;">
-                    <div style="font-size: 22px; font-weight: bold; opacity: 0.9;">總次數</div>
-                    <div style="font-size: 48px; font-weight: 900; line-height: 1.1; margin-top: 10px;">${Math.round(monthTotalReps)} <span style="font-size: 20px; font-weight: normal;">reps</span></div>
+            let repsVal = Math.round(monthTotalReps);
+            let fontSize = repsVal.toString().length >= 5 ? 32 : (repsVal.toString().length === 4 ? 42 : 52);
+            circlesHtml += `
+                <div style="background: linear-gradient(135deg, #34C759 0%, #30B0C7 100%); width: 130px; height: 130px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(52,199,89,0.3); color: white; flex-shrink: 0;">
+                    <div style="font-size: ${fontSize}px; font-weight: 900; line-height: 1;">${repsVal}</div>
+                    <div style="font-size: 18px; font-weight: bold; margin-top: 4px;">總次數</div>
                 </div>
-            `);
+            `;
         }
 
         wrapper.innerHTML = `
             <div style="background: ${mainBg}; border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 60px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; flex-direction: column;">
                 
-                <div style="display: flex; flex-direction: column; margin-bottom: 40px;">
-                    <div style="text-align: left; margin-bottom: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+                    <div style="text-align: left;">
                         <div style="font-size: 36px; font-weight: bold; color: ${isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'}; letter-spacing: 2px;">Monthly Summary</div>
                         <div style="font-size: 64px; font-weight: 900; color: ${isDark ? '#FFFFFF' : '#1C1C1E'}; text-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-top: 10px;">${monthTitle} 紀錄</div>
                     </div>
                     
-                    <div style="display: flex; gap: 15px; width: 100%; justify-content: center;">
-                        ${monthCards.join('')}
+                    <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                        ${circlesHtml}
                     </div>
                 </div>
 
@@ -2586,6 +2608,7 @@ async function shareMonthlyTraining() {
         hideShareLoading();
     }
 }
+
 
     </script>
 
