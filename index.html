@@ -724,12 +724,12 @@
 </label></div>
             </div>
             <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
-                <h4 style="margin:0 0 10px 0; color:#333;">使用者</h4>
+                <h4 style="margin:0 0 10px 0; color:#333;">信箱</h4>
                 <input type="email" id="sync-user-id" style="width:100%; box-sizing:border-box; margin-bottom:10px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="例如 alice@gmail.com" autocomplete="email" spellcheck="false">
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                     <button class="btn-record" style="background:#007AFF; flex:1; min-width: 140px; padding:10px; font-size:14px; margin-top:0;" onclick="saveUserIdSetting()">套用</button>
                 </div>
-                <p style="font-size:0.8rem; color:#666; margin:8px 0 0 0;">請輸入你的E-mail；同步與恢復都會使用你的E-mail。</p>
+                <p style="font-size:0.8rem; color:#666; margin:8px 0 0 0;">同步與恢復都會使用你的E-mail。</p>
             </div>
             <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
                 <button class="btn-record" style="background:#5856D6; flex: 1; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showImportChoiceModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>匯入紀錄</button>
@@ -919,7 +919,7 @@ function saveUserIdSetting() {
     }
 
     const value = setCurrentUserId(rawValue);
-    showNotice('已更新使用者E-mail', `已成功儲存E-mail：${value}`, false);
+    showNotice('成功儲存', `已更新E-mail：${value}`, false);
 }
 
 function initUserIdentity() {
