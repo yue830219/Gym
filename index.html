@@ -723,6 +723,14 @@
     <input type="checkbox" id="cfg-dark-auto" onchange="toggleAutoDarkTheme()">
 </label></div>
             </div>
+            <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
+                <h4 style="margin:0 0 10px 0; color:#333;">使用者</h4>
+                <input type="email" id="sync-user-id" style="width:100%; box-sizing:border-box; margin-bottom:10px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="例如 alice@gmail.com" autocomplete="email" spellcheck="false">
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn-record" style="background:#007AFF; flex:1; min-width: 140px; padding:10px; font-size:14px; margin-top:0;" onclick="saveUserIdSetting()">套用</button>
+                </div>
+                <p style="font-size:0.8rem; color:#666; margin:8px 0 0 0;">請輸入你的E-mail；同步與恢復都會使用你的E-mail。</p>
+            </div>
             <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
                 <button class="btn-record" style="background:#5856D6; flex: 1; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showImportChoiceModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>匯入紀錄</button>
                 <button class="btn-record" style="background:#007AFF; flex: 1; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showExportChoiceModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>匯出紀錄</button>
@@ -754,6 +762,7 @@
         </div>
     </div>
     
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/zh-tw.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@2.8.0/dist/dom-to-image-more.min.js"></script>
@@ -868,8 +877,68 @@ let isNoticeOpen = false; // 追蹤提示卡片是否正開啟中
    ====================================================================== */
 const googleSyncScriptUrl = 'https://script.google.com/macros/s/AKfycbxjQhFN7JqE34xVLJJY9ogeZrEyybxXVP7vhhDd6la2HZPfB9pDyLCe9Kc4rUGjk85lOw/exec';
 
+function getCurrentUserId() {
+    const input = document.getElementById('sync-user-id');
+    if (input && input.value !== undefined) {
+        return String(input.value).trim();
+    }
+
+    const saved = localStorage.getItem('sync_user_id');
+    if (saved === null || saved === undefined) {
+        return '';
+    }
+    return String(saved).trim();
+}
+
+function isValidEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
+}
+
+function setCurrentUserId(userId) {
+    const value = String(userId || '').trim();
+    localStorage.setItem('sync_user_id', value);
+    const input = document.getElementById('sync-user-id');
+    if (input) {
+        input.value = value;
+    }
+    return value;
+}
+
+function saveUserIdSetting() {
+    const input = document.getElementById('sync-user-id');
+    const rawValue = input ? String(input.value || '').trim() : '';
+
+    if (!rawValue) {
+        showNotice('尚未設定E-mail', '請輸入你的 E-mail 後再點套用。', false);
+        return;
+    }
+
+    if (!isValidEmail(rawValue)) {
+        showNotice('格式錯誤', '必須是有效的 E-mail 格式，例如 alice@gmail.com。', false);
+        return;
+    }
+
+    const value = setCurrentUserId(rawValue);
+    showNotice('已更新使用者E-mail', `已成功儲存E-mail：${value}`, false);
+}
+
+function initUserIdentity() {
+    const input = document.getElementById('sync-user-id');
+    if (!input) {
+        return;
+    }
+
+    const saved = localStorage.getItem('sync_user_id');
+    const initialValue = saved === null || saved === undefined ? '' : String(saved).trim();
+    input.value = initialValue;
+}
+
 function getGoogleSyncPayload() {
+    const input = document.getElementById('sync-user-id');
+    const userId = input ? String(input.value || '').trim() : getCurrentUserId();
+
     return {
+        sync_user_id: userId,
         gym_history: JSON.parse(localStorage.getItem('gym_history') || "[]"),
         custom_exercises: JSON.parse(localStorage.getItem('custom_exercises') || "null"),
         current_weights: JSON.parse(localStorage.getItem('current_weights') || "{}"),
@@ -892,9 +961,26 @@ async function syncDataToGoogleSheet(showFeedback = false) {
 
     try {
         const payload = getGoogleSyncPayload();
+        if (!payload.sync_user_id) {
+            if (showFeedback) {
+                showNotice('無法上傳', '請先輸入有效的 email後再上傳到 Google。', false);
+            }
+            return false;
+        }
+
+        if (!isValidEmail(payload.sync_user_id)) {
+            if (showFeedback) {
+                showNotice('格式錯誤', '必須是有效的 email 格式，例如 alice@gmail.com。', false);
+            }
+            return false;
+        }
+
         const formData = new FormData();
         formData.append('action', 'sync');
+        formData.append('user_id', payload.sync_user_id);
         formData.append('payload', JSON.stringify(payload));
+
+        console.log('同步E-mail:', payload.sync_user_id);
 
         const response = await fetch(googleSyncScriptUrl, {
             method: 'POST',
@@ -931,7 +1017,8 @@ async function loadRemoteHistoryFromGoogleSheet() {
     if (!navigator.onLine) return;
 
     try {
-        const response = await fetch(googleSyncScriptUrl + '?action=load', {
+        const userId = getCurrentUserId();
+        const response = await fetch(googleSyncScriptUrl + '?action=load&user_id=' + encodeURIComponent(userId), {
             method: 'GET',
             mode: 'cors'
         });
@@ -1031,6 +1118,7 @@ window.onload = function() {
     });
 
     // 初始化並載入各模組元件與設定
+    initUserIdentity(); // 載入使用者e-mail
     renderAllExerciseLists(); // 渲染所有部位的動作清單
     initCalendar(); // 載入日曆套件
     loadAllWeights(); // 從暫存區(localStorage)載入各動作上次輸入的值
@@ -2162,7 +2250,13 @@ async function importHistory() {
     }
 
     try {
-        const response = await fetch(googleSyncScriptUrl + '?action=load', {
+        const userId = getCurrentUserId();
+        if (!userId || !isValidEmail(userId)) {
+            showNotice('無法匯入', '請先輸入有效的 email 識別碼後再從 Google 匯入。', false);
+            return;
+        }
+
+        const response = await fetch(googleSyncScriptUrl + '?action=load&user_id=' + encodeURIComponent(userId), {
             method: 'GET',
             mode: 'cors'
         });
