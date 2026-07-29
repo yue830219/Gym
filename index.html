@@ -726,9 +726,9 @@
             <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
                 <h4 style="margin:0 0 10px 0; color:#333;">信箱</h4>
                 <input type="email" id="sync-user-id" style="width:100%; box-sizing:border-box; margin-bottom:10px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="例如 alice@gmail.com" autocomplete="email" spellcheck="false" oninput="validateSyncUserId()" onblur="saveSyncUserIdIfValid()">
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <button class="btn-record import-export-btn" style="background:#5856D6; flex: 1; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showImportChoiceModal()">匯入紀錄</button>
-                    <button class="btn-record import-export-btn" style="background:#007AFF; flex: 1; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showExportChoiceModal()">匯出紀錄</button>
+                <div style="display:flex; gap:10px; justify-content:space-between; align-items:center; flex-wrap:nowrap;">
+                    <button class="btn-record import-export-btn" style="background:#5856D6; flex:0 0 48%; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showImportChoiceModal()">匯入紀錄</button>
+                    <button class="btn-record import-export-btn" style="background:#007AFF; flex:0 0 48%; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showExportChoiceModal()">匯出紀錄</button>
                 </div>
                 <p id="sync-user-message" style="font-size:0.82rem; color:#666; margin:8px 0 10px 0;">同步與恢復都會使用你的 E-mail。</p>                
             </div>
