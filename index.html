@@ -725,15 +725,12 @@
             </div>
             <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
                 <h4 style="margin:0 0 10px 0; color:#333;">信箱</h4>
-                <input type="email" id="sync-user-id" style="width:100%; box-sizing:border-box; margin-bottom:10px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="例如 alice@gmail.com" autocomplete="email" spellcheck="false">
+                <input type="email" id="sync-user-id" style="width:100%; box-sizing:border-box; margin-bottom:10px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="例如 alice@gmail.com" autocomplete="email" spellcheck="false" oninput="validateSyncUserId()" onblur="saveSyncUserIdIfValid()">
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <button class="btn-record" style="background:#007AFF; flex:1; min-width: 140px; padding:10px; font-size:14px; margin-top:0;" onclick="saveUserIdSetting()">套用</button>
+                    <button class="btn-record import-export-btn" style="background:#5856D6; flex: 1; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showImportChoiceModal()">匯入紀錄</button>
+                    <button class="btn-record import-export-btn" style="background:#007AFF; flex: 1; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showExportChoiceModal()">匯出紀錄</button>
                 </div>
-                <p style="font-size:0.8rem; color:#666; margin:8px 0 0 0;">同步與恢復都會使用你的E-mail。</p>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-                <button class="btn-record" style="background:#5856D6; flex: 1; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showImportChoiceModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>匯入紀錄</button>
-                <button class="btn-record" style="background:#007AFF; flex: 1; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showExportChoiceModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>匯出紀錄</button>
+                <p id="sync-user-message" style="font-size:0.82rem; color:#666; margin:8px 0 10px 0;">同步與恢復都會使用你的 E-mail。</p>                
             </div>
             <input type="file" id="import-file-local" accept=".json" style="display:none" onchange="importHistoryLocal(event)">
             <p style="font-size: 0.85rem; color: #666; text-align: center;">建議定期匯出備份，避免數據遺失。</p>
@@ -894,6 +891,38 @@ function isValidEmail(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
 }
 
+function validateSyncUserId() {
+    const input = document.getElementById('sync-user-id');
+    const messageEl = document.getElementById('sync-user-message');
+    if (!input || !messageEl) return;
+
+    const rawValue = String(input.value || '').trim();
+    if (!rawValue) {
+        messageEl.innerText = '同步與恢復都會使用你的 E-mail。';
+        messageEl.style.color = '#666';
+        input.style.borderColor = '#d1d5db';
+        return;
+    }
+
+    if (!isValidEmail(rawValue)) {
+        messageEl.innerText = '請輸入有效的 E-mail 格式，例如 alice@gmail.com。';
+        messageEl.style.color = '#d9534f';
+        input.style.borderColor = '#d9534f';
+    } else {
+        messageEl.innerText = 'E-mail 格式正確，可直接匯入或匯出備份。';
+        messageEl.style.color = '#2a7f2a';
+        input.style.borderColor = '#34c759';
+    }
+}
+
+function saveSyncUserIdIfValid() {
+    const input = document.getElementById('sync-user-id');
+    if (!input) return;
+    const rawValue = String(input.value || '').trim();
+    if (!rawValue || !isValidEmail(rawValue)) return;
+    setCurrentUserId(rawValue);
+}
+
 function setCurrentUserId(userId) {
     const value = String(userId || '').trim();
     localStorage.setItem('sync_user_id', value);
@@ -931,6 +960,7 @@ function initUserIdentity() {
     const saved = localStorage.getItem('sync_user_id');
     const initialValue = saved === null || saved === undefined ? '' : String(saved).trim();
     input.value = initialValue;
+    validateSyncUserId();
 }
 
 function getGoogleSyncPayload() {
@@ -2265,7 +2295,16 @@ async function importHistory() {
         const result = await response.json();
         if (!result || !result.gym_history) throw new Error('Google 回傳資料錯誤');
 
-        localStorage.setItem('gym_history', JSON.stringify(result.gym_history || []));
+        const remoteHistory = Array.isArray(result.gym_history) ? result.gym_history : [];
+        const hasRemoteData = remoteHistory.length > 0 || (result.custom_exercises && Object.keys(result.custom_exercises).length > 0) || (result.current_weights && Object.keys(result.current_weights).length > 0);
+        const emailNotFound = result.found_user === false;
+
+        if (emailNotFound || !hasRemoteData) {
+            showNotice('雲端無紀錄', '找不到與此 Email 相符的雲端資料，請確認 Email 是否正確或稍後再試。', false);
+            return;
+        }
+
+        localStorage.setItem('gym_history', JSON.stringify(remoteHistory));
         if (result.custom_exercises) localStorage.setItem('custom_exercises', JSON.stringify(result.custom_exercises));
         if (result.current_weights) localStorage.setItem('current_weights', JSON.stringify(result.current_weights));
         if (result.cfg_rest_min) localStorage.setItem('cfg_rest_min', result.cfg_rest_min);
@@ -2286,7 +2325,7 @@ async function importHistory() {
 
         if (calendar) {
             calendar.removeAllEvents();
-            result.gym_history.forEach(function(ev) {
+            remoteHistory.forEach(function(ev) {
                 calendar.addEvent(ev);
             });
             calendar.render();
