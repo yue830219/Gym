@@ -296,13 +296,121 @@
         #loading-screen #app-text { font-size: 16px; color: #1c1c1e; margin: 6px 0 0 0; font-weight: bold; letter-spacing: 0.5px; }
         body.loading-locked { overflow: hidden !important; height: 100vh !important; touch-action: none !important; }
 
-        /* ==========================================================================
+            /* ==========================================================================
            8. FullCalendar 套件與外觀微調 (Calendar Tweaks)
            ========================================================================== */
-        .fc-event-title { text-align: center; width: 100%; display: block; font-weight: bold; }
-        .fc-daygrid-event { justify-content: center !important; }
-        .fc .fc-daygrid-day-frame { min-height: 40px !important; }
-        .fc-daygrid-event { margin-top: 1px !important; padding: 0 2px !important; font-size: 0.75rem !important; }
+        /* 隱藏預設的生硬表格邊框，並將整個日曆的預設底色拿掉 */
+        .fc-theme-standard,
+        .fc-theme-standard th, 
+        .fc-theme-standard td, 
+        .fc-theme-standard .fc-scrollgrid { 
+            border: none !important; 
+            background: transparent !important; 
+        }
+        
+        /* --- 1. 星期列樣式 --- */
+        .fc-col-header-cell { 
+            padding-bottom: 8px; 
+            background: transparent !important; 
+        }
+        .fc .fc-col-header-cell-cushion { 
+            font-size: 0.8rem; 
+            font-weight: bold; 
+            color: #1C1C1E !important; 
+            text-decoration: none;
+        }
+        body.dark-mode .fc .fc-col-header-cell-cushion { 
+            color: #FFFFFF !important; 
+        }
+        
+        /* --- 2. 日期格子 (調整寬高、上下間距、明亮風格陰影) --- */
+        .fc-daygrid-day {
+            padding: 0.5px !important;
+        }
+        .fc-daygrid-day-frame {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 7px; 
+            margin: 1px !important;
+            min-height: 78px !important;
+            height: 78px !important; 
+            max-height: 78px !important; 
+            overflow: hidden; 
+            border: 1px solid rgba(255, 255, 255, 0.9) !important;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+        }
+        body.dark-mode .fc-daygrid-day-frame {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: none;
+        }
+        
+        /* 今天日期的強調樣式 */
+        .fc-day-today .fc-daygrid-day-frame {
+            border: 2px solid #007AFF !important;
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        /* --- 3. 非當月日期的隱藏設定 (不顯示數字與紀錄) --- */
+        .fc-day-other .fc-daygrid-day-number,
+        .fc-day-other .fc-daygrid-day-top,
+        .fc-day-other .fc-daygrid-event-harness,
+        .fc-day-other .fc-event {
+            display: none !important; /* ★ 隱藏非當月的數字、頂部與所有活動紀錄 */
+        }
+        .fc-day-other .fc-daygrid-day-frame {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important; /* 非當月的格子完全透明且拿掉陰影 */
+        }
+        
+        /* 日期數字靠上 */
+        .fc-daygrid-day-top {
+            display: flex;
+            justify-content: center !important;
+            align-items: flex-start !important; 
+            padding-top: 2px !important; 
+        }
+        .fc-daygrid-day-number {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #1C1C1E !important;
+            text-decoration: none;
+            line-height: 1;
+            padding: 2px 0 0 0 !important;
+        }
+        body.dark-mode .fc-daygrid-day-number { color: #FFFFFF !important; }
+        
+        /* 訓練紀錄標籤微調與文字置中縮小 */
+        .fc-daygrid-event-harness { 
+            margin: 0 1px 1px 1px !important; 
+        }
+        .fc-event {
+            border-radius: 3px !important; 
+            border: none !important;
+            padding: 1px 2px !important; 
+            margin-bottom: 1px !important; 
+            text-align: center !important; 
+            justify-content: center !important; 
+            line-height: 1.1; 
+        }
+        .fc-event-title {
+            text-align: center;
+            display: block;
+            width: 100%; 
+            font-weight: bold;
+            font-size: 0.65rem; 
+            white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis; 
+        }
+        /* 日曆本體加寬 */
+        #calendar {
+            margin-top: 10px;
+            margin-left: -10px;
+            margin-right: -10px;
+        }
 
         /* ==========================================================================
            9. 暗黑模式主題與漸變動畫 (Dark Mode Styles)
@@ -380,10 +488,6 @@
 
         body.dark-mode .editing-mode .exercise-name { border-bottom: 1px dashed #3094FF !important; }
         body.dark-mode .editing-mode .unit-select { border-bottom: 1px dashed #3094FF !important; color: #3094FF !important; }
-        
-        /* 日曆暗黑微調 */
-        body.dark-mode .fc-theme-standard .fc-col-header-cell { background-color: #8E8E93 !important; }
-        body.dark-mode .fc .fc-col-header-cell-cushion { color: #FFFFFF !important; }
 
         /* 暗黑加載畫面 */
         #loading-screen.dark-theme { background: radial-gradient(circle at center, #2a2a1a 0%, #1c1c1e 100%); }
@@ -466,7 +570,7 @@
         }
         
         /* 新增：編輯模式下組數(x3)的輸入框樣式 */
-        .sets-input { outline: none; transition: color 0.3s, border-color 0.3s; }
+        .sets-input { outline: none; transition: color 0.3s, border-color 0.3s; min-width: 26px; }
         .editing-mode .sets-input { border-bottom: 1px dashed #007AFF !important; background: transparent !important; cursor: text; }
         .sets-input:disabled { color: #666 !important; opacity: 1 !important; background: transparent !important; cursor: default; }
         body.dark-mode .sets-input:disabled { color: #AEAEB2 !important; }
@@ -909,7 +1013,7 @@ function validateSyncUserId() {
         messageEl.style.color = '#d9534f';
         input.style.borderColor = '#d9534f';
     } else {
-        messageEl.innerText = 'E-mail 格式正確，可直接匯入或匯出備份。';
+        messageEl.innerText = 'E-mail格式正確，可直接匯入或匯出備份。';
         messageEl.style.color = '#2a7f2a';
         input.style.borderColor = '#34c759';
     }
@@ -938,12 +1042,12 @@ function saveUserIdSetting() {
     const rawValue = input ? String(input.value || '').trim() : '';
 
     if (!rawValue) {
-        showNotice('尚未設定E-mail', '請輸入你的 E-mail 後再點套用。', false);
+        showNotice('尚未設定E-mail', '請輸入你的E-mail後再點套用。', false);
         return;
     }
 
     if (!isValidEmail(rawValue)) {
-        showNotice('格式錯誤', '必須是有效的 E-mail 格式，例如 alice@gmail.com。', false);
+        showNotice('格式錯誤', '必須是有效的E-mail格式，例如 alice@gmail.com。', false);
         return;
     }
 
@@ -982,7 +1086,7 @@ function getGoogleSyncPayload() {
     };
 }
 
-async function syncDataToGoogleSheet(showFeedback = false) {
+async function syncDataToGoogleSheet(showFeedback = false, successMessage = '已更新雲端紀錄') {
     // 若使用者離線，先不嘗試雲端上傳，僅留本機資料
     if (!navigator.onLine) {
         if (showFeedback) showNotice('離線模式', '目前無網路，暫時只儲存到本機', false);
@@ -993,7 +1097,7 @@ async function syncDataToGoogleSheet(showFeedback = false) {
         const payload = getGoogleSyncPayload();
         if (!payload.sync_user_id) {
             if (showFeedback) {
-                showNotice('無法上傳', '請先輸入有效的 email後再上傳到 Google。', false);
+                showNotice('無法上傳', '請先輸入有效的E-mail後再上傳到雲端。', false);
             }
             return false;
         }
@@ -1023,21 +1127,21 @@ async function syncDataToGoogleSheet(showFeedback = false) {
         try {
             result = JSON.parse(responseText);
         } catch (parseError) {
-            console.warn('Google 同步回傳非 JSON 格式:', responseText);
+            console.warn('雲端同步回傳非 JSON 格式:', responseText);
         }
 
         if (!response.ok) {
-            throw new Error(`Google 同步 HTTP ${response.status}: ${responseText}`);
+            throw new Error(`雲端同步 HTTP ${response.status}: ${responseText}`);
         }
         if (!result || result.status !== 'ok') {
-            throw new Error(`Google 同步失敗: ${responseText}`);
+            throw new Error(`雲端同步失敗: ${responseText}`);
         }
 
-        if (showFeedback) showNotice('已同步', '訓練資料已成功上傳至 Google 試算表', false);
+        if (showFeedback) showNotice('已同步', successMessage, false);
         return true;
     } catch (error) {
-        console.warn('Google 同步失敗:', error);
-        if (showFeedback) showNotice('同步失敗', `無法連線到 Google 試算表：${error.message}`, false);
+        console.warn('雲端同步失敗:', error);
+        if (showFeedback) showNotice('同步失敗', `無法連線到雲端：${error.message}`, false);
         return false;
     }
 }
@@ -1055,7 +1159,7 @@ async function loadRemoteHistoryFromGoogleSheet() {
 
         if (!response.ok) throw new Error('HTTP ' + response.status);
         const result = await response.json();
-        if (!result) throw new Error('Google 回傳資料錯誤');
+        if (!result) throw new Error('雲端回傳資料錯誤');
 
         let importedData = null;
         if (Array.isArray(result)) {
@@ -1100,9 +1204,9 @@ async function loadRemoteHistoryFromGoogleSheet() {
             calendar.render();
         }
 
-        showNotice('已載入雲端紀錄', '已從 Google 試算表載入最新訓練紀錄', false);
+        showNotice('已載入雲端紀錄', '已從雲端載入最新訓練紀錄', false);
     } catch (error) {
-        console.warn('載入 Google 紀錄失敗:', error);
+        console.warn('載入雲端紀錄失敗:', error);
     }
 }
 
@@ -1524,7 +1628,7 @@ function createExerciseItemHTML(name, id, unit, sets = 3) {
         
                     <div style="display: flex; align-items: center; margin-left: -7px;">
                         <span class="unit-text">x</span>
-                        <input type="number" inputmode="decimal" class="sets-input" value="${sets}" disabled style="margin-left: -10px; width:10px; border:none; background:transparent; border-bottom: 1px solid transparent; font-size:1rem; font-weight:bold; color:#007AFF; text-align:left; padding:0; -webkit-appearance:none;">
+                        <input type="number" inputmode="decimal" class="sets-input" value="${sets}" disabled style="margin-left: 2px; width:24px; min-width:24px; border:none; background:transparent; border-bottom: 1px solid transparent; font-size:1rem; font-weight:bold; color:#007AFF; text-align:center; padding:0; -webkit-appearance:none;">
                     </div>
         
                     
@@ -2028,6 +2132,10 @@ function initCalendar() {
         dayCellContent: function(arg) {
             return arg.date.getDate();
         },
+        dayHeaderContent: function(arg) {
+            const days = ['日', '一', '二', '三', '四', '五', '六'];
+            return days[arg.date.getDay()];
+        },        
         eventOrder: "order",
         events: JSON.parse(localStorage.getItem('gym_history') || "[]"),
         eventClick: function(info) {
@@ -2265,24 +2373,61 @@ function exportHistoryToLocal() {
 
 async function uploadHistoryToGoogle() {
     if (!navigator.onLine) {
-        showNotice('離線上傳', '目前無法連線到 Google 試算表，請檢查網路後再試。', false);
+        showNotice('離線上傳', '目前無法連線到雲端，請檢查網路後再試。', false);
         return;
     }
 
-    await syncDataToGoogleSheet(true);
+    const userId = getCurrentUserId();
+    if (!userId || !isValidEmail(userId)) {
+        showNotice('無法上傳', '請先輸入有效的E-mail後再上傳到雲端。', false);
+        return;
+    }
+
+    try {
+        const response = await fetch(googleSyncScriptUrl + '?action=load&user_id=' + encodeURIComponent(userId), {
+            method: 'GET',
+            mode: 'cors'
+        });
+
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const result = await response.json();
+        const emailNotFound = result && result.found_user === false;
+
+        if (emailNotFound) {
+            showChoiceModal(
+                '雲端紀錄不存在',
+                '此E-mail尚未有任何紀錄，是否以此信箱上傳？',
+                '上傳紀錄',
+                function() {
+                    closeChoiceModal();
+                    syncDataToGoogleSheet(true, '已建立新雲端紀錄');
+                },
+                '取消',
+                function() {
+                    closeChoiceModal();
+                }
+            );
+            return;
+        }
+
+        await syncDataToGoogleSheet(true);
+    } catch (error) {
+        console.warn('檢查雲端紀錄失敗:', error);
+        showNotice('檢查失敗', '無法檢查雲端紀錄是否存在，請稍後再試。', false);
+    }
 }
 
-// 從 Google 雲端匯入資料
+// 從雲端匯入資料
 async function importHistory() {
     if (!navigator.onLine) {
-        showNotice('離線載入', '目前無法連線至 Google 試算表，請檢查網路後再重新匯入。', false);
+        showNotice('離線載入', '目前無法連線至雲端，請檢查網路後再重新匯入。', false);
         return;
     }
 
     try {
         const userId = getCurrentUserId();
         if (!userId || !isValidEmail(userId)) {
-            showNotice('無法匯入', '請先輸入有效的 email 識別碼後再從 Google 匯入。', false);
+            showNotice('無法匯入', '請先輸入有效的E-mail後再從雲端匯入。', false);
             return;
         }
 
@@ -2293,14 +2438,14 @@ async function importHistory() {
 
         if (!response.ok) throw new Error('HTTP ' + response.status);
         const result = await response.json();
-        if (!result || !result.gym_history) throw new Error('Google 回傳資料錯誤');
+        if (!result || !result.gym_history) throw new Error('雲端回傳資料錯誤');
 
         const remoteHistory = Array.isArray(result.gym_history) ? result.gym_history : [];
         const hasRemoteData = remoteHistory.length > 0 || (result.custom_exercises && Object.keys(result.custom_exercises).length > 0) || (result.current_weights && Object.keys(result.current_weights).length > 0);
         const emailNotFound = result.found_user === false;
 
         if (emailNotFound || !hasRemoteData) {
-            showNotice('雲端無紀錄', '找不到與此 Email 相符的雲端資料，請確認 Email 是否正確或稍後再試。', false);
+            showNotice('雲端無紀錄', '找不到與此Email相符的雲端資料，請確認Email是否正確或稍後再試。', false);
             return;
         }
 
@@ -2331,10 +2476,10 @@ async function importHistory() {
             calendar.render();
         }
 
-        showNotice('匯入成功', '已從 Google 試算表載入雲端紀錄', false);
+        showNotice('匯入成功', '已載入雲端紀錄', false);
     } catch (error) {
         console.warn('匯入雲端紀錄失敗:', error);
-        showNotice('匯入失敗', '無法從 Google 試算表讀取資料，請稍後再試。', false);
+        showNotice('匯入失敗', '無法從雲端讀取資料，請稍後再試。', false);
     }
 }
 
@@ -2400,7 +2545,7 @@ function showImportChoiceModal() {
             closeChoiceModal();
             triggerImportLocal();
         },
-        '從 Google 雲端匯入',
+        '從雲端匯入',
         function() {
             closeChoiceModal();
             importHistory();
@@ -2417,7 +2562,7 @@ function showExportChoiceModal() {
             closeChoiceModal();
             exportHistoryToLocal();
         },
-        '上傳到 Google 雲端',
+        '上傳到雲端',
         function() {
             closeChoiceModal();
             uploadHistoryToGoogle();
