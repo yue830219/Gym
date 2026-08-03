@@ -351,6 +351,10 @@
             border: 2px solid #007AFF !important;
             background: rgba(255, 255, 255, 0.95);
         }
+        body.dark-mode .fc-day-today .fc-daygrid-day-frame {
+            border: 2px solid #007AFF !important;
+            background: rgba(0, 122, 255, 0.12) !important;
+        }
         
         /* --- 3. 非當月日期的隱藏設定 (不顯示數字與紀錄) --- */
         .fc-day-other .fc-daygrid-day-number,
@@ -363,6 +367,11 @@
             background: transparent !important;
             border: none !important;
             box-shadow: none !important; /* 非當月的格子完全透明且拿掉陰影 */
+        }
+        body.dark-mode .fc-day-other .fc-daygrid-day-frame {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
         }
         
         /* 日期數字靠上 */
