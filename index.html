@@ -50,6 +50,7 @@
             overflow: hidden !important;
             height: 100vh !important;
             touch-action: none !important; /* 防止 iOS 上的橡皮筋捲動效應 */
+            overscroll-behavior: none !important;
         }        
         /* 側邊欄抽屜面板 */
         .sidebar { 
@@ -981,6 +982,44 @@ let tempTimerVal = ""; // 計時設定欄位聚焦時，暫存舊數據用
 let currentTourStep = 0; // 當前新手導覽的進度索引
 let isTourActive = false; // 是否正在進行新手導覽
 let isNoticeOpen = false; // 追蹤提示卡片是否正開啟中
+let sidebarScrollLockEnabled = false; // 追蹤側邊欄是否已鎖定頁面捲動
+
+function preventSidebarScroll(event) {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar || !sidebar.classList.contains('active')) return;
+    event.preventDefault();
+    event.stopPropagation();
+}
+
+function preventSidebarScrollKeydown(event) {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar || !sidebar.classList.contains('active')) return;
+    if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) {
+        event.preventDefault();
+    }
+}
+
+function enableSidebarScrollLock() {
+    if (sidebarScrollLockEnabled) return;
+    sidebarScrollLockEnabled = true;
+    document.body.classList.add('sidebar-locked');
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('touchmove', preventSidebarScroll, { passive: false });
+    document.addEventListener('wheel', preventSidebarScroll, true);
+    document.addEventListener('keydown', preventSidebarScrollKeydown);
+}
+
+function disableSidebarScrollLock() {
+    if (!sidebarScrollLockEnabled) return;
+    sidebarScrollLockEnabled = false;
+    document.body.classList.remove('sidebar-locked');
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+    document.removeEventListener('touchmove', preventSidebarScroll);
+    document.removeEventListener('wheel', preventSidebarScroll, true);
+    document.removeEventListener('keydown', preventSidebarScrollKeydown);
+}
 
 /* ======================================================================
    2. Google 試算表同步 (Google Sheets Sync)
@@ -1360,12 +1399,12 @@ function toggleSidebar() {
         // 收合側邊欄
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
-        document.body.classList.remove('sidebar-locked'); // 解除背景鎖定
+        disableSidebarScrollLock();
     } else {
         // 展開側邊欄
         sidebar.classList.add('active');
         overlay.classList.add('active');
-        document.body.classList.add('sidebar-locked'); // 鎖定背景不給滑
+        enableSidebarScrollLock();
     }
 }
 
