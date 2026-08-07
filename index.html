@@ -2465,6 +2465,42 @@ async function uploadHistoryToGoogle() {
     }
 }
 
+function getImportedHistoryCount(importedData) {
+    if (Array.isArray(importedData)) {
+        return importedData.length || 0;
+    }
+    if (importedData && Array.isArray(importedData.gym_history)) {
+        return importedData.gym_history.length || 0;
+    }
+    return 0;
+}
+
+function confirmImportIfLocalHistoryIsLarger(importedData, onConfirm) {
+    var localHistory = JSON.parse(localStorage.getItem('gym_history') || "[]");
+    var localCount = Array.isArray(localHistory) ? localHistory.length : 0;
+    var importedCount = getImportedHistoryCount(importedData);
+
+    if (!(localCount > importedCount)) {
+        onConfirm();
+        return;
+    }
+
+    showChoiceModal(
+        '是否繼續？',
+        '目前有 ' + localCount + ' 筆紀錄，要匯入的資料為 ' + importedCount + ' 筆。',
+        '取消',
+        function() {
+            closeChoiceModal();
+            showNotice('已取消', '匯入已取消', false);
+        },
+        '確認',
+        function() {
+            closeChoiceModal();
+            onConfirm();
+        }
+    );
+}
+
 // 從雲端匯入資料
 async function importHistory() {
     if (!navigator.onLine) {
@@ -2497,34 +2533,36 @@ async function importHistory() {
             return;
         }
 
-        localStorage.setItem('gym_history', JSON.stringify(remoteHistory));
-        if (result.custom_exercises) localStorage.setItem('custom_exercises', JSON.stringify(result.custom_exercises));
-        if (result.current_weights) localStorage.setItem('current_weights', JSON.stringify(result.current_weights));
-        if (result.cfg_rest_min) localStorage.setItem('cfg_rest_min', result.cfg_rest_min);
-        if (result.cfg_switch_min) localStorage.setItem('cfg_switch_min', result.cfg_switch_min);
-        if (result.cfg_sound_enable) localStorage.setItem('cfg_sound_enable', result.cfg_sound_enable);
-        if (result.cfg_flash_enable) localStorage.setItem('cfg_flash_enable', result.cfg_flash_enable);
-        if (result.cfg_dark_enable) localStorage.setItem('cfg_dark_enable', result.cfg_dark_enable);
-        if (result.cfg_dark_auto) localStorage.setItem('cfg_dark_auto', result.cfg_dark_auto);
-        if (result.cfg_wake_enable) localStorage.setItem('cfg_wake_enable', result.cfg_wake_enable);
+        confirmImportIfLocalHistoryIsLarger(result, function() {
+            localStorage.setItem('gym_history', JSON.stringify(remoteHistory));
+            if (result.custom_exercises) localStorage.setItem('custom_exercises', JSON.stringify(result.custom_exercises));
+            if (result.current_weights) localStorage.setItem('current_weights', JSON.stringify(result.current_weights));
+            if (result.cfg_rest_min) localStorage.setItem('cfg_rest_min', result.cfg_rest_min);
+            if (result.cfg_switch_min) localStorage.setItem('cfg_switch_min', result.cfg_switch_min);
+            if (result.cfg_sound_enable) localStorage.setItem('cfg_sound_enable', result.cfg_sound_enable);
+            if (result.cfg_flash_enable) localStorage.setItem('cfg_flash_enable', result.cfg_flash_enable);
+            if (result.cfg_dark_enable) localStorage.setItem('cfg_dark_enable', result.cfg_dark_enable);
+            if (result.cfg_dark_auto) localStorage.setItem('cfg_dark_auto', result.cfg_dark_auto);
+            if (result.cfg_wake_enable) localStorage.setItem('cfg_wake_enable', result.cfg_wake_enable);
 
-        renderAllExerciseLists();
-        loadAllWeights();
-        initTimerSettings();
-        initSoundSetting();
-        initFlashSetting();
-        initDarkThemeSetting();
-        initNewSettings();
+            renderAllExerciseLists();
+            loadAllWeights();
+            initTimerSettings();
+            initSoundSetting();
+            initFlashSetting();
+            initDarkThemeSetting();
+            initNewSettings();
 
-        if (calendar) {
-            calendar.removeAllEvents();
-            remoteHistory.forEach(function(ev) {
-                calendar.addEvent(ev);
-            });
-            calendar.render();
-        }
+            if (calendar) {
+                calendar.removeAllEvents();
+                remoteHistory.forEach(function(ev) {
+                    calendar.addEvent(ev);
+                });
+                calendar.render();
+            }
 
-        showNotice('匯入成功', '已載入雲端紀錄', false);
+            showNotice('匯入成功', '已載入雲端紀錄', false);
+        });
     } catch (error) {
         console.warn('匯入雲端紀錄失敗:', error);
         showNotice('匯入失敗', '無法從雲端讀取資料，請稍後再試。', false);
@@ -2544,39 +2582,41 @@ function importHistoryLocal(event) {
         try {
             var importedData = JSON.parse(e.target.result);
 
-            if (Array.isArray(importedData)) {
-                localStorage.setItem('gym_history', JSON.stringify(importedData));
-                calendar.removeAllEvents();
-                importedData.forEach(function(ev) {
-                    calendar.addEvent(ev);
-                });
-            } else if (importedData && importedData.gym_history) {
-                localStorage.setItem('gym_history', JSON.stringify(importedData.gym_history));
-                calendar.removeAllEvents();
-                importedData.gym_history.forEach(function(ev) {
-                    calendar.addEvent(ev);
-                });
+            confirmImportIfLocalHistoryIsLarger(importedData, function() {
+                if (Array.isArray(importedData)) {
+                    localStorage.setItem('gym_history', JSON.stringify(importedData));
+                    calendar.removeAllEvents();
+                    importedData.forEach(function(ev) {
+                        calendar.addEvent(ev);
+                    });
+                } else if (importedData && importedData.gym_history) {
+                    localStorage.setItem('gym_history', JSON.stringify(importedData.gym_history));
+                    calendar.removeAllEvents();
+                    importedData.gym_history.forEach(function(ev) {
+                        calendar.addEvent(ev);
+                    });
 
-                if (importedData.custom_exercises) localStorage.setItem('custom_exercises', JSON.stringify(importedData.custom_exercises));
-                if (importedData.current_weights) localStorage.setItem('current_weights', JSON.stringify(importedData.current_weights));
-                if (importedData.cfg_rest_min) localStorage.setItem('cfg_rest_min', importedData.cfg_rest_min);
-                if (importedData.cfg_switch_min) localStorage.setItem('cfg_switch_min', importedData.cfg_switch_min);
-                if (importedData.cfg_sound_enable) localStorage.setItem('cfg_sound_enable', importedData.cfg_sound_enable);
-                if (importedData.cfg_flash_enable) localStorage.setItem('cfg_flash_enable', importedData.cfg_flash_enable);
-                if (importedData.cfg_dark_enable) localStorage.setItem('cfg_dark_enable', importedData.cfg_dark_enable);
-                if (importedData.cfg_dark_auto) localStorage.setItem('cfg_dark_auto', importedData.cfg_dark_auto);
-                if (importedData.cfg_wake_enable) localStorage.setItem('cfg_wake_enable', importedData.cfg_wake_enable);
-            } else {
-                throw new Error("格式錯誤");
-            }
+                    if (importedData.custom_exercises) localStorage.setItem('custom_exercises', JSON.stringify(importedData.custom_exercises));
+                    if (importedData.current_weights) localStorage.setItem('current_weights', JSON.stringify(importedData.current_weights));
+                    if (importedData.cfg_rest_min) localStorage.setItem('cfg_rest_min', importedData.cfg_rest_min);
+                    if (importedData.cfg_switch_min) localStorage.setItem('cfg_switch_min', importedData.cfg_switch_min);
+                    if (importedData.cfg_sound_enable) localStorage.setItem('cfg_sound_enable', importedData.cfg_sound_enable);
+                    if (importedData.cfg_flash_enable) localStorage.setItem('cfg_flash_enable', importedData.cfg_flash_enable);
+                    if (importedData.cfg_dark_enable) localStorage.setItem('cfg_dark_enable', importedData.cfg_dark_enable);
+                    if (importedData.cfg_dark_auto) localStorage.setItem('cfg_dark_auto', importedData.cfg_dark_auto);
+                    if (importedData.cfg_wake_enable) localStorage.setItem('cfg_wake_enable', importedData.cfg_wake_enable);
+                } else {
+                    throw new Error("格式錯誤");
+                }
 
-            renderAllExerciseLists();
-            loadAllWeights();
-            initTimerSettings();
-            initSoundSetting();
-            initFlashSetting();
-            initDarkThemeSetting();
-            showNotice("匯入成功", "已從本機備份還原資料", false);
+                renderAllExerciseLists();
+                loadAllWeights();
+                initTimerSettings();
+                initSoundSetting();
+                initFlashSetting();
+                initDarkThemeSetting();
+                showNotice("匯入成功", "已從本機備份還原資料", false);
+            });
         } catch (err) {
             showNotice("匯入失敗", "檔案格式錯誤或不是有效的紀錄檔", false);
         }
