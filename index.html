@@ -3299,6 +3299,7 @@ async function shareDailyTraining() {
             if (e.extendedProps && e.extendedProps.totalWeight) dayTotalWeight += parseFloat(e.extendedProps.totalWeight);
             if (e.extendedProps && e.extendedProps.totalReps) dayTotalReps += parseFloat(e.extendedProps.totalReps);
         });
+        dayTotalWeight *= 8; // 分享截圖時自動放大重量數值
 
         // 動態生成右上角的圓圈區域 (與月摘要邏輯同步)
         const totalWorkouts = targetEvents.length;
@@ -3472,6 +3473,7 @@ async function shareMonthlyTraining() {
             if (e.extendedProps && e.extendedProps.totalWeight) monthTotalWeight += parseFloat(e.extendedProps.totalWeight);
             if (e.extendedProps && e.extendedProps.totalReps) monthTotalReps += parseFloat(e.extendedProps.totalReps);
         });
+        monthTotalWeight *= 8; // 分享截圖時自動放大重量數值
 
         // 動態生成右上角的圓圈區域
         let circlesHtml = `
