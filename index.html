@@ -864,11 +864,12 @@
             <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
                 <h4 style="margin:0 0 10px 0; color:#333;">信箱</h4>
                 <input type="email" id="sync-user-id" style="width:100%; box-sizing:border-box; margin-bottom:10px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="例如 alice@gmail.com" autocomplete="email" spellcheck="false" oninput="validateSyncUserId()" onblur="saveSyncUserIdIfValid()">
+                <input type="password" id="sync-backup-password" style="width:100%; box-sizing:border-box; margin-bottom:8px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="備份密碼（至少 10 個字元）" autocomplete="new-password" spellcheck="false">
                 <div style="display:flex; gap:10px; justify-content:space-between; align-items:center; flex-wrap:nowrap;">
                     <button class="btn-record import-export-btn" style="background:#5856D6; flex:0 0 48%; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showImportChoiceModal()">匯入紀錄</button>
                     <button class="btn-record import-export-btn" style="background:#007AFF; flex:0 0 48%; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showExportChoiceModal()">匯出紀錄</button>
                 </div>
-                <p id="sync-user-message" style="font-size:0.82rem; color:#666; margin:8px 0 10px 0;">同步與恢復都會使用你的 E-mail。</p>                
+                <p id="sync-user-message" style="font-size:0.82rem; color:#666; margin:8px 0 10px 0;">忘記密碼無法還原雲端備份。</p>                
             </div>
             <input type="file" id="import-file-local" accept=".json" style="display:none" onchange="importHistoryLocal(event)">
             <p style="font-size: 0.85rem; color: #666; text-align: center;">建議定期匯出備份，避免數據遺失。</p>
@@ -1045,9 +1046,9 @@ function disableSidebarScrollLock() {
 }
 
 /* ======================================================================
-   2. Google 試算表同步 (Google Sheets Sync)
+   2. Cloudflare 加密雲端備份
    ====================================================================== */
-const googleSyncScriptUrl = 'https://script.google.com/macros/s/AKfycbxjQhFN7JqE34xVLJJY9ogeZrEyybxXVP7vhhDd6la2HZPfB9pDyLCe9Kc4rUGjk85lOw/exec';
+const gymCloudBackupWorkerUrl = 'https://backup.yue830219.workers.dev/';
 
 function safeJsonParse(value, fallback) {
     try {
@@ -1179,7 +1180,107 @@ function getGoogleSyncPayload() {
     };
 }
 
+function getGymCloudBackupPassword() {
+    return String(document.getElementById('sync-backup-password')?.value || '');
+}
+
+function ensureGymCloudBackupReady(userId) {
+    const email = String(userId || getCurrentUserId() || '').trim().toLowerCase();
+    const password = getGymCloudBackupPassword();
+    if (!gymCloudBackupWorkerUrl) throw new Error('尚未設定雲端備份服務。');
+    if (!email || !isValidEmail(email)) throw new Error('請先輸入有效的 E-mail。');
+    if (password.length < 10) throw new Error('請輸入至少 10 個字元的備份密碼。');
+    if (!window.crypto?.subtle) throw new Error('此瀏覽器不支援安全雲端備份。');
+    return { email, password };
+}
+
+function gymBytesToBase64(bytes) {
+    let binary = '';
+    for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
+    }
+    return btoa(binary);
+}
+
+function gymBase64ToBytes(value) {
+    const binary = atob(value);
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+    return bytes;
+}
+
+async function getGymCloudBackupCredentials(email, password) {
+    const encoder = new TextEncoder();
+    const idBytes = new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(`indexgym:${email}:${password}`)));
+    const id = Array.from(idBytes, byte => byte.toString(16).padStart(2, '0')).join('');
+    const material = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveKey']);
+    const encryptionKey = await crypto.subtle.deriveKey({
+        name: 'PBKDF2',
+        salt: encoder.encode(`indexgym-backup:${email}`),
+        iterations: 210000,
+        hash: 'SHA-256'
+    }, material, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    return { id, encryptionKey };
+}
+
+async function encryptGymCloudBackup(data, encryptionKey) {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, encryptionKey, new TextEncoder().encode(JSON.stringify(data)));
+    return { version: 1, iv: gymBytesToBase64(iv), ciphertext: gymBytesToBase64(new Uint8Array(encrypted)) };
+}
+
+async function decryptGymCloudBackup(record, encryptionKey) {
+    if (!record?.iv || !record?.ciphertext) throw new Error('雲端備份格式不完整。');
+    try {
+        const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: gymBase64ToBytes(record.iv) }, encryptionKey, gymBase64ToBytes(record.ciphertext));
+        return JSON.parse(new TextDecoder().decode(decrypted));
+    } catch (error) {
+        throw new Error('無法解密雲端備份。請確認 E-mail 與備份密碼。');
+    }
+}
+
+async function requestGymCloudBackup(action, userId, payload) {
+    const { email, password } = ensureGymCloudBackupReady(userId);
+    const credentials = await getGymCloudBackupCredentials(email, password);
+    const body = { action, id: credentials.id };
+    if (payload) body.record = await encryptGymCloudBackup(payload, credentials.encryptionKey);
+    const response = await fetch(gymCloudBackupWorkerUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        mode: 'cors'
+    });
+    const result = await response.json().catch(() => null);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    if (!result || result.status === 'error') throw new Error(result?.message || '雲端服務回傳格式錯誤。');
+    if (action === 'load' && result.found_user) return { status: 'ok', found_user: true, ...await decryptGymCloudBackup(result.record, credentials.encryptionKey) };
+    return result;
+}
+
+async function loadGymCloudData(userId) {
+    return requestGymCloudBackup('load', userId);
+}
+
+async function syncGymCloudBackup(showFeedback = false, successMessage = '已更新雲端備份') {
+    if (!navigator.onLine) {
+        if (showFeedback) showNotice('離線模式', '目前無網路，暫時只儲存到本機。', false);
+        return false;
+    }
+    try {
+        const payload = getGoogleSyncPayload();
+        await requestGymCloudBackup('sync', payload.sync_user_id, payload);
+        if (showFeedback) showNotice('備份完成', successMessage, false);
+        return true;
+    } catch (error) {
+        console.warn('雲端備份失敗:', error);
+        if (showFeedback) showNotice('備份失敗', error.message || '請稍後再試。', false);
+        return false;
+    }
+}
+
 async function loadGoogleSyncData(userId) {
+    return loadGymCloudData(userId);
+
     const formData = new FormData();
     formData.append('action', 'load');
     formData.append('user_id', userId);
@@ -1196,6 +1297,8 @@ async function loadGoogleSyncData(userId) {
 }
 
 async function syncDataToGoogleSheet(showFeedback = false, successMessage = '已更新雲端紀錄') {
+    return syncGymCloudBackup(showFeedback, successMessage);
+
     // 若使用者離線，先不嘗試雲端上傳，僅留本機資料
     if (!navigator.onLine) {
         if (showFeedback) showNotice('離線模式', '目前無網路，暫時只儲存到本機', false);
@@ -1251,7 +1354,7 @@ async function loadRemoteHistoryFromGoogleSheet() {
     try {
         const userId = getCurrentUserId();
         if (!userId || !isValidEmail(userId)) return;
-        const result = await loadGoogleSyncData(userId);
+        const result = await loadGymCloudData(userId);
         if (!result) throw new Error('雲端回傳資料錯誤');
 
         let importedData = null;
@@ -2479,7 +2582,7 @@ async function uploadHistoryToGoogle() {
             showNotice('無法上傳', '請先輸入有效的 E-mail 後再上傳到雲端。', false);
             return;
         }
-        const result = await loadGoogleSyncData(userId);
+        const result = await loadGymCloudData(userId);
         const emailNotFound = result && result.found_user === false;
 
         if (emailNotFound) {
@@ -2489,7 +2592,7 @@ async function uploadHistoryToGoogle() {
                 '上傳紀錄',
                 function() {
                     closeChoiceModal();
-                    syncDataToGoogleSheet(true, '已建立新雲端紀錄');
+                    syncGymCloudBackup(true, '已建立新雲端備份');
                 },
                 '取消',
                 function() {
@@ -2499,7 +2602,7 @@ async function uploadHistoryToGoogle() {
             return;
         }
 
-        await syncDataToGoogleSheet(true);
+        await syncGymCloudBackup(true);
     } catch (error) {
         console.warn('檢查雲端紀錄失敗:', error);
         showNotice('檢查失敗', error.message || '無法檢查雲端紀錄是否存在，請稍後再試。', false);
@@ -2555,7 +2658,7 @@ async function importHistory() {
             showNotice('無法匯入', '請先輸入有效的 E-mail 後再從雲端匯入。', false);
             return;
         }
-        const result = await loadGoogleSyncData(userId);
+        const result = await loadGymCloudData(userId);
         if (!result || !result.gym_history) throw new Error('雲端回傳資料錯誤');
 
         const remoteHistory = Array.isArray(result.gym_history) ? result.gym_history : [];
