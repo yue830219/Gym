@@ -1018,6 +1018,9 @@ let calendar; // 存放 FullCalendar 的實例
 let countdown; // 存放 setInterval 的計時指標
 let timerEndsAt = Number(localStorage.getItem('gym_timer_ends_at')) || 0;
 let timerFinishedNotified = false;
+let alarmAudioContext = null;
+let alarmAudioBuffer = null;
+let alarmAudioSource = null;
 const GYM_NOTIFICATION_WORKER_URL = 'https://subscription-notifications.yue830219.workers.dev';
 const GYM_NOTIFICATION_DEVICE_ID = (() => {
     const saved = localStorage.getItem('gym_notification_device_id');
@@ -2302,6 +2305,10 @@ function resetTimer() {
     var alarm = document.getElementById('alarm-sound');
     alarm.pause();
     alarm.currentTime = 0;
+    if (alarmAudioSource) {
+        try { alarmAudioSource.stop(); } catch (error) {}
+        alarmAudioSource = null;
+    }
     document.querySelector('#timer-display').innerText = "00:00";
     setNum = 0;
     document.getElementById('set-counter').innerText = "";
@@ -2361,6 +2368,35 @@ async function syncGymTimerPush(endsAt) {
     if (!response.ok) throw new Error('背景通知排程失敗');
 }
 
+function isIOSDevice() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+async function prepareIOSAlarmAudio() {
+    if (!isIOSDevice() || localStorage.getItem('cfg_sound_enable') !== "true") return;
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    if (!alarmAudioContext) alarmAudioContext = new AudioContextClass();
+    if (alarmAudioContext.state === 'suspended') await alarmAudioContext.resume();
+    if (!alarmAudioBuffer) {
+        const response = await fetch('./music.mp3');
+        alarmAudioBuffer = await alarmAudioContext.decodeAudioData(await response.arrayBuffer());
+    }
+}
+
+function playIOSAlarmAudio() {
+    if (!alarmAudioContext || !alarmAudioBuffer) return;
+    if (alarmAudioSource) {
+        try { alarmAudioSource.stop(); } catch (error) {}
+    }
+    alarmAudioSource = alarmAudioContext.createBufferSource();
+    alarmAudioSource.buffer = alarmAudioBuffer;
+    alarmAudioSource.connect(alarmAudioContext.destination);
+    alarmAudioSource.onended = () => { alarmAudioSource = null; };
+    alarmAudioSource.start(0);
+}
+
 async function showTimerFinishedNotification() {
     if (timerFinishedNotified || !('Notification' in window) || Notification.permission !== 'granted') return;
     timerFinishedNotified = true;
@@ -2386,6 +2422,7 @@ async function showTimerFinishedNotification() {
 // 計時器秒數倒數驅動引擎 (採用 Date 修正法，並整合倒數 10 秒震動 3 下提示)
 function startTimer(s) {
     clearInterval(countdown);
+    prepareIOSAlarmAudio().catch(error => console.warn('iPhone 提示音準備失敗：', error));
     var display = document.querySelector('#timer-display');
     var alarm = document.getElementById('alarm-sound');
     alarm.load(); // 預載音訊，防止移動端瀏覽器因安全阻擋而無法播放
@@ -2407,7 +2444,8 @@ function startTimer(s) {
             display.innerText = "00:00";
             // 時間到！觸發聲音與畫面閃爍機制
             if (localStorage.getItem('cfg_sound_enable') === "true") {
-                alarm.play();
+                if (isIOSDevice()) playIOSAlarmAudio();
+                else alarm.play();
             }
             if (localStorage.getItem('cfg_flash_enable') === "true") {
                 document.getElementById('flash-screen').classList.add('flash-active');
