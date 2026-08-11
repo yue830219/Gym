@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gym-assistant-v1';
+const CACHE_NAME = 'gym-assistant-v2';
 const APP_ASSETS = [
   './',
   './index.html',
@@ -25,4 +25,17 @@ self.addEventListener('fetch', event => {
     caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
     return response;
   }).catch(() => caches.match(event.request)));
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const targetUrl = new URL((event.notification.data && event.notification.data.url) || './', self.location.href).href;
+  event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+    const existingClient = windowClients.find(client => client.url.startsWith(self.location.origin));
+    if (existingClient) {
+      existingClient.navigate(targetUrl);
+      return existingClient.focus();
+    }
+    return clients.openWindow(targetUrl);
+  }));
 });
