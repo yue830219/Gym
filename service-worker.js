@@ -1,13 +1,10 @@
-const CACHE_NAME = 'gym-assistant-v4';
+const CACHE_NAME = 'subscription-manager-v4';
 const APP_ASSETS = [
-  './',
   './index.html',
-  './manifest.json',
-  './music.mp3',
-  './assets/gym-icon-1024.png',
-  './assets/gym-icon-180.png',
-  './assets/gym-icon-192.png',
-  './assets/gym-icon-512.png'
+  './manifest-subscription.json',
+  './assets/subscription-icon-180.png',
+  './assets/subscription-icon-192.png',
+  './assets/subscription-icon-512.png'
 ];
 
 self.addEventListener('install', event => {
@@ -28,29 +25,25 @@ self.addEventListener('fetch', event => {
 });
 
 self.addEventListener('push', event => {
-  let payload = {};
-  try {
-    payload = event.data ? event.data.json() : {};
-  } catch (error) {
-    payload = { title: '計時結束', body: event.data ? event.data.text() : '時間到！開始下一組！' };
-  }
-  event.waitUntil(self.registration.showNotification(payload.title || '計時結束', {
-    body: payload.body || '時間到！開始下一組！',
-    icon: './assets/gym-icon-192.png',
-    badge: './assets/gym-icon-192.png',
-    tag: payload.tag || 'gym-timer-finished',
-    data: { url: payload.url || './' }
+  if (!event.data) return;
+  const data = event.data.json();
+  event.waitUntil(self.registration.showNotification(data.title || '訂閱付款提醒', {
+    body: data.body || '',
+    icon: './assets/subscription-icon-192.png',
+    badge: './assets/subscription-icon-192.png',
+    tag: data.tag,
+    data: { url: data.url || './' }
   }));
 });
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const targetUrl = new URL((event.notification.data && event.notification.data.url) || './', self.location.href).href;
-  event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
-    const existingClient = windowClients.find(client => client.url.startsWith(self.location.origin));
-    if (existingClient) {
-      return existingClient.focus();
+  const targetUrl = new URL(event.notification.data?.url || './', self.location.href).href;
+  event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async clients => {
+    for (const client of clients) {
+      if (new URL(client.url).origin !== self.location.origin) continue;
+      return client.focus();
     }
-    return clients.openWindow(targetUrl);
+    return self.clients.openWindow(targetUrl);
   }));
 });
