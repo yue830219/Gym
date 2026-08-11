@@ -849,14 +849,13 @@
 </label></div>
             </div>
             <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
-                <h4 style="margin:0 0 10px 0; color:#333;">Google 雲端同步</h4>
-                <div id="google-sign-in-button" style="margin-bottom:10px;"></div>
-                <input type="email" id="sync-user-id" readonly style="width:100%; box-sizing:border-box; margin-bottom:10px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem; background:#fff;" placeholder="請先使用 Google 登入" autocomplete="email" spellcheck="false">
+                <h4 style="margin:0 0 10px 0; color:#333;">信箱</h4>
+                <input type="email" id="sync-user-id" style="width:100%; box-sizing:border-box; margin-bottom:10px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="例如 alice@gmail.com" autocomplete="email" spellcheck="false" oninput="validateSyncUserId()" onblur="saveSyncUserIdIfValid()">
                 <div style="display:flex; gap:10px; justify-content:space-between; align-items:center; flex-wrap:nowrap;">
                     <button class="btn-record import-export-btn" style="background:#5856D6; flex:0 0 48%; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showImportChoiceModal()">匯入紀錄</button>
                     <button class="btn-record import-export-btn" style="background:#007AFF; flex:0 0 48%; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showExportChoiceModal()">匯出紀錄</button>
                 </div>
-                <p id="sync-user-message" style="font-size:0.82rem; color:#666; margin:8px 0 10px 0;">請使用 Google 帳號登入後再同步；資料僅會對應到該帳號。</p>                
+                <p id="sync-user-message" style="font-size:0.82rem; color:#666; margin:8px 0 10px 0;">同步與恢復都會使用你的 E-mail。</p>                
             </div>
             <input type="file" id="import-file-local" accept=".json" style="display:none" onchange="importHistoryLocal(event)">
             <p style="font-size: 0.85rem; color: #666; text-align: center;">建議定期匯出備份，避免數據遺失。</p>
@@ -885,7 +884,6 @@
         </div>
     </div>
     
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/zh-tw.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@2.8.0/dist/dom-to-image-more.min.js"></script>
@@ -1037,9 +1035,6 @@ function disableSidebarScrollLock() {
    2. Google 試算表同步 (Google Sheets Sync)
    ====================================================================== */
 const googleSyncScriptUrl = 'https://script.google.com/macros/s/AKfycbxjQhFN7JqE34xVLJJY9ogeZrEyybxXVP7vhhDd6la2HZPfB9pDyLCe9Kc4rUGjk85lOw/exec';
-// 在 Google Cloud Console 建立「網頁應用程式」OAuth 用戶端後，填入同一個 Client ID。
-const GOOGLE_CLIENT_ID = '154996228950-inoql9gm5p02sltb7c94mmf1bi7kfgst.apps.googleusercontent.com';
-let googleIdToken = sessionStorage.getItem('google_id_token') || '';
 
 function safeJsonParse(value, fallback) {
     try {
@@ -1062,62 +1057,6 @@ function escapeHTML(value) {
 
 function safeColor(value, fallback) {
     return /^#[0-9a-f]{3,8}$/i.test(String(value || '')) ? value : fallback;
-}
-
-function decodeGoogleTokenPayload(token) {
-    try {
-        const encodedPayload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-        return JSON.parse(decodeURIComponent(Array.prototype.map.call(atob(encodedPayload), function(char) {
-            return '%' + ('00' + char.charCodeAt(0).toString(16)).slice(-2);
-        }).join('')));
-    } catch (error) {
-        return null;
-    }
-}
-
-function handleGoogleCredential(response) {
-    googleIdToken = response && response.credential ? response.credential : '';
-    if (!googleIdToken) return;
-    sessionStorage.setItem('google_id_token', googleIdToken);
-    const payload = decodeGoogleTokenPayload(googleIdToken);
-    const email = payload && payload.email ? payload.email : '';
-    setCurrentUserId(email);
-    const messageEl = document.getElementById('sync-user-message');
-    if (messageEl) {
-        messageEl.textContent = email ? `已登入：${email}` : 'Google 登入成功。';
-        messageEl.style.color = '#2a7f2a';
-    }
-}
-
-function initializeGoogleSignIn(attempt = 0) {
-    const button = document.getElementById('google-sign-in-button');
-    if (!button) return;
-    if (GOOGLE_CLIENT_ID.startsWith('YOUR_')) {
-        button.textContent = '請先設定 GOOGLE_CLIENT_ID';
-        return;
-    }
-    if (!window.google || !google.accounts || !google.accounts.id) {
-        if (attempt < 20) setTimeout(function() { initializeGoogleSignIn(attempt + 1); }, 250);
-        return;
-    }
-    google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential, auto_select: false });
-    google.accounts.id.renderButton(button, { theme: 'outline', size: 'large', width: 260, text: 'signin_with' });
-    if (googleIdToken) {
-        const payload = decodeGoogleTokenPayload(googleIdToken);
-        if (payload && payload.exp * 1000 > Date.now()) setCurrentUserId(payload.email || '');
-        else sessionStorage.removeItem('google_id_token');
-    }
-}
-
-function requireGoogleSignIn() {
-    if (!googleIdToken) throw new Error('請先使用 Google 帳號登入。');
-    const payload = decodeGoogleTokenPayload(googleIdToken);
-    if (!payload || !payload.exp || payload.exp * 1000 <= Date.now()) {
-        sessionStorage.removeItem('google_id_token');
-        googleIdToken = '';
-        throw new Error('Google 登入已過期，請重新登入。');
-    }
-    return googleIdToken;
 }
 
 function getCurrentUserId() {
@@ -1210,8 +1149,10 @@ function initUserIdentity() {
 }
 
 function getGoogleSyncPayload() {
+    const input = document.getElementById('sync-user-id');
+    const userId = input ? String(input.value || '').trim() : getCurrentUserId();
     return {
-        id_token: requireGoogleSignIn(),
+        sync_user_id: userId,
         gym_history: getStoredJson('gym_history', []),
         custom_exercises: getStoredJson('custom_exercises', null),
         current_weights: getStoredJson('current_weights', {}),
@@ -1225,10 +1166,10 @@ function getGoogleSyncPayload() {
     };
 }
 
-async function loadGoogleSyncData() {
+async function loadGoogleSyncData(userId) {
     const formData = new FormData();
     formData.append('action', 'load');
-    formData.append('id_token', requireGoogleSignIn());
+    formData.append('user_id', userId);
 
     const response = await fetch(googleSyncScriptUrl, {
         method: 'POST',
@@ -1250,8 +1191,14 @@ async function syncDataToGoogleSheet(showFeedback = false, successMessage = '已
 
     try {
         const payload = getGoogleSyncPayload();
+        if (!payload.sync_user_id || !isValidEmail(payload.sync_user_id)) {
+            if (showFeedback) showNotice('格式錯誤', '請先輸入有效的 E-mail 後再同步。', false);
+            return false;
+        }
+
         const formData = new FormData();
         formData.append('action', 'sync');
+        formData.append('user_id', payload.sync_user_id);
         formData.append('payload', JSON.stringify(payload));
 
         const response = await fetch(googleSyncScriptUrl, {
@@ -1289,8 +1236,9 @@ async function loadRemoteHistoryFromGoogleSheet() {
     if (!navigator.onLine) return;
 
     try {
-        if (!googleIdToken) return;
-        const result = await loadGoogleSyncData();
+        const userId = getCurrentUserId();
+        if (!userId || !isValidEmail(userId)) return;
+        const result = await loadGoogleSyncData(userId);
         if (!result) throw new Error('雲端回傳資料錯誤');
 
         let importedData = null;
@@ -1384,8 +1332,7 @@ window.onload = function() {
     });
 
     // 初始化並載入各模組元件與設定
-    initUserIdentity(); // 載入已登入帳號顯示
-    initializeGoogleSignIn();
+    initUserIdentity(); // 載入使用者 E-mail
     renderAllExerciseLists(); // 渲染所有部位的動作清單
     initCalendar(); // 載入日曆套件
     loadAllWeights(); // 從暫存區(localStorage)載入各動作上次輸入的值
@@ -1630,7 +1577,6 @@ function closeTour() {
     document.removeEventListener('touchmove', preventTourScroll);
 
     localStorage.setItem('has_seen_tour_v2', 'true'); // 在瀏覽器標記已看過教學
-    const sparklesSVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -4px; margin-right: 5px;"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.2 1.2L3 12l5.8 1.9a2 2 0 0 1 1.2 1.2L12 21l1.9-5.8a2 2 0 0 1-1.2-1.2L21 12l-5.8-1.9a2 2 0 0 1-1.2-1.2L12 3Z"/></svg>`;
     showNotice('導覽結束！', "開始記錄今天的訓練吧！", false);
 
     document.getElementById('delete-modal').style.zIndex = "99999";
@@ -1675,7 +1621,8 @@ function highlightStep() {
 
             // 置換對話盒文案
             document.getElementById('tour-step-idx').innerText = `${currentTourStep + 1} / ${tourSteps.length}`;
-            document.getElementById('tour-title').textContent = step.title;
+            // step.title 僅來自本檔案內固定的導覽資料，包含 SVG 圖示；不可改用於任何使用者輸入。
+            document.getElementById('tour-title').innerHTML = step.title;
             document.getElementById('tour-body').textContent = step.desc;
 
             // 動態計算對話盒的最佳顯示位置，防止超出螢幕邊界
@@ -2514,14 +2461,18 @@ async function uploadHistoryToGoogle() {
     }
 
     try {
-        requireGoogleSignIn();
-        const result = await loadGoogleSyncData();
-        const accountNotFound = result && result.found_user === false;
+        const userId = getCurrentUserId();
+        if (!userId || !isValidEmail(userId)) {
+            showNotice('無法上傳', '請先輸入有效的 E-mail 後再上傳到雲端。', false);
+            return;
+        }
+        const result = await loadGoogleSyncData(userId);
+        const emailNotFound = result && result.found_user === false;
 
-        if (accountNotFound) {
+        if (emailNotFound) {
             showChoiceModal(
                 '雲端紀錄不存在',
-                '此 Google 帳號尚未有任何紀錄，是否上傳？',
+                '此 E-mail 尚未有任何紀錄，是否上傳？',
                 '上傳紀錄',
                 function() {
                     closeChoiceModal();
@@ -2586,16 +2537,20 @@ async function importHistory() {
     }
 
     try {
-        requireGoogleSignIn();
-        const result = await loadGoogleSyncData();
+        const userId = getCurrentUserId();
+        if (!userId || !isValidEmail(userId)) {
+            showNotice('無法匯入', '請先輸入有效的 E-mail 後再從雲端匯入。', false);
+            return;
+        }
+        const result = await loadGoogleSyncData(userId);
         if (!result || !result.gym_history) throw new Error('雲端回傳資料錯誤');
 
         const remoteHistory = Array.isArray(result.gym_history) ? result.gym_history : [];
         const hasRemoteData = remoteHistory.length > 0 || (result.custom_exercises && Object.keys(result.custom_exercises).length > 0) || (result.current_weights && Object.keys(result.current_weights).length > 0);
-        const accountNotFound = result.found_user === false;
+        const emailNotFound = result.found_user === false;
 
-        if (accountNotFound || !hasRemoteData) {
-            showNotice('雲端無紀錄', '這個 Google 帳號尚無雲端資料。', false);
+        if (emailNotFound || !hasRemoteData) {
+            showNotice('雲端無紀錄', '找不到與此 E-mail 相符的雲端資料。', false);
             return;
         }
 
