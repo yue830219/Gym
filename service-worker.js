@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gym-assistant-v3';
+const CACHE_NAME = 'gym-assistant-v4';
 const APP_ASSETS = [
   './',
   './index.html',
@@ -49,7 +49,6 @@ self.addEventListener('notificationclick', event => {
   event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
     const existingClient = windowClients.find(client => client.url.startsWith(self.location.origin));
     if (existingClient) {
-      existingClient.navigate(targetUrl);
       return existingClient.focus();
     }
     return clients.openWindow(targetUrl);

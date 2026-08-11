@@ -2409,7 +2409,6 @@ function startTimer(s) {
                 document.getElementById('flash-screen').classList.add('flash-active');
             }
             showNotice("計時結束", "時間到！開始下一組！", false);
-            showTimerFinishedNotification();
             return;
         }
 
@@ -2440,7 +2439,6 @@ document.addEventListener('visibilitychange', function() {
         if (display) display.innerText = "00:00";
         timerEndsAt = 0;
         localStorage.removeItem('gym_timer_ends_at');
-        showTimerFinishedNotification();
         showNotice("計時結束", "時間到！開始下一組！", false);
     }
 });
