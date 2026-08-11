@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gym-assistant-v2';
+const CACHE_NAME = 'gym-assistant-v3';
 const APP_ASSETS = [
   './',
   './index.html',
@@ -25,6 +25,22 @@ self.addEventListener('fetch', event => {
     caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
     return response;
   }).catch(() => caches.match(event.request)));
+});
+
+self.addEventListener('push', event => {
+  let payload = {};
+  try {
+    payload = event.data ? event.data.json() : {};
+  } catch (error) {
+    payload = { title: '計時結束', body: event.data ? event.data.text() : '時間到！開始下一組！' };
+  }
+  event.waitUntil(self.registration.showNotification(payload.title || '計時結束', {
+    body: payload.body || '時間到！開始下一組！',
+    icon: './assets/gym-icon-192.png',
+    badge: './assets/gym-icon-192.png',
+    tag: payload.tag || 'gym-timer-finished',
+    data: { url: payload.url || './' }
+  }));
 });
 
 self.addEventListener('notificationclick', event => {

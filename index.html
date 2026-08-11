@@ -1018,6 +1018,17 @@ let calendar; // 存放 FullCalendar 的實例
 let countdown; // 存放 setInterval 的計時指標
 let timerEndsAt = Number(localStorage.getItem('gym_timer_ends_at')) || 0;
 let timerFinishedNotified = false;
+const GYM_NOTIFICATION_WORKER_URL = 'https://subscription-notifications.yue830219.workers.dev';
+const GYM_NOTIFICATION_DEVICE_ID = (() => {
+    const saved = localStorage.getItem('gym_notification_device_id');
+    if (saved) return saved;
+    const generated = crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(char) {
+        const value = Math.random() * 16 | 0;
+        return (char === 'x' ? value : (value & 3 | 8)).toString(16);
+    });
+    localStorage.setItem('gym_notification_device_id', generated);
+    return generated;
+})();
 let currentEventInfo = null; // 點擊日曆事件時，暫存該事件的控制指標
 let setNum = 0; // 追蹤當前組數
 let tempValue = ""; // 重量欄位聚焦時，暫存舊數據用
@@ -2287,6 +2298,7 @@ function resetTimer() {
     timerEndsAt = 0;
     timerFinishedNotified = false;
     localStorage.removeItem('gym_timer_ends_at');
+    syncGymTimerPush(null).catch(error => console.warn('取消背景計時通知失敗：', error));
     var alarm = document.getElementById('alarm-sound');
     alarm.pause();
     alarm.currentTime = 0;
@@ -2296,12 +2308,56 @@ function resetTimer() {
 }
 
 async function requestTimerNotificationPermission() {
-    if (!('Notification' in window) || Notification.permission !== 'default') return;
-    try {
-        await Notification.requestPermission();
-    } catch (error) {
-        console.warn('無法取得計時通知權限：', error);
+    if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) return null;
+    if (Notification.permission === 'default') await Notification.requestPermission();
+    if (Notification.permission !== 'granted') return null;
+    const keyResponse = await fetch(`${GYM_NOTIFICATION_WORKER_URL}/vapid-public-key`);
+    if (!keyResponse.ok) throw new Error('無法取得通知金鑰');
+    const keyResult = await keyResponse.json();
+    if (!keyResult.publicKey) throw new Error('通知 Worker 尚未設定金鑰');
+    const registration = await navigator.serviceWorker.ready;
+    let subscription = await registration.pushManager.getSubscription();
+    if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: base64UrlToUint8Array(keyResult.publicKey)
+        });
     }
+    const registerResponse = await fetch(`${GYM_NOTIFICATION_WORKER_URL}/device/${GYM_NOTIFICATION_DEVICE_ID}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscription: subscription.toJSON() })
+    });
+    if (!registerResponse.ok) throw new Error('無法註冊背景通知');
+    return subscription;
+}
+
+function base64UrlToUint8Array(value) {
+    const padding = '='.repeat((4 - value.length % 4) % 4);
+    const base64 = (value + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const raw = atob(base64);
+    return Uint8Array.from(raw, char => char.charCodeAt(0));
+}
+
+async function syncGymTimerPush(endsAt) {
+    if (endsAt) {
+        const subscription = await requestTimerNotificationPermission();
+        if (!subscription) return;
+    }
+    const reminders = endsAt ? [{
+        id: `gym-timer-${endsAt}`,
+        scheduledAt: endsAt,
+        title: '計時結束',
+        body: '時間到！開始下一組！',
+        tag: 'gym-timer-finished',
+        url: location.href
+    }] : [];
+    const response = await fetch(`${GYM_NOTIFICATION_WORKER_URL}/device/${GYM_NOTIFICATION_DEVICE_ID}/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reminders })
+    });
+    if (!response.ok) throw new Error('背景通知排程失敗');
 }
 
 async function showTimerFinishedNotification() {
@@ -2329,7 +2385,6 @@ async function showTimerFinishedNotification() {
 // 計時器秒數倒數驅動引擎 (採用 Date 修正法，並整合倒數 10 秒震動 3 下提示)
 function startTimer(s) {
     clearInterval(countdown);
-    requestTimerNotificationPermission();
     var display = document.querySelector('#timer-display');
     var alarm = document.getElementById('alarm-sound');
     alarm.load(); // 預載音訊，防止移動端瀏覽器因安全阻擋而無法播放
@@ -2337,6 +2392,7 @@ function startTimer(s) {
     timerEndsAt = then;
     timerFinishedNotified = false;
     localStorage.setItem('gym_timer_ends_at', String(then));
+    syncGymTimerPush(then).catch(error => console.warn('背景計時通知設定失敗：', error));
 
     function updateDisplay() {
         var left = Math.round((then - Date.now()) / 1000);
