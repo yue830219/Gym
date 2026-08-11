@@ -285,27 +285,26 @@
         .tour-btn-next { background: #007AFF; color: white; }
         body.tour-locked { overflow: hidden !important; height: 100vh !important; touch-action: none !important; }        
 
-        /* 雙模態加載螢幕 (Loading Screen) */
+        /* 系統載入畫面：延續 iOS 毛玻璃風格的低調訓練提示。 */
         #loading-screen {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at center, #f2f2f7 0%, #f2f2f7 100%);
-            z-index: 10000; display: flex; flex-direction: column; justify-content: center;
-            align-items: center; opacity: 1; visibility: visible;
-            transition: opacity 0.5s ease-out, visibility 0.5s; overflow: hidden; font-family: -apple-system, system-ui, sans-serif;
-            pointer-events: auto; touch-action: none;
+            position: fixed; inset: 0; z-index: 10000;
+            background: #F2F2F7;
+            opacity: 1; visibility: visible; overflow: hidden; font-family: -apple-system, system-ui, sans-serif;
+            transition: opacity 0.55s ease-out, visibility 0.55s; pointer-events: auto; touch-action: none;
         }
-        #loading-screen::before {
-            content: ""; position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path d="M0,500 C250,250 250,750 500,500 C750,250 750,750 1000,500" stroke="%2300000012" stroke-width="1" fill="none" /></svg>');
-            background-size: 100px 100px; opacity: 0.1; filter: blur(1px); animation: moveTexture 30s linear infinite;
-        }
-        @keyframes moveTexture { from { transform: translate(0, 0); } to { transform: translate(-100px, -100px); } }
-        #loading-screen #loading-content { display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        #loading-screen #loading-logo-container { width: 110px; height: 110px; display: flex; justify-content: center; align-items: center; position: relative; }
-        #loading-screen #loading-logo { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.07)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.04)); }
-        #loading-screen #loading-text-container { margin-top: 35px; text-align: center; }
-        #loading-screen #prep-text { font-size: 14px; color: #8e8e93; margin: 0; font-weight: normal; letter-spacing: 1px; }
-        #loading-screen #app-text { font-size: 16px; color: #1c1c1e; margin: 6px 0 0 0; font-weight: bold; letter-spacing: 0.5px; }
+        #loading-screen::before { content: ""; position: absolute; width: 420px; height: 420px; border-radius: 50%; background: rgba(255,255,255,.45); filter: blur(42px); }
+        #loading-screen #loading-content { position: absolute; top: 50%; left: 50%; z-index: 1; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -50%); }
+        #loading-screen #loading-logo-container { width: 108px; height: 108px; position: relative; display: grid; place-items: center; border-radius: 32px; background: rgba(255,255,255,.7); border: 1px solid rgba(255,255,255,.9); box-shadow: 0 10px 26px rgba(0,0,0,.055); }
+        .loading-ring { display: none; }
+        .loading-core { width: 72px; height: 52px; display: grid; place-items: center; color: #1C1C1E; animation: loading-core-pulse 2.2s ease-in-out infinite; }
+        #loading-screen #loading-text-container { margin-top: 24px; text-align: center; }
+        #loading-screen #prep-text { font-size: 13px; color: #8E8E93; margin: 0; font-weight: 500; letter-spacing: .3px; text-transform: none; }
+        #loading-screen #app-text { font-size: 18px; color: #1C1C1E; margin: 7px 0 0; font-weight: 800; letter-spacing: .4px; }
+        .loading-progress { width: 104px; height: 3px; margin-top: 18px; overflow: hidden; border-radius: 999px; background: #D1D1D6; }
+        .loading-progress span { display: block; width: 42%; height: 100%; border-radius: inherit; background: #3A3A3C; animation: loading-progress 1.45s ease-in-out infinite; }
+        @keyframes loading-core-pulse { 50% { transform: scale(1.05); opacity: .8; } }
+        @keyframes loading-progress { 0% { transform: translateX(-115%); } 55%, 100% { transform: translateX(265%); } }
+        @media (prefers-reduced-motion: reduce) { #loading-screen *, #loading-screen::before, #loading-screen::after { animation: none !important; } }
         body.loading-locked { overflow: hidden !important; height: 100vh !important; touch-action: none !important; }
 
             /* ==========================================================================
@@ -511,10 +510,13 @@
         body.dark-mode .editing-mode .unit-select { border-bottom: 1px dashed #3094FF !important; color: #3094FF !important; }
 
         /* 暗黑加載畫面 */
-        #loading-screen.dark-theme { background: radial-gradient(circle at center, #2a2a1a 0%, #1c1c1e 100%); }
-        #loading-screen.dark-theme::before { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path d="M0,500 C250,250 250,750 500,500 C750,250 750,750 1000,500" stroke="%23ffea0033" stroke-width="1" fill="none" /></svg>'); }
-        #loading-screen.dark-theme #loading-logo { filter: drop-shadow(0 0 20px rgba(255, 234, 0, 0.25)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.4)); }
-        #loading-screen.dark-theme #prep-text { color: #aeaeb2; }
+        #loading-screen.dark-theme { background: #1C1C1E; }
+        #loading-screen.dark-theme::before { background: rgba(58,58,60,.65); }
+        #loading-screen.dark-theme #loading-logo-container { background: rgba(44,44,46,.8); border-color: rgba(255,255,255,.08); box-shadow: none; }
+        #loading-screen.dark-theme .loading-core { color: #FFFFFF; }
+        #loading-screen.dark-theme .loading-progress { background: #3A3A3C; }
+        #loading-screen.dark-theme .loading-progress span { background: #E5E5EA; }
+        #loading-screen.dark-theme #prep-text { color: #9ea8bc; }
         #loading-screen.dark-theme #app-text { color: #ffffff; }
         #loading-screen.dark-theme #home-indicator { background: #ffffff; opacity: 0.7; }
         
@@ -612,12 +614,23 @@
     
     <div id="loading-screen">
         <div id="loading-content">
-            <div id="loading-logo-container">
-                <img id="loading-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' stroke='white' stroke-width='2' fill='none'/><path d='M20 50 H30 M70 50 H80 M30 45 H70 v10 H30 v-10z M35 40 H45 v20 H35 v-20z M55 40 H65 v20 H55 v-20z' fill='white'/></svg>" alt="健身助手標誌">
+            <div id="loading-logo-container" aria-label="健身助手載入中">
+                <div class="loading-ring loading-ring-one"></div>
+                <div class="loading-ring loading-ring-two"></div>
+                <div class="loading-core" aria-hidden="true">
+                    <svg width="72" height="52" viewBox="0 0 72 64" fill="currentColor" aria-hidden="true">
+                        <rect x="3" y="20" width="10" height="24" rx="3"/>
+                        <rect x="15" y="16" width="10" height="32" rx="3"/>
+                        <rect x="28" y="28" width="16" height="8" rx="2"/>
+                        <rect x="47" y="16" width="10" height="32" rx="3"/>
+                        <rect x="59" y="20" width="10" height="24" rx="3"/>
+                    </svg>
+                </div>
             </div>
             <div id="loading-text-container">
-                <p id="prep-text">載入中...</p>
+                <p id="prep-text">正在準備你的訓練</p>
                 <p id="app-text">健身助手 Pro</p>
+                <div class="loading-progress" aria-hidden="true"><span></span></div>
             </div>
         </div>
         <div id="home-indicator"></div>
