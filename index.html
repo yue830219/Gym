@@ -2422,7 +2422,6 @@ async function showTimerFinishedNotification() {
 // 計時器秒數倒數驅動引擎 (採用 Date 修正法，並整合倒數 10 秒震動 3 下提示)
 function startTimer(s) {
     clearInterval(countdown);
-    prepareIOSAlarmAudio().catch(error => console.warn('iPhone 提示音準備失敗：', error));
     var display = document.querySelector('#timer-display');
     var alarm = document.getElementById('alarm-sound');
     alarm.load(); // 預載音訊，防止移動端瀏覽器因安全阻擋而無法播放
@@ -2444,8 +2443,7 @@ function startTimer(s) {
             display.innerText = "00:00";
             // 時間到！觸發聲音與畫面閃爍機制
             if (localStorage.getItem('cfg_sound_enable') === "true") {
-                if (isIOSDevice()) playIOSAlarmAudio();
-                else alarm.play();
+                alarm.play().catch(error => console.warn('提示音樂播放失敗：', error));
             }
             if (localStorage.getItem('cfg_flash_enable') === "true") {
                 document.getElementById('flash-screen').classList.add('flash-active');
