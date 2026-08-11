@@ -23,6 +23,17 @@
             --leg: #5AC8FA; --abs: #AF52DE; --bg: #F2F2F7; --danger: #FF3B30; 
             --leg-strength: #008080; --hiit: #5856D6; 
         }
+
+        /* 保留頁面捲動功能，但隱藏右側捲動條。 */
+        html, body {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
         
         body { 
             font-family: -apple-system, system-ui, sans-serif; 
@@ -838,13 +849,14 @@
 </label></div>
             </div>
             <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
-                <h4 style="margin:0 0 10px 0; color:#333;">信箱</h4>
-                <input type="email" id="sync-user-id" style="width:100%; box-sizing:border-box; margin-bottom:10px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="例如 alice@gmail.com" autocomplete="email" spellcheck="false" oninput="validateSyncUserId()" onblur="saveSyncUserIdIfValid()">
+                <h4 style="margin:0 0 10px 0; color:#333;">Google 雲端同步</h4>
+                <div id="google-sign-in-button" style="margin-bottom:10px;"></div>
+                <input type="email" id="sync-user-id" readonly style="width:100%; box-sizing:border-box; margin-bottom:10px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem; background:#fff;" placeholder="請先使用 Google 登入" autocomplete="email" spellcheck="false">
                 <div style="display:flex; gap:10px; justify-content:space-between; align-items:center; flex-wrap:nowrap;">
                     <button class="btn-record import-export-btn" style="background:#5856D6; flex:0 0 48%; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showImportChoiceModal()">匯入紀錄</button>
                     <button class="btn-record import-export-btn" style="background:#007AFF; flex:0 0 48%; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showExportChoiceModal()">匯出紀錄</button>
                 </div>
-                <p id="sync-user-message" style="font-size:0.82rem; color:#666; margin:8px 0 10px 0;">同步與恢復都會使用你的 E-mail。</p>                
+                <p id="sync-user-message" style="font-size:0.82rem; color:#666; margin:8px 0 10px 0;">請使用 Google 帳號登入後再同步；資料僅會對應到該帳號。</p>                
             </div>
             <input type="file" id="import-file-local" accept=".json" style="display:none" onchange="importHistoryLocal(event)">
             <p style="font-size: 0.85rem; color: #666; text-align: center;">建議定期匯出備份，避免數據遺失。</p>
@@ -1025,6 +1037,88 @@ function disableSidebarScrollLock() {
    2. Google 試算表同步 (Google Sheets Sync)
    ====================================================================== */
 const googleSyncScriptUrl = 'https://script.google.com/macros/s/AKfycbxjQhFN7JqE34xVLJJY9ogeZrEyybxXVP7vhhDd6la2HZPfB9pDyLCe9Kc4rUGjk85lOw/exec';
+// 在 Google Cloud Console 建立「網頁應用程式」OAuth 用戶端後，填入同一個 Client ID。
+const GOOGLE_CLIENT_ID = '154996228950-inoql9gm5p02sltb7c94mmf1bi7kfgst.apps.googleusercontent.com';
+let googleIdToken = sessionStorage.getItem('google_id_token') || '';
+
+function safeJsonParse(value, fallback) {
+    try {
+        return value ? JSON.parse(value) : fallback;
+    } catch (error) {
+        console.warn('本機資料格式錯誤，已改用預設值：', error);
+        return fallback;
+    }
+}
+
+function getStoredJson(key, fallback) {
+    return safeJsonParse(localStorage.getItem(key), fallback);
+}
+
+function escapeHTML(value) {
+    return String(value ?? '').replace(/[&<>'"]/g, function(char) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char];
+    });
+}
+
+function safeColor(value, fallback) {
+    return /^#[0-9a-f]{3,8}$/i.test(String(value || '')) ? value : fallback;
+}
+
+function decodeGoogleTokenPayload(token) {
+    try {
+        const encodedPayload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+        return JSON.parse(decodeURIComponent(Array.prototype.map.call(atob(encodedPayload), function(char) {
+            return '%' + ('00' + char.charCodeAt(0).toString(16)).slice(-2);
+        }).join('')));
+    } catch (error) {
+        return null;
+    }
+}
+
+function handleGoogleCredential(response) {
+    googleIdToken = response && response.credential ? response.credential : '';
+    if (!googleIdToken) return;
+    sessionStorage.setItem('google_id_token', googleIdToken);
+    const payload = decodeGoogleTokenPayload(googleIdToken);
+    const email = payload && payload.email ? payload.email : '';
+    setCurrentUserId(email);
+    const messageEl = document.getElementById('sync-user-message');
+    if (messageEl) {
+        messageEl.textContent = email ? `已登入：${email}` : 'Google 登入成功。';
+        messageEl.style.color = '#2a7f2a';
+    }
+}
+
+function initializeGoogleSignIn(attempt = 0) {
+    const button = document.getElementById('google-sign-in-button');
+    if (!button) return;
+    if (GOOGLE_CLIENT_ID.startsWith('YOUR_')) {
+        button.textContent = '請先設定 GOOGLE_CLIENT_ID';
+        return;
+    }
+    if (!window.google || !google.accounts || !google.accounts.id) {
+        if (attempt < 20) setTimeout(function() { initializeGoogleSignIn(attempt + 1); }, 250);
+        return;
+    }
+    google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential, auto_select: false });
+    google.accounts.id.renderButton(button, { theme: 'outline', size: 'large', width: 260, text: 'signin_with' });
+    if (googleIdToken) {
+        const payload = decodeGoogleTokenPayload(googleIdToken);
+        if (payload && payload.exp * 1000 > Date.now()) setCurrentUserId(payload.email || '');
+        else sessionStorage.removeItem('google_id_token');
+    }
+}
+
+function requireGoogleSignIn() {
+    if (!googleIdToken) throw new Error('請先使用 Google 帳號登入。');
+    const payload = decodeGoogleTokenPayload(googleIdToken);
+    if (!payload || !payload.exp || payload.exp * 1000 <= Date.now()) {
+        sessionStorage.removeItem('google_id_token');
+        googleIdToken = '';
+        throw new Error('Google 登入已過期，請重新登入。');
+    }
+    return googleIdToken;
+}
 
 function getCurrentUserId() {
     const input = document.getElementById('sync-user-id');
@@ -1116,14 +1210,11 @@ function initUserIdentity() {
 }
 
 function getGoogleSyncPayload() {
-    const input = document.getElementById('sync-user-id');
-    const userId = input ? String(input.value || '').trim() : getCurrentUserId();
-
     return {
-        sync_user_id: userId,
-        gym_history: JSON.parse(localStorage.getItem('gym_history') || "[]"),
-        custom_exercises: JSON.parse(localStorage.getItem('custom_exercises') || "null"),
-        current_weights: JSON.parse(localStorage.getItem('current_weights') || "{}"),
+        id_token: requireGoogleSignIn(),
+        gym_history: getStoredJson('gym_history', []),
+        custom_exercises: getStoredJson('custom_exercises', null),
+        current_weights: getStoredJson('current_weights', {}),
         cfg_rest_min: localStorage.getItem('cfg_rest_min') || "2",
         cfg_switch_min: localStorage.getItem('cfg_switch_min') || "4",
         cfg_sound_enable: localStorage.getItem('cfg_sound_enable') || "true",
@@ -1132,6 +1223,22 @@ function getGoogleSyncPayload() {
         cfg_dark_auto: localStorage.getItem('cfg_dark_auto') || "false",
         cfg_wake_enable: localStorage.getItem('cfg_wake_enable') || "false"
     };
+}
+
+async function loadGoogleSyncData() {
+    const formData = new FormData();
+    formData.append('action', 'load');
+    formData.append('id_token', requireGoogleSignIn());
+
+    const response = await fetch(googleSyncScriptUrl, {
+        method: 'POST',
+        body: formData,
+        mode: 'cors'
+    });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const result = await response.json();
+    if (result && result.status === 'error') throw new Error(result.message || '雲端驗證失敗');
+    return result;
 }
 
 async function syncDataToGoogleSheet(showFeedback = false, successMessage = '已更新雲端紀錄') {
@@ -1143,26 +1250,9 @@ async function syncDataToGoogleSheet(showFeedback = false, successMessage = '已
 
     try {
         const payload = getGoogleSyncPayload();
-        if (!payload.sync_user_id) {
-            if (showFeedback) {
-                showNotice('無法上傳', '請先輸入有效的E-mail後再上傳到雲端。', false);
-            }
-            return false;
-        }
-
-        if (!isValidEmail(payload.sync_user_id)) {
-            if (showFeedback) {
-                showNotice('格式錯誤', '必須是有效的 email 格式，例如 alice@gmail.com。', false);
-            }
-            return false;
-        }
-
         const formData = new FormData();
         formData.append('action', 'sync');
-        formData.append('user_id', payload.sync_user_id);
         formData.append('payload', JSON.stringify(payload));
-
-        console.log('同步E-mail:', payload.sync_user_id);
 
         const response = await fetch(googleSyncScriptUrl, {
             method: 'POST',
@@ -1199,14 +1289,8 @@ async function loadRemoteHistoryFromGoogleSheet() {
     if (!navigator.onLine) return;
 
     try {
-        const userId = getCurrentUserId();
-        const response = await fetch(googleSyncScriptUrl + '?action=load&user_id=' + encodeURIComponent(userId), {
-            method: 'GET',
-            mode: 'cors'
-        });
-
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        const result = await response.json();
+        if (!googleIdToken) return;
+        const result = await loadGoogleSyncData();
         if (!result) throw new Error('雲端回傳資料錯誤');
 
         let importedData = null;
@@ -1300,7 +1384,8 @@ window.onload = function() {
     });
 
     // 初始化並載入各模組元件與設定
-    initUserIdentity(); // 載入使用者e-mail
+    initUserIdentity(); // 載入已登入帳號顯示
+    initializeGoogleSignIn();
     renderAllExerciseLists(); // 渲染所有部位的動作清單
     initCalendar(); // 載入日曆套件
     loadAllWeights(); // 從暫存區(localStorage)載入各動作上次輸入的值
@@ -1473,10 +1558,10 @@ function switchTab(index) {
 // 開啟共用 Modal 對話視窗並設定內容樣態與刪除按鈕顯隱狀態
 function showNotice(title, content, showDelete) {
     isNoticeOpen = true; // 狀態設定為 true 攔截右滑手勢
-    document.getElementById('modal-title').innerHTML = title;
+    document.getElementById('modal-title').textContent = title;
     var detailsEl = document.getElementById('modal-details');
     if (content && content.trim() !== "") {
-        detailsEl.innerHTML = content;
+        detailsEl.textContent = content;
         detailsEl.style.display = 'block';
     } else {
         detailsEl.style.display = 'none';
@@ -1546,7 +1631,7 @@ function closeTour() {
 
     localStorage.setItem('has_seen_tour_v2', 'true'); // 在瀏覽器標記已看過教學
     const sparklesSVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -4px; margin-right: 5px;"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.2 1.2L3 12l5.8 1.9a2 2 0 0 1 1.2 1.2L12 21l1.9-5.8a2 2 0 0 1-1.2-1.2L21 12l-5.8-1.9a2 2 0 0 1-1.2-1.2L12 3Z"/></svg>`;
-    showNotice(`${sparklesSVG} 導覽結束！`, "開始記錄今天的訓練吧！", false);
+    showNotice('導覽結束！', "開始記錄今天的訓練吧！", false);
 
     document.getElementById('delete-modal').style.zIndex = "99999";
 }
@@ -1590,8 +1675,8 @@ function highlightStep() {
 
             // 置換對話盒文案
             document.getElementById('tour-step-idx').innerText = `${currentTourStep + 1} / ${tourSteps.length}`;
-            document.getElementById('tour-title').innerHTML = step.title;
-            document.getElementById('tour-body').innerHTML = step.desc;
+            document.getElementById('tour-title').textContent = step.title;
+            document.getElementById('tour-body').textContent = step.desc;
 
             // 動態計算對話盒的最佳顯示位置，防止超出螢幕邊界
             let dialogTop = bottom + 12;
@@ -1627,7 +1712,7 @@ window.addEventListener('resize', () => {
    ========================================================================== */
 // 將儲存在瀏覽器的客製化動作佈局取出，並逐項繪製到對應的卡片中
 function renderAllExerciseLists() {
-    const savedExercises = JSON.parse(localStorage.getItem('custom_exercises')) || defaultExercises;
+    const savedExercises = getStoredJson('custom_exercises', null) || defaultExercises;
     Object.keys(savedExercises).forEach(type => {
         const card = document.getElementById(`card-${type}`);
         if (!card) return;
@@ -1655,16 +1740,19 @@ function createExerciseItemHTML(name, id, unit, sets = 3) {
         optionsHTML += `<option value="${u}" ${selected}>${u}</option>`;
     });
 
+    const safeName = escapeHTML(name);
+    const safeId = escapeHTML(id);
+    const safeSets = escapeHTML(sets);
     div.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div class="drag-handle">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="8" x2="20" y2="8"></line><line x1="4" y1="16" x2="20" y2="16"></line></svg>
                     </div>
-                    <span class="exercise-name" data-placeholder="自訂新動作" oninput="checkEmptyName(this)">${name}</span>
+                    <span class="exercise-name" data-placeholder="自訂新動作" oninput="checkEmptyName(this)">${safeName}</span>
                 </div>
                 <div class="input-group">
                     <!-- 👉 調整這裡的 margin-left: 15px; 可以把整個重量方塊往右推 -->
-                    <input type="number" step="any" inputmode="decimal" class="weight-input" data-id="${id}" placeholder="0" value="0"
+                    <input type="number" step="any" inputmode="decimal" class="weight-input" data-id="${safeId}" placeholder="0" value="0"
                         style="margin-left: 15px;"
                         onfocus="this.dataset.oldVal = this.value; this.value = '';" 
                         onblur="if(this.value.trim() === '') { this.value = this.dataset.oldVal; } else { saveCurrentWeight(this); }"
@@ -1676,7 +1764,7 @@ function createExerciseItemHTML(name, id, unit, sets = 3) {
         
                     <div style="display: flex; align-items: center; margin-left: -7px;">
                         <span class="unit-text">x</span>
-                        <input type="number" inputmode="decimal" class="sets-input" value="${sets}" disabled style="margin-left: -10px; width:24px; min-width:24px; border:none; background:transparent; border-bottom: 1px solid transparent; font-size:1rem; font-weight:bold; color:#007AFF; text-align:center; padding:0; -webkit-appearance:none;">
+                        <input type="number" inputmode="decimal" class="sets-input" value="${safeSets}" disabled style="margin-left: -10px; width:24px; min-width:24px; border:none; background:transparent; border-bottom: 1px solid transparent; font-size:1rem; font-weight:bold; color:#007AFF; text-align:center; padding:0; -webkit-appearance:none;">
                     </div>
         
                     
@@ -1711,7 +1799,7 @@ function saveCurrentExerciseLayout(cardElement) {
     const type = cardElement.dataset.type;
     if (!type || type === 'leg' || type === 'hiit') return;
 
-    const savedExercises = JSON.parse(localStorage.getItem('custom_exercises')) || defaultExercises;
+    const savedExercises = getStoredJson('custom_exercises', null) || defaultExercises;
     const currentLayout = [];
 
     cardElement.querySelectorAll('.exercise-list .exercise-item').forEach(item => {
@@ -1812,7 +1900,7 @@ function toggleManageMode(btnElement) {
 function cancelAllEditing() {
     const editingCards = document.querySelectorAll('.card.editing-mode');
     if (editingCards.length === 0) return;
-    const savedExercises = JSON.parse(localStorage.getItem('custom_exercises')) || defaultExercises;
+    const savedExercises = getStoredJson('custom_exercises', null) || defaultExercises;
 
     editingCards.forEach(card => {
         card.classList.remove('editing-mode');
@@ -2017,7 +2105,7 @@ function initAutoJump() {
 function saveCurrentWeight(input) {
     var id = input.dataset.id;
     var val = input.value === "" ? "0" : input.value;
-    var currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
+    var currentWeights = getStoredJson('current_weights', {});
     currentWeights[id] = val;
     localStorage.setItem('current_weights', JSON.stringify(currentWeights));
     updateCardioStats();
@@ -2025,7 +2113,7 @@ function saveCurrentWeight(input) {
 
 // 網頁開載時，自動回填使用者上次離開前在各個欄位所填入的重量數值
 function loadAllWeights() {
-    var currentWeights = JSON.parse(localStorage.getItem('current_weights') || "{}");
+    var currentWeights = getStoredJson('current_weights', {});
     document.querySelectorAll('.weight-input').forEach(function(input) {
         var id = input.dataset.id;
         if (!id) {
@@ -2185,7 +2273,7 @@ function initCalendar() {
             return days[arg.date.getDay()];
         },        
         eventOrder: "order",
-        events: JSON.parse(localStorage.getItem('gym_history') || "[]"),
+        events: getStoredJson('gym_history', []),
         eventClick: function(info) {
             currentEventInfo = info;
             showNotice(info.event.title + " (" + info.event.startStr + ")", info.event.extendedProps.note || "無詳細內容", true);
@@ -2272,7 +2360,7 @@ function saveToHistory(type, btnElement, color) {
         return;
     }
 
-    var history = JSON.parse(localStorage.getItem('gym_history') || "[]");
+    var history = getStoredJson('gym_history', []);
     var existingIndex = history.findIndex(function(item) {
         return item.start === dateVal && item.title === type;
     });
@@ -2317,7 +2405,7 @@ document.getElementById('confirm-delete').onclick = function() {
     if (currentEventInfo) {
         currentEventInfo.event.remove(); // 從日曆中拔除元件
         // 從 localStorage 的陣列資料中過濾掉該筆資料
-        var history = JSON.parse(localStorage.getItem('gym_history') || "[]").filter(function(item) {
+    var history = getStoredJson('gym_history', []).filter(function(item) {
             return item.id !== currentEventInfo.event.id;
         });
         localStorage.setItem('gym_history', JSON.stringify(history));
@@ -2388,9 +2476,9 @@ function saveFlashSetting() {
 // 資料庫匯出到本機：將所有訓練紀錄、自訂動作與暫存重量完整打包匯出
 function exportHistoryToLocal() {
     var backupData = {
-        gym_history: JSON.parse(localStorage.getItem('gym_history') || "[]"),
-        custom_exercises: JSON.parse(localStorage.getItem('custom_exercises') || "null"),
-        current_weights: JSON.parse(localStorage.getItem('current_weights') || "{}"),
+        gym_history: getStoredJson('gym_history', []),
+        custom_exercises: getStoredJson('custom_exercises', null),
+        current_weights: getStoredJson('current_weights', {}),
         cfg_rest_min: localStorage.getItem('cfg_rest_min') || "2",
         cfg_switch_min: localStorage.getItem('cfg_switch_min') || "4",
         cfg_sound_enable: localStorage.getItem('cfg_sound_enable') || "true",
@@ -2425,26 +2513,15 @@ async function uploadHistoryToGoogle() {
         return;
     }
 
-    const userId = getCurrentUserId();
-    if (!userId || !isValidEmail(userId)) {
-        showNotice('無法上傳', '請先輸入有效的E-mail後再上傳到雲端。', false);
-        return;
-    }
-
     try {
-        const response = await fetch(googleSyncScriptUrl + '?action=load&user_id=' + encodeURIComponent(userId), {
-            method: 'GET',
-            mode: 'cors'
-        });
+        requireGoogleSignIn();
+        const result = await loadGoogleSyncData();
+        const accountNotFound = result && result.found_user === false;
 
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        const result = await response.json();
-        const emailNotFound = result && result.found_user === false;
-
-        if (emailNotFound) {
+        if (accountNotFound) {
             showChoiceModal(
                 '雲端紀錄不存在',
-                '此E-mail尚未有任何紀錄，是否以此信箱上傳？',
+                '此 Google 帳號尚未有任何紀錄，是否上傳？',
                 '上傳紀錄',
                 function() {
                     closeChoiceModal();
@@ -2461,7 +2538,7 @@ async function uploadHistoryToGoogle() {
         await syncDataToGoogleSheet(true);
     } catch (error) {
         console.warn('檢查雲端紀錄失敗:', error);
-        showNotice('檢查失敗', '無法檢查雲端紀錄是否存在，請稍後再試。', false);
+        showNotice('檢查失敗', error.message || '無法檢查雲端紀錄是否存在，請稍後再試。', false);
     }
 }
 
@@ -2476,7 +2553,7 @@ function getImportedHistoryCount(importedData) {
 }
 
 function confirmImportIfLocalHistoryIsLarger(importedData, onConfirm) {
-    var localHistory = JSON.parse(localStorage.getItem('gym_history') || "[]");
+    var localHistory = getStoredJson('gym_history', []);
     var localCount = Array.isArray(localHistory) ? localHistory.length : 0;
     var importedCount = getImportedHistoryCount(importedData);
 
@@ -2509,27 +2586,16 @@ async function importHistory() {
     }
 
     try {
-        const userId = getCurrentUserId();
-        if (!userId || !isValidEmail(userId)) {
-            showNotice('無法匯入', '請先輸入有效的E-mail後再從雲端匯入。', false);
-            return;
-        }
-
-        const response = await fetch(googleSyncScriptUrl + '?action=load&user_id=' + encodeURIComponent(userId), {
-            method: 'GET',
-            mode: 'cors'
-        });
-
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        const result = await response.json();
+        requireGoogleSignIn();
+        const result = await loadGoogleSyncData();
         if (!result || !result.gym_history) throw new Error('雲端回傳資料錯誤');
 
         const remoteHistory = Array.isArray(result.gym_history) ? result.gym_history : [];
         const hasRemoteData = remoteHistory.length > 0 || (result.custom_exercises && Object.keys(result.custom_exercises).length > 0) || (result.current_weights && Object.keys(result.current_weights).length > 0);
-        const emailNotFound = result.found_user === false;
+        const accountNotFound = result.found_user === false;
 
-        if (emailNotFound || !hasRemoteData) {
-            showNotice('雲端無紀錄', '找不到與此Email相符的雲端資料，請確認Email是否正確或稍後再試。', false);
+        if (accountNotFound || !hasRemoteData) {
+            showNotice('雲端無紀錄', '這個 Google 帳號尚無雲端資料。', false);
             return;
         }
 
@@ -2565,7 +2631,7 @@ async function importHistory() {
         });
     } catch (error) {
         console.warn('匯入雲端紀錄失敗:', error);
-        showNotice('匯入失敗', '無法從雲端讀取資料，請稍後再試。', false);
+        showNotice('匯入失敗', error.message || '無法從雲端讀取資料，請稍後再試。', false);
     }
 }
 
@@ -3106,7 +3172,7 @@ async function processAndShare(element, filename) {
 function promptDateSelection(recordedDates, dateMap, headerText = '') {
     return new Promise((resolve) => {
         const isDark = document.body.classList.contains('dark-mode');
-        const headerLabel = headerText ? `<div style="font-size: 14px; margin-bottom: 10px; color: ${isDark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.65)'};">${headerText}</div>` : '';
+        const headerLabel = headerText ? `<div style="font-size: 14px; margin-bottom: 10px; color: ${isDark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.65)'};">${escapeHTML(headerText)}</div>` : '';
 
         // 建立 Modal 遮罩
         const modal = document.createElement('div');
@@ -3120,7 +3186,9 @@ function promptDateSelection(recordedDates, dateMap, headerText = '') {
 
         // 構建下拉選單內容 (範例: 2026-07-22 (3 項訓練))
         const optionsHtml = recordedDates.map(d => {
-            return `<option value="${d}">${d} (${dateMap[d]} 項訓練)</option>`;
+            const safeDate = escapeHTML(d);
+            const count = Number.isFinite(Number(dateMap[d])) ? Number(dateMap[d]) : 0;
+            return `<option value="${safeDate}">${safeDate} (${count} 項訓練)</option>`;
         }).join('');
 
         modal.innerHTML = `
@@ -3262,14 +3330,14 @@ async function shareDailyTraining() {
             if (noteText) {
                 if (noteText.length > 120) noteText = noteText.substring(0, 120) + '...';
                 detailsHtml = `<div style="font-size: 36px; font-weight: 500; text-align: left; margin-top: 18px; color: ${isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.75)'}; width: 100%; line-height: 1.5; border-top: 1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}; padding-top: 18px; box-sizing: border-box;">
-                    ${noteText.replace(/\n/g, '<br>')}
+                    ${escapeHTML(noteText).replace(/\n/g, '<br>')}
                 </div>`;
             }
 
             const itemBg = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.85)';
             eventHtml += `<div style="background: ${itemBg}; border: 1px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.5)'}; border-radius: 30px; padding: 35px; margin-bottom: 25px; color: ${isDark ? '#fff' : '#1C1C1E'}; box-shadow: 0 10px 30px rgba(0,0,0,${isDark ? '0.2' : '0.05'}); width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); box-sizing: border-box;">
                 <div style="font-size: 50px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%;">
-                    <span style="color:${e.backgroundColor || '#26E6A8'}">●</span> ${e.title}
+                    <span style="color:${safeColor(e.backgroundColor, '#26E6A8')}">●</span> ${escapeHTML(e.title)}
                 </div>
                 ${detailsHtml}
             </div>`;
@@ -3431,7 +3499,7 @@ async function shareMonthlyTraining() {
             dayEvents.slice(0, 3).forEach(e => {
                 eventsHtml += `
                     <div style="background: ${e.backgroundColor}; color: #fff; font-size: 24px; font-weight: bold; padding: ${itemPadding}; border-radius: 8px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 85%; text-align: center;">
-                        ${e.title}
+                        ${escapeHTML(e.title)}
                     </div>
                 `;
             });
