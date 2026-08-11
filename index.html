@@ -861,16 +861,16 @@
     <input type="checkbox" id="cfg-dark-auto" onchange="toggleAutoDarkTheme()">
 </label></div>
             </div>
-            <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
+            <form autocomplete="on" onsubmit="event.preventDefault()" style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
                 <h4 style="margin:0 0 10px 0; color:#333;">信箱</h4>
-                <input type="email" id="sync-user-id" style="width:100%; box-sizing:border-box; margin-bottom:10px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="例如 alice@gmail.com" autocomplete="email" spellcheck="false" oninput="validateSyncUserId()" onblur="saveSyncUserIdIfValid()">
-                <input type="password" id="sync-backup-password" style="width:100%; box-sizing:border-box; margin-bottom:8px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="備份密碼（至少 10 個字元）" autocomplete="new-password" spellcheck="false">
+                <input type="email" id="sync-user-id" name="username" style="width:100%; box-sizing:border-box; margin-bottom:10px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="例如 alice@gmail.com" autocomplete="email" inputmode="email" autocapitalize="none" autocorrect="off" spellcheck="false" oninput="validateSyncUserId()" onblur="saveSyncUserIdIfValid()">
+                <input type="password" id="sync-backup-password" name="current-password" style="width:100%; box-sizing:border-box; margin-bottom:8px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="備份密碼（至少 10 個字元）" autocomplete="current-password" spellcheck="false">
                 <div style="display:flex; gap:10px; justify-content:space-between; align-items:center; flex-wrap:nowrap;">
                     <button class="btn-record import-export-btn" style="background:#5856D6; flex:0 0 48%; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showImportChoiceModal()">匯入紀錄</button>
                     <button class="btn-record import-export-btn" style="background:#007AFF; flex:0 0 48%; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showExportChoiceModal()">匯出紀錄</button>
                 </div>
                 <p id="sync-user-message" style="font-size:0.82rem; color:#666; margin:8px 0 10px 0;">忘記密碼無法還原雲端備份。</p>                
-            </div>
+            </form>
             <input type="file" id="import-file-local" accept=".json" style="display:none" onchange="importHistoryLocal(event)">
             <p style="font-size: 0.85rem; color: #666; text-align: center;">建議定期匯出備份，避免數據遺失。</p>
         </div>
