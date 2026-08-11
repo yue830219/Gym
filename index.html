@@ -4,8 +4,9 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007AFF"> 
     <meta name="mobile-web-app-capable" content="yes"> 
-    <link rel="apple-touch-icon" href="./Strength.png"> 
-    <link rel="icon" type="image/jpeg" href="./Strength.png"> 
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/gym-icon-180.png"> 
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/gym-icon-192.png"> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>健身助手 Pro</title>
@@ -608,7 +609,7 @@
     </style>
 </head>
 <body>
-    <audio id="alarm-sound" src="https://github.com/yue830219/Gym/raw/refs/heads/main/music.mp3" preload="auto"></audio>
+    <audio id="alarm-sound" src="music.mp3" preload="auto"></audio>
         <div id="landscape-blocker">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
             <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
@@ -3103,7 +3104,7 @@ setInterval(function() {
 }, 60000);
 
 // 註冊 PWA 離線服務線程 (Service Worker) 確保應用程式可以離線開啟
-if ("serviceWorker" in navigator) {
+if (location.protocol === 'https:' && "serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js");
 }
 
