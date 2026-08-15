@@ -1100,6 +1100,21 @@ function keepConverterAtTop() {
     if (window.scrollX !== 0 || window.scrollY !== 0) window.scrollTo(0, 0);
 }
 
+function syncConverterVisualViewport() {
+    if (!document.body.classList.contains('converter-locked')) return;
+    const viewport = window.visualViewport;
+    document.body.style.top = (viewport ? viewport.offsetTop : 0) + 'px';
+    document.body.style.left = (viewport ? viewport.offsetLeft : 0) + 'px';
+}
+
+function stabilizeConverterInputFocus(event) {
+    if (!event.target.closest('#card-converter')) return;
+    syncConverterVisualViewport();
+    requestAnimationFrame(syncConverterVisualViewport);
+    setTimeout(syncConverterVisualViewport, 100);
+    setTimeout(syncConverterVisualViewport, 350);
+}
+
 function enableConverterScrollLock() {
     if (converterScrollLockEnabled) return;
     converterScrollLockEnabled = true;
@@ -1108,7 +1123,13 @@ function enableConverterScrollLock() {
     document.body.style.overflow = 'hidden';
     document.addEventListener('touchmove', preventConverterScroll, { passive: false });
     document.addEventListener('wheel', preventConverterScroll, { passive: false });
+    document.addEventListener('focusin', stabilizeConverterInputFocus);
     window.addEventListener('scroll', keepConverterAtTop, { passive: true });
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', syncConverterVisualViewport);
+        window.visualViewport.addEventListener('scroll', syncConverterVisualViewport);
+    }
+    syncConverterVisualViewport();
     window.scrollTo(0, 0);
 }
 
@@ -1116,11 +1137,18 @@ function disableConverterScrollLock() {
     if (!converterScrollLockEnabled) return;
     converterScrollLockEnabled = false;
     document.body.classList.remove('converter-locked');
+    document.body.style.top = '';
+    document.body.style.left = '';
     document.documentElement.style.overflow = sidebarScrollLockEnabled ? 'hidden' : '';
     document.body.style.overflow = sidebarScrollLockEnabled ? 'hidden' : '';
     document.removeEventListener('touchmove', preventConverterScroll);
     document.removeEventListener('wheel', preventConverterScroll);
+    document.removeEventListener('focusin', stabilizeConverterInputFocus);
     window.removeEventListener('scroll', keepConverterAtTop);
+    if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', syncConverterVisualViewport);
+        window.visualViewport.removeEventListener('scroll', syncConverterVisualViewport);
+    }
 }
 
 /* ======================================================================
