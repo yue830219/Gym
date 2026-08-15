@@ -1052,6 +1052,7 @@ let currentTourStep = 0; // 當前新手導覽的進度索引
 let isTourActive = false; // 是否正在進行新手導覽
 let isNoticeOpen = false; // 追蹤提示卡片是否正開啟中
 let sidebarScrollLockEnabled = false; // 追蹤側邊欄是否已鎖定頁面捲動
+let converterScrollLockEnabled = false;
 
 function preventSidebarScroll(event) {
     const sidebar = document.getElementById('sidebar');
@@ -1083,11 +1084,43 @@ function disableSidebarScrollLock() {
     if (!sidebarScrollLockEnabled) return;
     sidebarScrollLockEnabled = false;
     document.body.classList.remove('sidebar-locked');
-    document.documentElement.style.overflow = '';
-    document.body.style.overflow = '';
+    document.documentElement.style.overflow = converterScrollLockEnabled ? 'hidden' : '';
+    document.body.style.overflow = converterScrollLockEnabled ? 'hidden' : '';
     document.removeEventListener('touchmove', preventSidebarScroll);
     document.removeEventListener('wheel', preventSidebarScroll, true);
     document.removeEventListener('keydown', preventSidebarScrollKeydown);
+}
+
+function preventConverterScroll(event) {
+    if (document.body.classList.contains('converter-locked')) event.preventDefault();
+}
+
+function keepConverterAtTop() {
+    if (!document.body.classList.contains('converter-locked')) return;
+    if (window.scrollX !== 0 || window.scrollY !== 0) window.scrollTo(0, 0);
+}
+
+function enableConverterScrollLock() {
+    if (converterScrollLockEnabled) return;
+    converterScrollLockEnabled = true;
+    document.body.classList.add('converter-locked');
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('touchmove', preventConverterScroll, { passive: false });
+    document.addEventListener('wheel', preventConverterScroll, { passive: false });
+    window.addEventListener('scroll', keepConverterAtTop, { passive: true });
+    window.scrollTo(0, 0);
+}
+
+function disableConverterScrollLock() {
+    if (!converterScrollLockEnabled) return;
+    converterScrollLockEnabled = false;
+    document.body.classList.remove('converter-locked');
+    document.documentElement.style.overflow = sidebarScrollLockEnabled ? 'hidden' : '';
+    document.body.style.overflow = sidebarScrollLockEnabled ? 'hidden' : '';
+    document.removeEventListener('touchmove', preventConverterScroll);
+    document.removeEventListener('wheel', preventConverterScroll);
+    window.removeEventListener('scroll', keepConverterAtTop);
 }
 
 /* ======================================================================
@@ -1609,7 +1642,8 @@ function handleMenuClick(action) {
     const mainTitle = document.getElementById('main-title');
     const timerTitle = document.getElementById('timer-title');
 
-    document.body.classList.toggle('converter-locked', action === 'converter');
+    if (action === 'converter') enableConverterScrollLock();
+    else disableConverterScrollLock();
 
     document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
 
@@ -1646,7 +1680,7 @@ function handleMenuClick(action) {
 
 // 點選訓練部位分頁 (Tab) 切換特定紀錄卡片展示
 function switchTab(index) {
-    document.body.classList.remove('converter-locked');
+    disableConverterScrollLock();
     cancelAllEditing(); // 離開原卡片前自動中斷並還原未儲存的動作自訂編輯
     document.querySelector('.timer-panel').style.display = 'block';
     document.querySelector('.tab-menu').style.display = 'flex';
