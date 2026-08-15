@@ -2,8 +2,6 @@
 <html lang="zh-TW">
 <head>
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://github.io">
-    <link rel="icon" type="image/png" href="https://github.io">
     <meta name="theme-color" content="#007AFF"> 
     <meta name="mobile-web-app-capable" content="yes"> 
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21,7 +19,7 @@
     <meta property="og:image:width" content="1024">
     <meta property="og:image:height" content="1024">
     <meta name="twitter:card" content="summary">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>健身助手 Pro</title>
     <meta name="apple-mobile-web-app-title" content="健身助手">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> 
@@ -77,13 +75,22 @@
             touch-action: none !important; /* 防止 iOS 上的橡皮筋捲動效應 */
             overscroll-behavior: none !important;
         }        
+        body.converter-locked {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden !important;
+            box-sizing: border-box;
+            overscroll-behavior: none;
+        }
         /* 側邊欄抽屜面板 */
         .sidebar { 
             position: fixed; 
             top: 0; 
             left: -220px; 
             width: 200px; 
-            height: 100%; 
+            height: 100dvh; 
             background: rgba(255, 255, 255, 0.6); 
             backdrop-filter: blur(20px); 
             -webkit-backdrop-filter: blur(20px); 
@@ -97,7 +104,8 @@
                         border-color 0.8s ease, 
                         box-shadow 0.8s ease; 
                         
-            padding: 20px 0; 
+            padding: calc(20px + env(safe-area-inset-top, 0px)) 0 env(safe-area-inset-bottom, 0px); 
+            box-sizing: border-box;
             visibility: hidden; 
             border-right: 1px solid rgba(255, 255, 255, 0.5); 
         }
@@ -301,7 +309,7 @@
 
         /* 系統載入畫面：延續 iOS 毛玻璃風格的低調訓練提示。 */
         #loading-screen {
-            position: fixed; inset: 0; z-index: 10000;
+            position: fixed; inset: 0; width: 100%; height: 100dvh; z-index: 10000;
             background: #F2F2F7;
             opacity: 1; visibility: visible; overflow: hidden; font-family: -apple-system, system-ui, sans-serif;
             transition: opacity 0.55s ease-out, visibility 0.55s; pointer-events: auto; touch-action: none;
@@ -1600,6 +1608,8 @@ function handleMenuClick(action) {
     const mainTitle = document.getElementById('main-title');
     const timerTitle = document.getElementById('timer-title');
 
+    document.body.classList.toggle('converter-locked', action === 'converter');
+
     document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
 
     if (action === 'add') { // 回到主畫面紀錄模式
@@ -1635,6 +1645,7 @@ function handleMenuClick(action) {
 
 // 點選訓練部位分頁 (Tab) 切換特定紀錄卡片展示
 function switchTab(index) {
+    document.body.classList.remove('converter-locked');
     cancelAllEditing(); // 離開原卡片前自動中斷並還原未儲存的動作自訂編輯
     document.querySelector('.timer-panel').style.display = 'block';
     document.querySelector('.tab-menu').style.display = 'flex';
@@ -2568,16 +2579,19 @@ function saveToHistory(type, btnElement, color) {
 
                 details += "● " + name + ": " + weightStr + " " + unitLabel;
                 if (sets > 1) {
-                    details += " x" + sets;
+                    details += " x" + sets + "組";
+                }
+                if (unit === 'kg' || unit === 'lbs') {
+                    details += "（每組8次）";
                 }
                 details += "\n";
                 hasData = true;
 
                 // 運算加總：重量 * x數值
                 if (unit === 'kg') {
-                    totalWeight += weight * sets;
+                    totalWeight += weight * sets * 8;
                 } else if (unit === 'lbs') {
-                    totalWeight += weight * sets * 0.45359;
+                    totalWeight += weight * sets * 8 * 0.45359;
                 } // 磅轉公斤計算
                 else if (unit === 'reps') {
                     totalReps += weight * sets;
@@ -2606,6 +2620,7 @@ function saveToHistory(type, btnElement, color) {
         history[existingIndex].extendedProps.note = details;
         history[existingIndex].extendedProps.totalWeight = totalWeight;
         history[existingIndex].extendedProps.totalReps = totalReps;
+        history[existingIndex].extendedProps.repsPerSet = 8;
         history[existingIndex].order = orderWeight;
         var oldEvent = calendar.getEvents().find(function(e) {
             return e.startStr === dateVal && e.title === type;
@@ -2614,6 +2629,7 @@ function saveToHistory(type, btnElement, color) {
             oldEvent.setExtendedProp('note', details);
             oldEvent.setExtendedProp('totalWeight', totalWeight);
             oldEvent.setExtendedProp('totalReps', totalReps);
+            oldEvent.setExtendedProp('repsPerSet', 8);
         }
         showNotice("訓練紀錄已更新", "", false);
     } else {
@@ -2627,7 +2643,8 @@ function saveToHistory(type, btnElement, color) {
             extendedProps: {
                 note: details,
                 totalWeight: totalWeight,
-                totalReps: totalReps
+                totalReps: totalReps,
+                repsPerSet: 8
             }
         };
         history.push(newRecord);
@@ -3609,10 +3626,12 @@ async function shareDailyTraining() {
         let dayTotalWeight = 0;
         let dayTotalReps = 0;
         targetEvents.forEach(e => {
-            if (e.extendedProps && e.extendedProps.totalWeight) dayTotalWeight += parseFloat(e.extendedProps.totalWeight);
+            if (e.extendedProps && e.extendedProps.totalWeight) {
+                const savedWeight = parseFloat(e.extendedProps.totalWeight);
+                dayTotalWeight += e.extendedProps.repsPerSet === 8 ? savedWeight : savedWeight * 8;
+            }
             if (e.extendedProps && e.extendedProps.totalReps) dayTotalReps += parseFloat(e.extendedProps.totalReps);
         });
-        dayTotalWeight *= 8; // 分享截圖時自動放大重量數值
 
         // 動態生成右上角的圓圈區域 (與月摘要邏輯同步)
         const totalWorkouts = targetEvents.length;
@@ -3783,10 +3802,12 @@ async function shareMonthlyTraining() {
         let monthTotalWeight = 0;
         let monthTotalReps = 0;
         monthEvents.forEach(e => {
-            if (e.extendedProps && e.extendedProps.totalWeight) monthTotalWeight += parseFloat(e.extendedProps.totalWeight);
+            if (e.extendedProps && e.extendedProps.totalWeight) {
+                const savedWeight = parseFloat(e.extendedProps.totalWeight);
+                monthTotalWeight += e.extendedProps.repsPerSet === 8 ? savedWeight : savedWeight * 8;
+            }
             if (e.extendedProps && e.extendedProps.totalReps) monthTotalReps += parseFloat(e.extendedProps.totalReps);
         });
-        monthTotalWeight *= 8; // 分享截圖時自動放大重量數值
 
         // 動態生成右上角的圓圈區域
         let circlesHtml = `
