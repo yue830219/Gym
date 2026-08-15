@@ -3323,7 +3323,7 @@ setInterval(function() {
 }, 60000);
 
 // 註冊 PWA 離線服務線程 (Service Worker) 確保應用程式可以離線開啟
-if (location.protocol === 'https:' && "serviceWorker" in navigator) {
+if ((location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1') && "serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js");
 }
 
