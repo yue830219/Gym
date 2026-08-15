@@ -844,12 +844,12 @@
         <div style="background:#f8f8f8; padding:20px; border-radius:15px; border:1px solid #eee;">
             <div style="margin-bottom: 20px;">
                 <label style="display:block; margin-bottom:8px; font-weight:bold; color:#666;">磅 (lbs)</label>
-                <input type="text" id="input-lbs" inputmode="decimal" class="weight-input" style="width:100%; box-sizing:border-box; height:50px; font-size:1.5rem;" placeholder="輸入磅數" onfocus="this.value='';" onblur="if(this.value.trim()==='') { this.value='0'; convertUnit('lbs'); }" oninput="convertUnit('lbs')">
+                <input type="text" id="input-lbs" inputmode="decimal" class="weight-input" style="width:100%; box-sizing:border-box; height:50px; font-size:1.5rem;" placeholder="輸入磅數" onpointerdown="focusConverterInputWithoutJump(event)" onfocus="this.value='';" onblur="if(this.value.trim()==='') { this.value='0'; convertUnit('lbs'); }" oninput="convertUnit('lbs')">
             </div>
             <div style="text-align:center; margin: 10px 0; color:#007AFF; font-size:1.5rem; user-select:none;">⇅</div>
             <div>
                 <label style="display:block; margin-bottom:8px; font-weight:bold; color:#666;">公斤 (kg)</label>
-                <input type="text" id="input-kgs" inputmode="decimal" class="weight-input" style="width:100%; box-sizing:border-box; height:50px; font-size:1.5rem;" placeholder="輸入公斤" onfocus="this.value='';" onblur="if(this.value.trim()==='') { this.value='0'; convertUnit('kgs'); }" oninput="convertUnit('kgs')">
+                <input type="text" id="input-kgs" inputmode="decimal" class="weight-input" style="width:100%; box-sizing:border-box; height:50px; font-size:1.5rem;" placeholder="輸入公斤" onpointerdown="focusConverterInputWithoutJump(event)" onfocus="this.value='';" onblur="if(this.value.trim()==='') { this.value='0'; convertUnit('kgs'); }" oninput="convertUnit('kgs')">
             </div>
             <p style="font-size:0.8rem; color:#999; margin-top:15px; text-align:center;">換算基準：1 lb ≈ 0.45359 kg</p>
         </div>
@@ -1100,19 +1100,18 @@ function keepConverterAtTop() {
     if (window.scrollX !== 0 || window.scrollY !== 0) window.scrollTo(0, 0);
 }
 
-function syncConverterVisualViewport() {
-    if (!document.body.classList.contains('converter-locked')) return;
-    const viewport = window.visualViewport;
-    document.body.style.top = (viewport ? viewport.offsetTop : 0) + 'px';
-    document.body.style.left = (viewport ? viewport.offsetLeft : 0) + 'px';
-}
-
-function stabilizeConverterInputFocus(event) {
-    if (!event.target.closest('#card-converter')) return;
-    syncConverterVisualViewport();
-    requestAnimationFrame(syncConverterVisualViewport);
-    setTimeout(syncConverterVisualViewport, 100);
-    setTimeout(syncConverterVisualViewport, 350);
+function focusConverterInputWithoutJump(event) {
+    const input = event.currentTarget;
+    if (document.activeElement === input) return;
+    event.preventDefault();
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    try {
+        input.focus({ preventScroll: true });
+    } catch (error) {
+        input.focus();
+    }
+    requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
 }
 
 function enableConverterScrollLock() {
@@ -1123,13 +1122,7 @@ function enableConverterScrollLock() {
     document.body.style.overflow = 'hidden';
     document.addEventListener('touchmove', preventConverterScroll, { passive: false });
     document.addEventListener('wheel', preventConverterScroll, { passive: false });
-    document.addEventListener('focusin', stabilizeConverterInputFocus);
     window.addEventListener('scroll', keepConverterAtTop, { passive: true });
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', syncConverterVisualViewport);
-        window.visualViewport.addEventListener('scroll', syncConverterVisualViewport);
-    }
-    syncConverterVisualViewport();
     window.scrollTo(0, 0);
 }
 
@@ -1137,18 +1130,11 @@ function disableConverterScrollLock() {
     if (!converterScrollLockEnabled) return;
     converterScrollLockEnabled = false;
     document.body.classList.remove('converter-locked');
-    document.body.style.top = '';
-    document.body.style.left = '';
     document.documentElement.style.overflow = sidebarScrollLockEnabled ? 'hidden' : '';
     document.body.style.overflow = sidebarScrollLockEnabled ? 'hidden' : '';
     document.removeEventListener('touchmove', preventConverterScroll);
     document.removeEventListener('wheel', preventConverterScroll);
-    document.removeEventListener('focusin', stabilizeConverterInputFocus);
     window.removeEventListener('scroll', keepConverterAtTop);
-    if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', syncConverterVisualViewport);
-        window.visualViewport.removeEventListener('scroll', syncConverterVisualViewport);
-    }
 }
 
 /* ======================================================================
