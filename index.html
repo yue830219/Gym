@@ -156,6 +156,20 @@
         .date-input { border: 1px solid #ddd; border-radius: 6px; padding: 6px; font-size: 1rem; font-weight: bold; background: #fff; transition: background 0.3s, border-color 0.3s, color 0.3s; }
         /* 「儲存到日曆」大按鈕 */
         .btn-record { background: #34c759; color: white; padding: 14px; font-size: 16px; border-radius: 12px; width: 100%; margin-top: 15px; border: none; font-weight: bold; cursor: pointer; }
+
+        /* 七種訓練卡片統一為原 HIIT 卡片高度，只有中央訓練內容可上下滑動。 */
+        .training-fixed-card { height: 340px; padding: 16px; box-sizing: border-box; overflow: hidden; }
+        .training-fixed-card.active { display: flex; flex-direction: column; }
+        .training-fixed-card > .card-header { flex: 0 0 auto; margin-bottom: 7px; }
+        .training-scroll-content { flex: 1 1 auto; min-height: 0; margin: 0 -4px; padding: 0 4px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .training-scroll-content::-webkit-scrollbar { display: none; }
+        .training-fixed-card > .btn-calendar-only { flex: 0 0 auto; min-height: 46px; margin-top: 8px; }
+        .training-scroll-content .exercise-item { padding: 6px 0; }
+        .training-scroll-content .exercise-item[style*="background:"] { margin-top: 6px !important; padding: 8px !important; }
+        .training-scroll-content .weight-input { padding-top: 4px; padding-bottom: 4px; }
+        .training-scroll-content .bottom-manage-bar { gap: 7px; margin: 7px 0; }
+        .training-scroll-content .training-note-row { margin: 6px 0 !important; }
+        .training-scroll-content .card-note { height: 34px !important; padding: 6px 8px !important; }
         
         /* 訓練日曆專用卡片樣式表 */
         .calendar-card { display: none; }
@@ -1811,7 +1825,34 @@ const tourSteps = [{
 /* ==========================================================================
    3. 系統初始化與生命週期 (Initialization & Lifecycle)
    ========================================================================== */
+function initializeFixedTrainingCards() {
+    const trainingCardIds = ['card-chest', 'card-shoulder', 'card-arm', 'card-abs', 'card-leg-strength', 'card-leg', 'card-hiit'];
+
+    trainingCardIds.forEach(function(cardId) {
+        const card = document.getElementById(cardId);
+        if (!card || card.querySelector(':scope > .training-scroll-content')) return;
+        const header = card.querySelector(':scope > .card-header');
+        const saveButton = card.querySelector(':scope > .btn-calendar-only');
+        if (!header || !saveButton) return;
+
+        const scrollContent = document.createElement('div');
+        scrollContent.className = 'training-scroll-content';
+        let currentNode = header.nextSibling;
+        while (currentNode && currentNode !== saveButton) {
+            const nextNode = currentNode.nextSibling;
+            scrollContent.appendChild(currentNode);
+            currentNode = nextNode;
+        }
+        card.insertBefore(scrollContent, saveButton);
+        card.classList.add('training-fixed-card');
+
+        const noteInput = scrollContent.querySelector('.card-note');
+        if (noteInput && noteInput.parentElement) noteInput.parentElement.classList.add('training-note-row');
+    });
+}
+
 window.onload = function() {
+    initializeFixedTrainingCards();
     // 初始化所有卡片的日期選擇器為「今天」
     var today = new Date().toLocaleDateString('sv-SE');
     document.querySelectorAll('.date-input').forEach(function(input) {
