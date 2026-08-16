@@ -1938,7 +1938,7 @@ function handleMenuClick(action) {
     const mainTitle = document.getElementById('main-title');
     const timerTitle = document.getElementById('timer-title');
 
-    if (action === 'converter') enableConverterScrollLock();
+    if (action === 'converter' || action === 'calendar') enableConverterScrollLock();
     else disableConverterScrollLock();
 
     document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
