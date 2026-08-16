@@ -91,6 +91,7 @@
             overflow: hidden !important;
             overscroll-behavior: none;
             box-sizing: border-box;
+            padding-bottom: 0;
         }
         /* 側邊欄抽屜面板 */
         .sidebar { 
@@ -170,7 +171,7 @@
         /* 七種訓練卡片統一延伸到螢幕底部，只有中央訓練內容可上下滑動。 */
         .training-fixed-card { height:340px; padding:16px; box-sizing:border-box; overflow:hidden; }
         .training-fixed-card.active { display: flex; flex-direction: column; }
-        body.training-main-locked .training-fixed-card.active { position:fixed; top:var(--training-card-top,0px); right:15px; bottom:0; left:15px; width:auto; height:auto; margin:0; border-bottom:0; border-radius:18px 18px 0 0; z-index:20; }
+        body.training-main-locked .training-fixed-card.active { position:fixed; top:var(--training-card-top,0px); right:15px; bottom:-20px; left:15px; width:auto; height:auto; z-index:20; }
         .training-fixed-card > .card-header { flex: 0 0 auto; margin-bottom: 7px; }
         .training-scroll-content { flex: 1 1 auto; min-height: 0; margin: 0 -4px; padding: 0 4px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .training-scroll-content::-webkit-scrollbar { display: none; }
