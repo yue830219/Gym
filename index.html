@@ -339,16 +339,18 @@
         .gym-account-login { min-height: 84px; border-radius: 16px; background: rgba(0,122,255,.08); }
         .gym-account-action { border: 0; border-radius: 10px; padding: 10px 12px; font-weight: 700; cursor: pointer; }
         .gym-backup-card { min-height:110px; padding:16px; border:1px solid #d1d5db; border-radius:16px; background:#fff; color:#1c1c1e; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; text-align:left; cursor:pointer; }
-        .gym-backup-icon { display:block; font-size:1.35rem; font-weight:800; margin-bottom:10px; }
+        .gym-backup-icon { width:34px; height:34px; display:grid; place-items:center; margin-bottom:10px; }
+        .gym-backup-icon svg { width:28px; height:28px; }
         .gym-backup-card strong { display:block; font-size:.9rem; }
         .gym-backup-card small { display:block; margin-top:5px; color:#8E8E93; font-size:.75rem; }
         .gym-settings-stack { display:flex; flex-direction:column; gap:24px; margin-top:12px; }
         .gym-settings-section-title { margin:0 0 10px; padding-left:2px; color:#8E8E93; font-size:.72rem; font-weight:750; letter-spacing:.08em; text-transform:uppercase; }
         .gym-settings-panel { overflow:hidden; border:1px solid #e5e7eb; border-radius:18px; background:#fff; box-shadow:0 1px 3px rgba(15,23,42,.04); }
-        .gym-setting-row { min-height:70px; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid #eceef2; box-sizing:border-box; }
+        .gym-setting-row { min-height:78px; padding:13px 14px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid #eceef2; box-sizing:border-box; }
         .gym-setting-row:last-child { border-bottom:0; }
         .gym-setting-leading { min-width:0; display:flex; align-items:center; gap:12px; }
-        .gym-setting-icon { width:42px; height:42px; flex:0 0 42px; border-radius:14px; display:grid; place-items:center; }
+        .gym-setting-icon { width:50px; height:50px; flex:0 0 50px; border-radius:16px; display:grid; place-items:center; }
+        .gym-setting-icon svg { width:26px; height:26px; }
         .gym-setting-copy { min-width:0; }
         .gym-setting-copy strong { display:block; color:#1c1c1e; font-size:.94rem; }
         .gym-setting-copy small { display:block; margin-top:4px; color:#8E8E93; font-size:.76rem; line-height:1.35; }
@@ -356,6 +358,8 @@
         .gym-settings-save { width:calc(100% - 24px); margin:12px; min-height:44px; border:0; border-radius:12px; background:#007AFF; color:#fff; font-weight:750; cursor:pointer; }
         .gym-settings-link { width:100%; border:0; background:transparent; color:inherit; text-align:left; cursor:pointer; }
         .gym-settings-chevron { color:#8E8E93; font-size:1.35rem; }
+        .gym-account-avatar-actions { display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-top:8px; }
+        .gym-account-avatar-actions button { border:0; background:transparent; padding:5px 1px; font-size:.78rem; font-weight:700; cursor:pointer; }
         #gym-account-modal { display: none; position: fixed; inset: 0; z-index: 12000; align-items: center; justify-content: center; padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom)); background: rgba(0,0,0,.72); backdrop-filter: blur(12px); box-sizing: border-box; }
         #gym-account-modal.active { display: flex; }
         .gym-account-modal-card { width: 100%; max-width: 380px; padding: 24px; border-radius: 24px; background: #fff; box-shadow: 0 24px 70px rgba(0,0,0,.28); box-sizing: border-box; }
@@ -530,7 +534,6 @@
         body.dark-mode #card-settings #sync-backup-password { background: #1C1C1E !important; border-color: #3A3A3C !important; color: #FFFFFF !important; }
         body.dark-mode #card-settings #sync-user-id::placeholder,
         body.dark-mode #card-settings #sync-backup-password::placeholder { color: #8E8E93 !important; }
-        body.dark-mode #card-settings #sync-user-message { color: #AEAEB2 !important; }
         body.dark-mode h4 { color: #FFFFFF !important; }
         body.dark-mode label[style*="color:#666"] { color: #AEAEB2 !important; }
         body.dark-mode p[style*="color:#999"], body.dark-mode p[style*="color: #666"] { color: #8E8E93 !important; }
@@ -930,38 +933,37 @@
             <section>
                 <h4 class="gym-settings-section-title">訓練計時</h4>
                 <div class="gym-settings-panel">
-                    <div class="gym-setting-row"><div class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(0,122,255,.12);color:#007AFF;">⏱</span><span class="gym-setting-copy"><strong>組間間隔</strong><small>每一組完成後的休息時間</small></span></div><div style="display:flex;align-items:center;gap:7px;"><input type="number" inputmode="decimal" id="cfg-rest-min" class="weight-input gym-setting-number" onfocus="this.dataset.oldVal=this.value;this.value='';" onblur="if(this.value===''){this.value=this.dataset.oldVal;}" placeholder="2"><span style="color:#8E8E93;font-size:.82rem;">分</span></div></div>
-                    <div class="gym-setting-row"><div class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(88,86,214,.12);color:#5856D6;">↻</span><span class="gym-setting-copy"><strong>動作間隔</strong><small>切換到下一個動作的休息時間</small></span></div><div style="display:flex;align-items:center;gap:7px;"><input type="number" inputmode="decimal" id="cfg-switch-min" class="weight-input gym-setting-number" onfocus="this.dataset.oldVal=this.value;this.value='';" onblur="if(this.value===''){this.value=this.dataset.oldVal;}" placeholder="4"><span style="color:#8E8E93;font-size:.82rem;">分</span></div></div>
+                    <div class="gym-setting-row"><div class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(0,122,255,.12);color:#007AFF;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg></span><span class="gym-setting-copy"><strong>組間間隔</strong><small>每一組完成後的休息時間</small></span></div><div style="display:flex;align-items:center;gap:7px;"><input type="number" inputmode="decimal" id="cfg-rest-min" class="weight-input gym-setting-number" onfocus="this.dataset.oldVal=this.value;this.value='';" onblur="if(this.value===''){this.value=this.dataset.oldVal;}" placeholder="2"><span style="color:#8E8E93;font-size:.82rem;">分</span></div></div>
+                    <div class="gym-setting-row"><div class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(88,86,214,.12);color:#5856D6;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9M14 4l-3 3 3 3M4 17h9M10 14l3 3-3 3"/></svg></span><span class="gym-setting-copy"><strong>動作間隔</strong><small>切換到下一個動作的休息時間</small></span></div><div style="display:flex;align-items:center;gap:7px;"><input type="number" inputmode="decimal" id="cfg-switch-min" class="weight-input gym-setting-number" onfocus="this.dataset.oldVal=this.value;this.value='';" onblur="if(this.value===''){this.value=this.dataset.oldVal;}" placeholder="4"><span style="color:#8E8E93;font-size:.82rem;">分</span></div></div>
                     <button type="button" class="gym-settings-save" onclick="saveTimerSettings()">儲存計時設定</button>
                 </div>
             </section>
             <section>
                 <h4 class="gym-settings-section-title">提醒與裝置</h4>
                 <div class="gym-settings-panel">
-                    <div class="gym-setting-row"><div class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(255,149,0,.14);color:#FF9500;">♪</span><span class="gym-setting-copy"><strong>播放鈴聲</strong><small>計時結束時播放提示音</small></span></div><label class="switch"><input type="checkbox" id="cfg-sound-enable" onchange="saveSoundSetting()"><span class="slider"></span></label></div>
-                    <div class="gym-setting-row"><div class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(255,59,48,.12);color:#FF3B30;">✦</span><span class="gym-setting-copy"><strong>畫面閃爍</strong><small>計時結束時以畫面閃爍提醒</small></span></div><label class="switch"><input type="checkbox" id="cfg-flash-enable" onchange="saveFlashSetting()"><span class="slider"></span></label></div>
-                    <div class="gym-setting-row"><div class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(52,199,89,.12);color:#34C759;">☀</span><span class="gym-setting-copy"><strong>保持螢幕常亮</strong><small>訓練期間避免螢幕自動鎖定</small></span></div><label class="switch"><input type="checkbox" id="cfg-wake-enable" onchange="toggleWakeLockSetting()"><span class="slider"></span></label></div>
+                    <div class="gym-setting-row"><div class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(255,149,0,.14);color:#FF9500;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></span><span class="gym-setting-copy"><strong>播放鈴聲</strong><small>計時結束時播放提示音</small></span></div><label class="switch"><input type="checkbox" id="cfg-sound-enable" onchange="saveSoundSetting()"><span class="slider"></span></label></div>
+                    <div class="gym-setting-row"><div class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(255,59,48,.12);color:#FF3B30;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3"/></svg></span><span class="gym-setting-copy"><strong>畫面閃爍</strong><small>計時結束時以畫面閃爍提醒</small></span></div><label class="switch"><input type="checkbox" id="cfg-flash-enable" onchange="saveFlashSetting()"><span class="slider"></span></label></div>
+                    <div class="gym-setting-row"><div class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(52,199,89,.12);color:#34C759;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M9 18h6"/></svg></span><span class="gym-setting-copy"><strong>保持螢幕常亮</strong><small>訓練期間避免螢幕自動鎖定</small></span></div><label class="switch"><input type="checkbox" id="cfg-wake-enable" onchange="toggleWakeLockSetting()"><span class="slider"></span></label></div>
                 </div>
             </section>
             <section>
                 <h4 class="gym-settings-section-title">外觀</h4>
                 <div class="gym-settings-panel">
-                    <div class="gym-setting-row"><div class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(175,82,222,.12);color:#AF52DE;">◐</span><span class="gym-setting-copy"><strong>暗黑風格模式</strong><small>使用深色背景與介面</small></span></div><label class="switch"><input type="checkbox" id="cfg-dark-enable" onchange="toggleDarkTheme()"><span class="slider"></span></label></div>
-                    <div class="gym-setting-row"><div class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(90,200,250,.14);color:#30B0C7;">A</span><span class="gym-setting-copy"><strong>自動切換</strong><small>依照白天與夜晚自動變更</small></span></div><label class="switch"><input type="checkbox" id="cfg-dark-auto" onchange="toggleAutoDarkTheme()"><span class="slider"></span></label></div>
+                    <div class="gym-setting-row"><div class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(175,82,222,.12);color:#AF52DE;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg></span><span class="gym-setting-copy"><strong>暗黑風格模式</strong><small>使用深色背景與介面</small></span></div><label class="switch"><input type="checkbox" id="cfg-dark-enable" onchange="toggleDarkTheme()"><span class="slider"></span></label></div>
+                    <div class="gym-setting-row"><div class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(90,200,250,.14);color:#30B0C7;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></span><span class="gym-setting-copy"><strong>自動切換</strong><small>依照白天與夜晚自動變更</small></span></div><label class="switch"><input type="checkbox" id="cfg-dark-auto" onchange="toggleAutoDarkTheme()"><span class="slider"></span></label></div>
                 </div>
             </section>
             <section>
                 <h4 class="gym-settings-section-title">使用說明</h4>
-                <div class="gym-settings-panel"><button type="button" class="gym-setting-row gym-settings-link" onclick="startTour()"><span class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(0,122,255,.12);color:#007AFF;">?</span><span class="gym-setting-copy"><strong>功能導覽</strong><small>重新查看健身助手的主要功能</small></span></span><span class="gym-settings-chevron">›</span></button></div>
+                <div class="gym-settings-panel"><button type="button" class="gym-setting-row gym-settings-link" onclick="startTour()"><span class="gym-setting-leading"><span class="gym-setting-icon" style="background:rgba(0,122,255,.12);color:#007AFF;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 1 1 5.8 1c0 2-3 2-3 4M12 18h.01"/></svg></span><span class="gym-setting-copy"><strong>功能導覽</strong><small>重新查看健身助手的主要功能</small></span></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div>
             </section>
             <section>
                 <h4 class="gym-settings-section-title">資料備份</h4>
                 <input type="file" id="import-file-local" accept=".json" style="display:none" onchange="importHistoryLocal(event)">
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                    <button type="button" class="gym-backup-card" onclick="showExportChoiceModal()"><span class="gym-backup-icon" style="color:#007AFF;">↥</span><strong>匯出資料</strong><small>選擇位置</small></button>
-                    <button type="button" class="gym-backup-card" onclick="showImportChoiceModal()"><span class="gym-backup-icon" style="color:#34C759;">↧</span><strong>匯入資料</strong><small>選擇來源</small></button>
+                    <button type="button" class="gym-backup-card" onclick="showExportChoiceModal()"><span class="gym-backup-icon" style="color:#007AFF;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M12 18V10"/><path d="m8 14 4-4 4 4"/></svg></span><strong>匯出資料</strong><small>選擇位置</small></button>
+                    <button type="button" class="gym-backup-card" onclick="showImportChoiceModal()"><span class="gym-backup-icon" style="color:#34C759;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M12 10v8"/><path d="m8 14 4 4 4-4"/></svg></span><strong>匯入資料</strong><small>選擇來源</small></button>
                 </div>
-                <p id="sync-user-message" style="font-size:.78rem;color:#8E8E93;margin:10px 0 0;text-align:center;">忘記密碼無法還原雲端備份。</p>
             </section>
         </div>
     </div>
@@ -1262,24 +1264,17 @@ function isValidEmail(value) {
 
 function validateSyncUserId() {
     const input = document.getElementById('sync-user-id');
-    const messageEl = document.getElementById('sync-user-message');
-    if (!input || !messageEl) return;
+    if (!input) return;
 
     const rawValue = String(input.value || '').trim();
     if (!rawValue) {
-        messageEl.innerText = '同步與恢復都會使用你的 E-mail。';
-        messageEl.style.color = '#666';
         input.style.borderColor = '#d1d5db';
         return;
     }
 
     if (!isValidEmail(rawValue)) {
-        messageEl.innerText = '請輸入有效的 E-mail 格式，例如 alice@gmail.com。';
-        messageEl.style.color = '#d9534f';
         input.style.borderColor = '#d9534f';
     } else {
-        messageEl.innerText = 'E-mail格式正確，可直接匯入或匯出備份。';
-        messageEl.style.color = '#2a7f2a';
         input.style.borderColor = '#34c759';
     }
 }
@@ -1474,7 +1469,7 @@ function renderGymAccountProfile(forceEditor = false) {
     const target = document.getElementById('gym-account-profile');
     if (!target) return;
     if (!isGymCloudAuthenticated()) {
-        target.innerHTML = `<button type="button" class="gym-account-login" onclick="openGymAccountModal('login')" style="width:100%;border:0;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:14px;text-align:left;color:inherit;cursor:pointer;"><span style="display:flex;align-items:center;gap:12px;"><span style="width:48px;height:48px;border-radius:16px;background:rgba(0,122,255,.15);color:#007AFF;display:grid;place-items:center;font-size:1.25rem;">↪</span><span><strong style="display:block;font-size:1rem;">登入或註冊</strong><small style="display:block;margin-top:5px;color:#777;">登入後即可使用加密雲端備份</small></span></span><span style="color:#8E8E93;font-size:1.3rem;">›</span></button>`;
+        target.innerHTML = `<button type="button" class="gym-account-login" onclick="openGymAccountModal('login')" style="width:100%;border:0;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:14px;text-align:left;color:inherit;cursor:pointer;"><span style="display:flex;align-items:center;gap:12px;"><span style="width:50px;height:50px;border-radius:16px;background:rgba(0,122,255,.15);color:#007AFF;display:grid;place-items:center;"><svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></svg></span><span><strong style="display:block;font-size:1rem;">登入或註冊</strong><small style="display:block;margin-top:5px;color:#777;">登入後即可使用加密雲端備份</small></span></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>`;
         return;
     }
     const email = escapeHTML(localStorage.getItem('sync_user_id') || '');
@@ -1485,7 +1480,7 @@ function renderGymAccountProfile(forceEditor = false) {
         target.innerHTML = `<button type="button" class="gym-account-card" onclick="openGymAccountEditor()" style="width:100%;display:flex;align-items:center;gap:16px;text-align:left;color:inherit;cursor:pointer;" aria-label="修改帳戶資料">${avatar}<span style="min-width:0;flex:1;"><span class="gym-account-name" style="display:block;">${name}</span><span class="gym-account-email" style="display:block;">${email}</span></span></button><button type="button" onclick="logoutGymCloudAccount()" style="width:100%;border:0;background:transparent;padding:10px 0 0;color:#8E8E93;font-size:.88rem;">登出</button>`;
         return;
     }
-    target.innerHTML = `<div class="gym-account-card" style="display:flex;align-items:center;gap:16px;"><div style="width:80px;flex:0 0 80px;text-align:center;"><label style="position:relative;display:block;cursor:pointer;">${avatar}<span style="position:absolute;right:-1px;bottom:-1px;width:28px;height:28px;border-radius:50%;background:#007AFF;color:#fff;border:2px solid #fff;display:grid;place-items:center;font-size:.8rem;">⌁</span><input id="gym-account-avatar-file" type="file" accept="image/*" style="display:none" onchange="handleGymAccountAvatar(event)"></label></div><div style="min-width:0;flex:1;"><input id="gym-account-name" value="${name}" maxlength="60" autocomplete="off" placeholder="名稱" style="width:100%;border:0;border-bottom:1px solid rgba(15,23,42,.16);background:transparent;padding:8px 0;font-size:1rem;font-weight:700;color:inherit;box-sizing:border-box;"><input id="gym-account-edit-email" value="${email}" type="email" autocomplete="email" inputmode="email" placeholder="E-mail" style="width:100%;border:0;border-bottom:1px solid rgba(15,23,42,.16);background:transparent;padding:8px 0;font-size:1rem;color:inherit;box-sizing:border-box;"><input id="gym-account-edit-password" value="${escapeHTML(getGymCloudBackupPassword())}" type="password" autocomplete="current-password" placeholder="備份密碼（至少 10 個字元）" style="width:100%;border:0;border-bottom:1px solid rgba(15,23,42,.16);background:transparent;padding:8px 0;font-size:1rem;color:inherit;box-sizing:border-box;"></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;"><button type="button" onclick="cancelGymAccountEdit()" style="min-height:42px;border:0;border-radius:12px;background:#E5E5EA;color:#3A3A3C;font-weight:750;">取消</button><button type="button" onclick="saveGymAccountProfile()" style="min-height:42px;border:0;border-radius:12px;background:#007AFF;color:#fff;font-weight:750;">儲存</button></div>`;
+    target.innerHTML = `<div class="gym-account-card" style="display:flex;align-items:flex-start;gap:16px;"><div style="width:80px;flex:0 0 80px;text-align:center;"><label style="position:relative;display:block;cursor:pointer;">${avatar}<span style="position:absolute;right:-1px;bottom:-1px;width:30px;height:30px;border-radius:50%;background:#007AFF;color:#fff;border:2px solid #fff;display:grid;place-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3"/></svg></span><input id="gym-account-avatar-file" type="file" accept="image/*" style="display:none" onchange="handleGymAccountAvatar(event)"></label><div class="gym-account-avatar-actions"><button type="button" onclick="cancelGymAccountEdit()" style="color:#8E8E93;">取消</button><button type="button" onclick="saveGymAccountProfile()" style="color:#007AFF;">儲存</button></div></div><div style="min-width:0;flex:1;"><input id="gym-account-name" value="${name}" maxlength="60" autocomplete="off" placeholder="名稱" style="width:100%;border:0;border-bottom:1px solid rgba(15,23,42,.16);background:transparent;padding:8px 0;font-size:1rem;font-weight:700;color:inherit;box-sizing:border-box;"><input id="gym-account-edit-email" value="${email}" type="email" autocomplete="email" inputmode="email" placeholder="E-mail" style="width:100%;border:0;border-bottom:1px solid rgba(15,23,42,.16);background:transparent;padding:8px 0;font-size:1rem;color:inherit;box-sizing:border-box;"><input id="gym-account-edit-password" value="${escapeHTML(getGymCloudBackupPassword())}" type="password" autocomplete="current-password" placeholder="備份密碼（至少 10 個字元）" style="width:100%;border:0;border-bottom:1px solid rgba(15,23,42,.16);background:transparent;padding:8px 0;font-size:1rem;color:inherit;box-sizing:border-box;"></div></div>`;
 }
 
 function openGymAccountEditor() {
