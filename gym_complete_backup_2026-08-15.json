@@ -1,0 +1,2220 @@
+{
+  "gym_history": [
+    {
+      "id": "id_1785405784724",
+      "title": "練胸",
+      "start": "2026-07-30",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": 1,
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 27.5 kg x3組（每組8次）\n● 啞鈴上斜臥推: 17.5 kg x3組（每組8次）\n",
+        "totalWeight": 1080,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1785405836674",
+      "title": "練腹",
+      "start": "2026-07-30",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": 4,
+      "extendedProps": {
+        "note": "● 強力跨越: 30 下 x3\n● 仰臥捲腹: 30 下 x3\n\n【備註】: 強力跨越單手負重7.5kg",
+        "totalWeight": 0,
+        "totalReps": 180
+      }
+    },
+    {
+      "id": "id_1785410328704",
+      "title": "有氧",
+      "start": "2026-07-30",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": 6,
+      "extendedProps": {
+        "note": "● 距離: 4 km\n● 坡度: 15%\n● 時間: 55 分 00 秒\n● 配速: 13'45\"\n● 消耗: 518 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1785321370332",
+      "title": "練肩",
+      "start": "2026-07-29",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": 2,
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 22.5 kg x3組（每組8次）\n● 啞鈴正手划船: 22.5 kg x3組（每組8次）\n● 啞鈴俯身飛鳥: 7.5 kg x3組（每組8次）\n",
+        "totalWeight": 1260,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1785323211972",
+      "title": "練腹",
+      "start": "2026-07-29",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": 4,
+      "extendedProps": {
+        "note": "● 滾輪捲腹: 30 下 x3\n",
+        "totalWeight": 0,
+        "totalReps": 90
+      }
+    },
+    {
+      "id": "id_1785088344707",
+      "title": "練腹",
+      "start": "2026-07-27",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 側捲腹: 30 reps x3\n● 仰臥捲腹: 30 reps x3\n● 單槓螺旋式（簡）: 20 reps x3\n● 俯臥登山跑: 60 sec x3\n",
+        "totalWeight": 0,
+        "totalReps": 240
+      }
+    },
+    {
+      "id": "id_1785165590968",
+      "title": "練腿",
+      "start": "2026-07-27",
+      "backgroundColor": "#008080",
+      "borderColor": "#008080",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 啞鈴硬舉: 40 kg x3組（每組8次）\n● 啞鈴分腿蹲: 20 kg x3組（每組8次）\n",
+        "totalWeight": 1440,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1784887837679",
+      "title": "練腹",
+      "start": "2026-07-24",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 25 reps x3\n● 仰臥捲腹: 25 reps x3\n\n【備註】: 仰臥捲腹負重15kg、強力跨越單手負重7.5kg",
+        "totalWeight": 0,
+        "totalReps": 150
+      }
+    },
+    {
+      "id": "id_1784887851297",
+      "title": "練胸",
+      "start": "2026-07-24",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 27.5 kg x3組（每組8次）\n● 啞鈴上斜臥推: 17.5 kg x3組（每組8次）\n",
+        "totalWeight": 1080,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1784893123672",
+      "title": "有氧",
+      "start": "2026-07-24",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 4 km\n● 坡度: 15%\n● 時間: 55 分 00 秒\n● 配速: 13'45\"\n● 消耗: 518 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1784718220124",
+      "title": "練肩",
+      "start": "2026-07-22",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 20 kg x3組（每組8次）\n● 啞鈴正手划船: 20 kg x3組（每組8次）\n● 啞鈴俯身飛鳥: 6 kg x3組（每組8次）\n",
+        "totalWeight": 1104,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1784719303780",
+      "title": "練腹",
+      "start": "2026-07-22",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 站姿滾輪捲腹: 12 reps x3\n● 單槓螺旋式: 10 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 66
+      }
+    },
+    {
+      "id": "id_1784631665451",
+      "title": "練腿",
+      "start": "2026-07-21",
+      "backgroundColor": "#008080",
+      "borderColor": "#008080",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 槓鈴硬舉: 90 kg x3組（每組8次）\n● 沙包分腿蹲: 46 kg x3組（每組8次）\n",
+        "totalWeight": 3264,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1784633507386",
+      "title": "練臂",
+      "start": "2026-07-21",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": "3",
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 6 kg x3組（每組8次）\n● 啞鈴俯後臂屈伸: 6 kg x3組（每組8次）\n",
+        "totalWeight": 288,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1784635162465",
+      "title": "有氧",
+      "start": "2026-07-21",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 2.6 km\n● 坡度: 15%\n● 時間: 38 分 00 秒\n● 配速: 14'37\"\n● 消耗: 339 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1784456747118",
+      "title": "練胸",
+      "start": "2026-07-19",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 25 kg x3組（每組8次）\n● 啞鈴上斜臥推: 15 kg x3組（每組8次）\n",
+        "totalWeight": 960,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1784456780326",
+      "title": "練腹",
+      "start": "2026-07-19",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 25 reps x3\n● 仰臥捲腹: 25 reps x3\n\n【備註】: 強力跨越負重5公斤啞鈴、仰臥捲腹負重10公斤啞鈴",
+        "totalWeight": 0,
+        "totalReps": 150
+      }
+    },
+    {
+      "id": "id_1784371428717",
+      "title": "練肩",
+      "start": "2026-07-18",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 20 kg x3組（每組8次）\n● 啞鈴正手划船: 20 kg x3組（每組8次）\n● 啞鈴側平舉: 10 kg x3組（每組8次）\n",
+        "totalWeight": 1200,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1784373155467",
+      "title": "練腹",
+      "start": "2026-07-18",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 滾輪捲腹: 25 reps x3\n● 單槓螺旋式（簡）: 20 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 135
+      }
+    },
+    {
+      "id": "id_1783767289686",
+      "title": "練胸",
+      "start": "2026-07-11",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 25 kg x3組（每組8次）\n● 啞鈴上斜臥推: 15 kg x3組（每組8次）\n",
+        "totalWeight": 960,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1783767822552",
+      "title": "練腹",
+      "start": "2026-07-11",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 仰臥捲腹: 25 reps x3\n● 單槓螺旋式: 10 sec\n",
+        "totalWeight": 0,
+        "totalReps": 75
+      }
+    },
+    {
+      "id": "id_1783770997519",
+      "title": "有氧",
+      "start": "2026-07-11",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 4 km\n● 坡度: 15%\n● 時間: 49 分 00 秒\n● 配速: 12'15\"\n● 消耗: 519 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1783680221692",
+      "title": "練腿",
+      "start": "2026-07-10",
+      "backgroundColor": "#008080",
+      "borderColor": "#008080",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 腿推機高腳位: 80 kg x3組（每組8次）\n● 腿推機寬腳位: 80 kg x3組（每組8次）\n",
+        "totalWeight": 3840,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1783680224222",
+      "title": "練臂",
+      "start": "2026-07-10",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": "3",
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 10 kg x3組（每組8次）\n● 啞鈴垂式彎舉: 10 kg x3組（每組8次）\n",
+        "totalWeight": 480,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1783683348251",
+      "title": "有氧",
+      "start": "2026-07-10",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 2.2 km\n● 坡度: 15%\n● 時間: 31 分 00 秒\n● 配速: 14'05\"\n● 消耗: 290 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1783597616349",
+      "title": "練肩",
+      "start": "2026-07-09",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 20 kg x3組（每組8次）\n● 啞鈴側平舉: 6.5 kg x3組（每組8次）\n● 啞鈴前平舉: 6.5 kg x3組（每組8次）\n",
+        "totalWeight": 792,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1783255347305",
+      "title": "練胸",
+      "start": "2026-07-05",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 25 kg x3組（每組8次）\n● 啞鈴上斜臥推: 17.5 kg x3組（每組8次）\n",
+        "totalWeight": 1020,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1783256686078",
+      "title": "練腹",
+      "start": "2026-07-05",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 25 reps x3\n● 仰臥捲腹: 25 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 150
+      }
+    },
+    {
+      "id": "id_1783164273324",
+      "title": "練腿",
+      "start": "2026-07-04",
+      "backgroundColor": "#008080",
+      "borderColor": "#008080",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 啞鈴硬舉: 50 kg x3組（每組8次）\n● 啞鈴分腿蹲: 20 kg x3組（每組8次）\n",
+        "totalWeight": 1680,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1783168747141",
+      "title": "練腹",
+      "start": "2026-07-04",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 滾輪捲腹: 30 reps x3\n● 單槓螺旋式（簡）: 20 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 150
+      }
+    },
+    {
+      "id": "id_1783085906112",
+      "title": "有氧",
+      "start": "2026-07-03",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 3.7 km\n● 坡度: 15%\n● 時間: 51 分 00 秒\n● 配速: 13'47\"\n● 消耗: 486 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1783085955356",
+      "title": "練臂",
+      "start": "2026-07-03",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": "3",
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 10 kg x3組（每組8次）\n● 啞鈴垂式彎舉: 10 kg x3組（每組8次）\n● 啞鈴頸後臂屈伸: 15 kg x3組（每組8次）\n",
+        "totalWeight": 840,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1782985866379",
+      "title": "練肩",
+      "start": "2026-07-02",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 20 kg x3組（每組8次）\n● 啞鈴正手划船: 20 kg x3組（每組8次）\n● 啞鈴側平舉: 7.5 kg x3組（每組8次）\n",
+        "totalWeight": 1140,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1782814585985",
+      "title": "練胸",
+      "start": "2026-06-30",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 25 kg x3組（每組8次）\n● 啞鈴上斜臥推: 15 kg x3組（每組8次）\n",
+        "totalWeight": 960,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1782818367439",
+      "title": "練腹",
+      "start": "2026-06-30",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 30 reps x3\n● 仰臥捲腹: 30 reps x3\n\n【備註】: 強力跨越負重5公斤啞鈴",
+        "totalWeight": 0,
+        "totalReps": 180
+      }
+    },
+    {
+      "id": "id_1782820148782",
+      "title": "有氧",
+      "start": "2026-06-30",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 3.6 km\n● 坡度: 15%\n● 時間: 50 分 00 秒\n● 配速: 13'53\"\n● 消耗: 474 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1782636269908",
+      "title": "練腿",
+      "start": "2026-06-28",
+      "backgroundColor": "#008080",
+      "borderColor": "#008080",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 啞鈴硬舉: 50 kg x3組（每組8次）\n● 啞鈴分腿蹲: 25 kg x3組（每組8次）\n",
+        "totalWeight": 1800,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1782638377477",
+      "title": "練腹",
+      "start": "2026-06-28",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 仰臥捲腹: 30 reps x3\n● 單槓螺旋式（簡）: 20 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 150
+      }
+    },
+    {
+      "id": "id_1782642379753",
+      "title": "有氧",
+      "start": "2026-06-28",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 3.7 km\n● 坡度: 15%\n● 時間: 51 分 00 秒\n● 配速: 13'47\"\n● 消耗: 486 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1782474572426",
+      "title": "練肩",
+      "start": "2026-06-26",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 20 kg x3組（每組8次）\n● 啞鈴正手划船: 20 kg x3組（每組8次）\n● 啞鈴側平舉: 7.5 kg x3組（每組8次）\n",
+        "totalWeight": 1140,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1782482140354",
+      "title": "有氧",
+      "start": "2026-06-26",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 3.6 km\n● 坡度: 15%\n● 時間: 50 分 00 秒\n● 配速: 13'53\"\n● 消耗: 474 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1782208412821",
+      "title": "練臂",
+      "start": "2026-06-23",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": "3",
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 10 kg x3組（每組8次）\n● 啞鈴垂式彎舉: 10 kg x3組（每組8次）\n● 啞鈴俯後臂屈伸: 10 kg x3組（每組8次）\n",
+        "totalWeight": 720,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1782210919191",
+      "title": "有氧",
+      "start": "2026-06-23",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 2.05 km\n● 坡度: 15%\n● 時間: 31 分 00 秒\n● 配速: 15'07\"\n● 消耗: 272 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1782119056837",
+      "title": "練胸",
+      "start": "2026-06-22",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 槓鈴臥推: 60 kg x3組（每組8次）\n● 槓鈴上斜臥推: 30 kg x3組（每組8次）\n",
+        "totalWeight": 2160,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1782121355261",
+      "title": "練腹",
+      "start": "2026-06-22",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 30 reps x3\n● 仰臥捲腹: 30 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 180
+      }
+    },
+    {
+      "id": "id_1781521686999",
+      "title": "有氧",
+      "start": "2026-06-15",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 3.15 km\n● 坡度: 15%\n● 時間: 47 分 00 秒\n● 配速: 14'55\"\n● 消耗: 418 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1781435593923",
+      "title": "練肩",
+      "start": "2026-06-14",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 20 kg x3組（每組8次）\n● 啞鈴正手划船: 20 kg x3組（每組8次）\n● 啞鈴側平舉: 7.5 kg x3組（每組8次）\n",
+        "totalWeight": 1140,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1781437809277",
+      "title": "有氧",
+      "start": "2026-06-14",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 2.65 km\n● 坡度: 15%\n● 時間: 40 分 00 秒\n● 配速: 15'06\"\n● 消耗: 352 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1781349023260",
+      "title": "練腿",
+      "start": "2026-06-13",
+      "backgroundColor": "#008080",
+      "borderColor": "#008080",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 啞鈴分腿蹲: 25 kg x3組（每組8次）\n● 腿推機高腳位: 80 kg x3組（每組8次）\n● 腿推機寬腳位: 80 kg x3組（每組8次）\n",
+        "totalWeight": 4440,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1781261565368",
+      "title": "練胸",
+      "start": "2026-06-12",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 25 kg x3組（每組8次）\n● 啞鈴上斜臥推: 20 kg x3組（每組8次）\n● 啞鈴窄推: 20 kg x3組（每組8次）\n",
+        "totalWeight": 1560,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1781270494049",
+      "title": "有氧",
+      "start": "2026-06-12",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 2.3 km\n● 坡度: 15%\n● 時間: 34 分 00 秒\n● 配速: 14'47\"\n● 消耗: 305 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1781090902206",
+      "title": "有氧",
+      "start": "2026-06-10",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 3.2 km\n● 坡度: 15%\n● 時間: 46 分 30 秒\n● 配速: 14'32\"\n● 消耗: 423 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1780915892639",
+      "title": "練腹",
+      "start": "2026-06-08",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 30 reps x3\n● 仰臥捲腹: 30 reps x3\n● 單槓螺旋式: 12 reps x3\n● 俯撐登山跑: 60 sec\n",
+        "totalWeight": 0,
+        "totalReps": 216
+      }
+    },
+    {
+      "id": "id_1780918691147",
+      "title": "有氧",
+      "start": "2026-06-08",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 2.1 km\n● 坡度: 15%\n● 時間: 32 分 00 秒\n● 配速: 15'14\"\n● 消耗: 279 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1780748287824",
+      "title": "有氧",
+      "start": "2026-06-06",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 3.8 km\n● 坡度: 15%\n● 時間: 54 分 00 秒\n● 配速: 14'13\"\n● 消耗: 501 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1780486106291",
+      "title": "練肩",
+      "start": "2026-06-03",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 20 kg x3組（每組8次）\n● 啞鈴正手划船: 20 kg x3組（每組8次）\n● 啞鈴側平舉: 6.5 kg x3組（每組8次）\n",
+        "totalWeight": 1116,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1780488027773",
+      "title": "有氧",
+      "start": "2026-06-03",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 2.2 km\n● 坡度: 15%\n● 時間: 34 分 00 秒\n● 配速: 15'27\"\n● 消耗: 284 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1780398222399",
+      "title": "練臂",
+      "start": "2026-06-02",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": "3",
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 10 kg x3組（每組8次）\n● 啞鈴垂式彎舉: 6 kg x3組（每組8次）\n● 啞鈴俯後臂屈伸: 9 kg x3組（每組8次）\n",
+        "totalWeight": 600,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1780401837502",
+      "title": "有氧",
+      "start": "2026-06-02",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 3.32 km\n● 坡度: 15%\n● 時間: 46 分 00 秒\n● 配速: 13'51\"\n● 消耗: 423 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1780310184730",
+      "title": "練胸",
+      "start": "2026-06-01",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 25 kg x3組（每組8次）\n● 啞鈴上斜臥推: 15 kg x3組（每組8次）\n● 啞鈴飛鳥: 10 kg x3組（每組8次）\n",
+        "totalWeight": 1200,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1780312614749",
+      "title": "有氧",
+      "start": "2026-06-01",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 2.2 km\n● 坡度: 15%\n● 時間: 32 分 00 秒\n● 配速: 14'33\"\n● 消耗: 282 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1780396082165",
+      "title": "練腿",
+      "start": "2026-05-28",
+      "backgroundColor": "#008080",
+      "borderColor": "#008080",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 分腿蹲: 45 kg x3組（每組8次）\n● 啞鈴硬舉: 90 kg x3組（每組8次）\n",
+        "totalWeight": 3240,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1779702408534",
+      "title": "練腹",
+      "start": "2026-05-25",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 30 reps x3\n● 仰臥捲腹: 30 reps x3\n● 單槓螺旋式: 12 reps x3\n● 俯撐登山跑: 60 秒\n",
+        "totalWeight": 0,
+        "totalReps": 216
+      }
+    },
+    {
+      "id": "id_1779622013322",
+      "title": "練肩",
+      "start": "2026-05-24",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 20 kg x3組（每組8次）\n● 啞鈴正手划船: 20 kg x3組（每組8次）\n● 啞鈴側平舉: 7.5 kg x3組（每組8次）\n",
+        "totalWeight": 1140,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1779624881695",
+      "title": "有氧",
+      "start": "2026-05-24",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 3.27 km\n● 坡度: 15%\n● 時間: 45 分 00 秒\n● 配速: 13'46\"\n● 消耗: 417 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1779533137256",
+      "title": "練臂",
+      "start": "2026-05-23",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": "3",
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 10 kg x3組（每組8次）\n● 啞鈴垂式彎舉: 10 kg x3組（每組8次）\n● 啞鈴俯後臂屈伸: 10 kg x3組（每組8次）\n● 啞鈴頸後臂屈伸: 20 kg x3組（每組8次）\n",
+        "totalWeight": 1200,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1779372088580",
+      "title": "練腿",
+      "start": "2026-05-21",
+      "backgroundColor": "#008080",
+      "borderColor": "#008080",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 啞鈴深蹲: 70 kg x3組（每組8次）\n● 分腿蹲: 36 kg x3組（每組8次）\n",
+        "totalWeight": 2544,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1779110079869",
+      "title": "練胸",
+      "start": "2026-05-18",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 30 kg x3組（每組8次）\n● 啞鈴下斜臥推: 20 kg x3組（每組8次）\n",
+        "totalWeight": 1200,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1778576435551",
+      "title": "練腹",
+      "start": "2026-05-12",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 30 reps x3\n● 仰臥捲腹: 30 reps x3\n● 單槓螺旋式: 20 reps x3\n● 俯撐登山跑: 60 秒\n",
+        "totalWeight": 0,
+        "totalReps": 240
+      }
+    },
+    {
+      "id": "id_1778328017802",
+      "title": "練臂",
+      "start": "2026-05-09",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": "3",
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 7 kg x3組（每組8次）\n● 啞鈴垂式彎舉: 7 kg x3組（每組8次）\n",
+        "totalWeight": 336,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1778576956797",
+      "title": "練腿",
+      "start": "2026-05-09",
+      "backgroundColor": "#008080",
+      "borderColor": "#008080",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 啞鈴深蹲: 50 kg x3組（每組8次）\n",
+        "totalWeight": 1200,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1778577095418",
+      "title": "有氧",
+      "start": "2026-05-08",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 4 km\n● 坡度: 15%\n● 時間: 45 分 00 秒\n● 配速: 11'15\"\n● 消耗: 499 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1778146604812",
+      "title": "練肩",
+      "start": "2026-05-07",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 20 kg x3組（每組8次）\n● 啞鈴正手划船: 20 kg x3組（每組8次）\n",
+        "totalWeight": 960,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1778149317506",
+      "title": "練胸",
+      "start": "2026-05-07",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 25 kg x3組（每組8次）\n",
+        "totalWeight": 600,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1776956621576",
+      "title": "練腹",
+      "start": "2026-04-23",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 96
+      }
+    },
+    {
+      "id": "id_1776516139890",
+      "title": "有氧",
+      "start": "2026-04-18",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 10 km\n● 時間: 1 時 10 分 11 秒\n● 配速: 7'01\"\n● 消耗: 621 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1776376282377",
+      "title": "練腹",
+      "start": "2026-04-16",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 96
+      }
+    },
+    {
+      "id": "id_1776073450833",
+      "title": "練腹",
+      "start": "2026-04-13",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 20 reps x3\n● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 156
+      }
+    },
+    {
+      "id": "id_1775900619361",
+      "title": "練肩",
+      "start": "2026-04-11",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 20 kg x3組（每組8次）\n● 啞鈴正手划船: 20 kg x3組（每組8次）\n● 啞鈴側平舉: 7.5 kg x3組（每組8次）\n● 啞鈴前平舉: 7.5 kg x3組（每組8次）\n",
+        "totalWeight": 1320,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1775911595684",
+      "title": "有氧",
+      "start": "2026-04-11",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "6",
+      "extendedProps": {
+        "note": "● 距離: 6 km\n● 時間: 62 分 00 秒\n● 配速: 10'20\"\n● 消耗: 397 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1775645308178",
+      "title": "練臂",
+      "start": "2026-04-08",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": "3",
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 7 kg x3組（每組8次）\n● 啞鈴垂式彎舉: 7 kg x3組（每組8次）\n● 啞鈴頸後臂屈伸: 14 kg x3組（每組8次）\n",
+        "totalWeight": 672,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1775647911850",
+      "title": "HIIT",
+      "start": "2026-04-08",
+      "backgroundColor": "#5856D6",
+      "borderColor": "#5856D6",
+      "order": "7",
+      "extendedProps": {
+        "note": "● 時間: 20 分 0 秒\n● 消耗: 213 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1775568117539",
+      "title": "練腹",
+      "start": "2026-04-07",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 30 reps x3\n● 仰臥捲腹: 30 reps x3\n● 單槓螺旋式: 15 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 225
+      }
+    },
+    {
+      "id": "id_1775043969005",
+      "title": "練腹",
+      "start": "2026-04-01",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 20 reps x3\n● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n● 俯撐登山跑: 60 秒\n",
+        "totalWeight": 0,
+        "totalReps": 156
+      }
+    },
+    {
+      "id": "id_1774873535369",
+      "title": "練胸",
+      "start": "2026-03-30",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 23.5 kg x3組（每組8次）\n● 啞鈴下斜臥推: 21 kg x3組（每組8次）\n● 啞鈴窄推: 21 kg x3組（每組8次）\n",
+        "totalWeight": 1572,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1774721684447",
+      "title": "有氧",
+      "start": "2026-03-28",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 距離: 10.39 km\n● 時間: 1 時 24 分 53 秒\n● 配速: 8'10\"\n● 消耗: 752 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1774441050154",
+      "title": "練臂",
+      "start": "2026-03-25",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": "3",
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 10 kg x3組（每組8次）\n● 啞鈴垂式彎舉: 10 kg x3組（每組8次）\n",
+        "totalWeight": 480,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1774441057881",
+      "title": "練肩",
+      "start": "2026-03-25",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴側平舉: 7 kg x3組（每組8次）\n● 啞鈴前平舉: 7 kg x3組（每組8次）\n",
+        "totalWeight": 336,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1774351198666",
+      "title": "練腹",
+      "start": "2026-03-24",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 20 reps x3\n● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n● 俯撐登山跑: 60 秒\n",
+        "totalWeight": 0,
+        "totalReps": 156
+      }
+    },
+    {
+      "id": "id_1774102126111",
+      "title": "有氧",
+      "start": "2026-03-21",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 距離: 10.38 km\n● 時間: 1 時 06 分 31 秒\n● 配速: 6'24\"\n● 消耗: 695 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1773826163749",
+      "title": "練肩",
+      "start": "2026-03-18",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 21 kg x3組（每組8次）\n● 啞鈴正手划船: 21 kg x3組（每組8次）\n● 啞鈴側平舉: 7 kg x3組（每組8次）\n",
+        "totalWeight": 1176,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1773745468054",
+      "title": "練胸",
+      "start": "2026-03-17",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 26.5 kg x3組（每組8次）\n● 啞鈴下斜臥推: 21 kg x3組（每組8次）\n● 啞鈴窄推: 21 kg x3組（每組8次）\n",
+        "totalWeight": 1644,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1773300470367",
+      "title": "練臂",
+      "start": "2026-03-12",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": "3",
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 10 kg x3組（每組8次）\n● 啞鈴垂式彎舉: 10 kg x3組（每組8次）\n● 啞鈴頸後臂屈伸: 17 kg x3組（每組8次）\n",
+        "totalWeight": 888,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1773303814244",
+      "title": "練腹",
+      "start": "2026-03-12",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 96
+      }
+    },
+    {
+      "id": "id_1773224271841",
+      "title": "有氧",
+      "start": "2026-03-11",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 距離: 2 km\n● 時間: 12 分 00 秒\n● 配速: 6'00\"\n● 消耗: 125 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1773227712297",
+      "title": "練胸",
+      "start": "2026-03-11",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 21 kg x3組（每組8次）\n● 啞鈴下斜臥推: 21 kg x3組（每組8次）\n● 啞鈴窄推: 21 kg x3組（每組8次）\n● 啞鈴飛鳥: 11 kg x3組（每組8次）\n",
+        "totalWeight": 1776,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1773056077496",
+      "title": "練肩",
+      "start": "2026-03-09",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 21 kg x3組（每組8次）\n● 啞鈴正手划船: 21 kg x3組（每組8次）\n● 啞鈴側平舉: 7 kg x3組（每組8次）\n● 啞鈴前平舉: 7 kg x3組（每組8次）\n",
+        "totalWeight": 1344,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1772909645714",
+      "title": "練腹",
+      "start": "2026-03-07",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 20 reps x3\n● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 156
+      }
+    },
+    {
+      "id": "id_1772539683811",
+      "title": "練胸",
+      "start": "2026-03-03",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 19 kg x3組（每組8次）\n",
+        "totalWeight": 456,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1772539694294",
+      "title": "練腹",
+      "start": "2026-03-03",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 20 reps x3\n● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 156
+      }
+    },
+    {
+      "id": "id_1772539777871",
+      "title": "有氧",
+      "start": "2026-03-02",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 距離: 4.5 km\n● 時間: 25 分 43 秒\n● 配速: 5'43\"\n● 消耗: 269 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1772278639131",
+      "title": "練臂",
+      "start": "2026-02-28",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": "3",
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 10 kg x3組（每組8次）\n● 啞鈴垂式彎舉: 10 kg x3組（每組8次）\n● 啞鈴頸後臂屈伸: 17.5 kg x3組（每組8次）\n",
+        "totalWeight": 900,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1772197091134",
+      "title": "練肩",
+      "start": "2026-02-27",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 17.5 kg x3組（每組8次）\n● 啞鈴正手划船: 17.5 kg x3組（每組8次）\n● 啞鈴側平舉: 7.5 kg x3組（每組8次）\n● 啞鈴前平舉: 7.5 kg x3組（每組8次）\n",
+        "totalWeight": 1200,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1771751068228",
+      "title": "練胸",
+      "start": "2026-02-21",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 15 kg x3組（每組8次）\n● 啞鈴下斜臥推: 15 kg x3組（每組8次）\n",
+        "totalWeight": 720,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1771164685816",
+      "title": "練腹",
+      "start": "2026-02-15",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 20 reps x3\n● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 156
+      }
+    },
+    {
+      "id": "id_1770210389107",
+      "title": "練胸",
+      "start": "2026-02-04",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 25 kg x3組（每組8次）\n● 啞鈴下斜臥推: 22 kg x3組（每組8次）\n● 啞鈴窄推: 17 kg x3組（每組8次）\n● 啞鈴飛鳥: 12 kg x3組（每組8次）\n",
+        "totalWeight": 1824,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1770116196760",
+      "title": "練腹",
+      "start": "2026-02-03",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 20 reps x3\n● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n● 俯撐登山跑: 60 秒\n",
+        "totalWeight": 0,
+        "totalReps": 156
+      }
+    },
+    {
+      "id": "id_1770116188970",
+      "title": "練臂",
+      "start": "2026-02-02",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": "3",
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 10 kg x3組（每組8次）\n● 啞鈴垂式彎舉: 10 kg x3組（每組8次）\n● 啞鈴俯後臂屈伸: 10 kg x3組（每組8次）\n● 啞鈴頸後臂屈伸: 16 kg x3組（每組8次）\n",
+        "totalWeight": 1104,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1769956050776",
+      "title": "練腹",
+      "start": "2026-02-01",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 20 reps x3\n● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 156
+      }
+    },
+    {
+      "id": "id_1769510933652",
+      "title": "練肩",
+      "start": "2026-01-27",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 18 kg x3組（每組8次）\n● 啞鈴正手划船: 18 kg x3組（每組8次）\n● 啞鈴側平舉: 8 kg x3組（每組8次）\n● 啞鈴前平舉: 8 kg x3組（每組8次）\n",
+        "totalWeight": 1248,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1769190081493",
+      "title": "練腹",
+      "start": "2026-01-24",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 20 reps x3\n● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 156
+      }
+    },
+    {
+      "id": "id_1769009948946",
+      "title": "練腹",
+      "start": "2026-01-21",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 20 reps x3\n● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 156
+      }
+    },
+    {
+      "id": "id_1768821269807",
+      "title": "練胸",
+      "start": "2026-01-19",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 22 kg x3組（每組8次）\n● 啞鈴下斜臥推: 22 kg x3組（每組8次）\n● 啞鈴窄推: 22 kg x3組（每組8次）\n● 啞鈴飛鳥: 15 kg x3組（每組8次）\n",
+        "totalWeight": 1944,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1768391197538",
+      "title": "練腹",
+      "start": "2026-01-14",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 20 reps x3\n● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n● 俯撐登山跑: 60 秒\n",
+        "totalWeight": 0,
+        "totalReps": 156
+      }
+    },
+    {
+      "id": "id_1768043655210",
+      "title": "練臂",
+      "start": "2026-01-10",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": "3",
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 10 kg x3組（每組8次）\n● 啞鈴垂式彎舉: 10 kg x3組（每組8次）\n● 啞鈴俯後臂屈伸: 10 kg x3組（每組8次）\n",
+        "totalWeight": 720,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1768043667778",
+      "title": "練腹",
+      "start": "2026-01-10",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 10 reps x3\n● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 126
+      }
+    },
+    {
+      "id": "id_1768044114392",
+      "title": "有氧",
+      "start": "2026-01-10",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 距離: 4 km\n● 時間: 29 分 00 秒\n● 配速: 7'15\"\n● 消耗: 261 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1767791314596",
+      "title": "有氧",
+      "start": "2026-01-07",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "5",
+      "extendedProps": {
+        "note": "● 距離: 2.25 km\n● 時間: 12 分 00 秒\n● 配速: 5'20\"\n● 消耗: 150 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1767695807573",
+      "title": "練腹",
+      "start": "2026-01-06",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 20 reps x3\n● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n● 俯撐登山跑: 60 秒\n",
+        "totalWeight": 0,
+        "totalReps": 156
+      }
+    },
+    {
+      "id": "id_1767622074199",
+      "title": "練腹",
+      "start": "2026-01-05",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 強力跨越: 20 reps x3\n● 仰臥捲腹: 20 reps x3\n● 單槓螺旋式: 12 reps x3\n",
+        "totalWeight": 0,
+        "totalReps": 156
+      }
+    },
+    {
+      "id": "id_1767443205635",
+      "title": "練肩",
+      "start": "2026-01-03",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 18 kg x3組（每組8次）\n● 啞鈴正手划船: 18 kg x3組（每組8次）\n● 啞鈴側平舉: 8 kg x3組（每組8次）\n● 啞鈴前平舉: 8 kg x3組（每組8次）\n",
+        "totalWeight": 1248,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1767201541988",
+      "title": "有氧",
+      "start": "2025-12-31",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 距離: 3 km\n● 時間: 33 分 00 秒\n● 配速: 11'00\"\n● 消耗: 215 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1767201491414",
+      "title": "練胸",
+      "start": "2025-12-30",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 20 kg x3組（每組8次）\n● 啞鈴下斜臥推: 20 kg x3組（每組8次）\n● 啞鈴窄推: 20 kg x3組（每組8次）\n● 啞鈴飛鳥: 14 kg x3組（每組8次）\n",
+        "totalWeight": 1776,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1767201524794",
+      "title": "練臂",
+      "start": "2025-12-29",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": "3",
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 8 kg x3組（每組8次）\n● 啞鈴垂式彎舉: 8 kg x3組（每組8次）\n● 啞鈴俯後臂屈伸: 10 kg x3組（每組8次）\n● 啞鈴頸後臂屈伸: 14 kg x3組（每組8次）\n",
+        "totalWeight": 960,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1767201513801",
+      "title": "練肩",
+      "start": "2025-12-27",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 18 kg x3組（每組8次）\n● 啞鈴正手划船: 16 kg x3組（每組8次）\n● 啞鈴側平舉: 8 kg x3組（每組8次）\n● 啞鈴前平舉: 8 kg x3組（每組8次）\n",
+        "totalWeight": 1200,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1767204747019",
+      "title": "有氧",
+      "start": "2025-12-25",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 距離: 4.39 km\n● 時間: 29 分 07 秒\n● 配速: 6'38\"\n● 消耗: 309 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1767201499213",
+      "title": "練胸",
+      "start": "2025-12-23",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": "1",
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 20 kg x3組（每組8次）\n● 啞鈴下斜臥推: 20 kg x3組（每組8次）\n● 啞鈴窄推: 20 kg x3組（每組8次）\n● 啞鈴飛鳥: 14 kg x3組（每組8次）\n",
+        "totalWeight": 1776,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1767201509260",
+      "title": "練肩",
+      "start": "2025-12-22",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": "2",
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 18 kg x3組（每組8次）\n● 啞鈴正手划船: 16 kg x3組（每組8次）\n● 啞鈴側平舉: 8 kg x3組（每組8次）\n● 啞鈴前平舉: 8 kg x3組（每組8次）\n",
+        "totalWeight": 1200,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1767204794288",
+      "title": "有氧",
+      "start": "2025-12-20",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": "4",
+      "extendedProps": {
+        "note": "● 距離: 5.36 km\n● 時間: 34 分 08 秒\n● 配速: 6'22\"\n● 消耗: 362 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1785671064214",
+      "title": "練腿",
+      "start": "2026-08-02",
+      "backgroundColor": "#008080",
+      "borderColor": "#008080",
+      "order": 5,
+      "extendedProps": {
+        "note": "● 啞鈴硬舉: 40 kg x3組（每組8次）\n● 啞鈴分腿蹲: 20 kg x3組（每組8次）\n",
+        "totalWeight": 1440,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1785671068049",
+      "title": "練臂",
+      "start": "2026-08-02",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": 3,
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 10 kg x3組（每組8次）\n● 啞鈴俯後臂屈伸: 10 kg x3組（每組8次）\n",
+        "totalWeight": 480,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1785760174066",
+      "title": "練肩",
+      "start": "2026-08-03",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": 2,
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 22.5 kg x3組（每組8次）\n● 啞鈴正手划船: 22.5 kg x3組（每組8次）\n",
+        "totalWeight": 1080,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1785762816588",
+      "title": "練腹",
+      "start": "2026-08-03",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": 4,
+      "extendedProps": {
+        "note": "● 滾輪捲腹: 25 下 x3\n● 單槓螺旋式（簡）: 25 下 x3\n",
+        "totalWeight": 0,
+        "totalReps": 150
+      }
+    },
+    {
+      "id": "id_1785836372241",
+      "title": "練胸",
+      "start": "2026-08-04",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": 1,
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 25 kg x3組（每組8次）\n● 啞鈴上斜臥推: 17.5 kg x3組（每組8次）\n",
+        "totalWeight": 1020,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1785838823984",
+      "title": "練腹",
+      "start": "2026-08-04",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": 4,
+      "extendedProps": {
+        "note": "● 強力跨越: 30 下 x3\n● 仰臥捲腹: 30 下 x3\n\n【備註】: 強力跨越負重5公斤啞鈴",
+        "totalWeight": 0,
+        "totalReps": 180
+      }
+    },
+    {
+      "id": "id_1785841965285",
+      "title": "有氧",
+      "start": "2026-08-04",
+      "backgroundColor": "#5AC8FA",
+      "borderColor": "#5AC8FA",
+      "order": 6,
+      "extendedProps": {
+        "note": "● 距離: 2.5 km\n● 坡度: 15%\n● 時間: 35 分 00 秒\n● 配速: 14'00\"\n● 消耗: 329 kcal\n",
+        "totalWeight": 0,
+        "totalReps": 0
+      }
+    },
+    {
+      "id": "id_1785931774144",
+      "title": "練腹",
+      "start": "2026-08-05",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": 4,
+      "extendedProps": {
+        "note": "● 滾輪捲腹: 30 下 x3\n● 側身抬腹: 20 下 x4\n",
+        "totalWeight": 0,
+        "totalReps": 170
+      }
+    },
+    {
+      "id": "id_1786013544880",
+      "title": "練腿",
+      "start": "2026-08-06",
+      "backgroundColor": "#008080",
+      "borderColor": "#008080",
+      "order": 5,
+      "extendedProps": {
+        "note": "● 啞鈴硬舉: 30 kg x3組（每組8次）\n● 啞鈴分腿蹲: 15 kg x4組（每組8次）\n",
+        "totalWeight": 1200,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1786014737493",
+      "title": "練胸",
+      "start": "2026-08-06",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": 1,
+      "extendedProps": {
+        "note": "● 伏地挺身: 25 下 x6\n● 鑽石伏地挺身: 25 下 x4\n",
+        "totalWeight": 0,
+        "totalReps": 250
+      }
+    },
+    {
+      "id": "id_1786183698654",
+      "title": "練臂",
+      "start": "2026-08-08",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": 3,
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 10 kg x3組（每組8次）\n● 啞鈴俯後臂屈伸: 10 kg x3組（每組8次）\n",
+        "totalWeight": 480,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1786183717402",
+      "title": "練肩",
+      "start": "2026-08-08",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": 2,
+      "extendedProps": {
+        "note": "● 啞鈴側平舉: 10 kg x3組（每組8次）\n",
+        "totalWeight": 240,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1786266621277",
+      "title": "練腹",
+      "start": "2026-08-09",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": 4,
+      "extendedProps": {
+        "note": "● 仰臥捲腹: 30 下 x3\n● 側身抬腹: 20 下 x3\n● 平板撐轉體: 40 下 x3\n",
+        "totalWeight": 0,
+        "totalReps": 270
+      }
+    },
+    {
+      "id": "id_1786270068748",
+      "title": "練胸",
+      "start": "2026-08-09",
+      "backgroundColor": "#FF3B30",
+      "borderColor": "#FF3B30",
+      "order": 1,
+      "extendedProps": {
+        "note": "● 啞鈴臥推: 30 kg x3組（每組8次）\n● 伏地挺身: 30 下 x3\n",
+        "totalWeight": 720,
+        "totalReps": 90,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1786444744655",
+      "title": "練肩",
+      "start": "2026-08-11",
+      "backgroundColor": "#FF9500",
+      "borderColor": "#FF9500",
+      "order": 2,
+      "extendedProps": {
+        "note": "● 啞鈴肩推: 15 kg x3組（每組8次）\n● 啞鈴正手划船: 15 kg x3組（每組8次）\n",
+        "totalWeight": 720,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1786447401738",
+      "title": "練腹",
+      "start": "2026-08-11",
+      "backgroundColor": "#AF52DE",
+      "borderColor": "#AF52DE",
+      "order": 4,
+      "extendedProps": {
+        "note": "● 強力跨越: 30 下 x3\n● 滾輪捲腹: 30 下 x3\n",
+        "totalWeight": 0,
+        "totalReps": 180
+      }
+    },
+    {
+      "id": "id_1786620644538",
+      "title": "練腿",
+      "start": "2026-08-13",
+      "backgroundColor": "#008080",
+      "borderColor": "#008080",
+      "order": 5,
+      "extendedProps": {
+        "note": "● 啞鈴硬舉: 30 kg x3組（每組8次）\n● 啞鈴分腿蹲: 15 kg x4組（每組8次）\n",
+        "totalWeight": 1200,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    },
+    {
+      "id": "id_1786620660595",
+      "title": "練臂",
+      "start": "2026-08-13",
+      "backgroundColor": "#4CD964",
+      "borderColor": "#4CD964",
+      "order": 3,
+      "extendedProps": {
+        "note": "● 啞鈴彎舉: 9 kg x3組（每組8次）\n● 啞鈴俯後臂屈伸: 9 kg x3組（每組8次）\n",
+        "totalWeight": 432,
+        "totalReps": 0,
+        "repsPerSet": 8
+      }
+    }
+  ],
+  "custom_exercises": {
+    "chest": [
+      {
+        "id": "chest_1",
+        "name": "啞鈴臥推",
+        "unit": "kg",
+        "sets": "3"
+      },
+      {
+        "id": "chest_2",
+        "name": "啞鈴上斜臥推",
+        "unit": "kg",
+        "sets": "3"
+      },
+      {
+        "id": "chest_3",
+        "name": "啞鈴窄推",
+        "unit": "kg",
+        "sets": "3"
+      },
+      {
+        "id": "chest_4",
+        "name": "啞鈴飛鳥",
+        "unit": "kg",
+        "sets": "3"
+      },
+      {
+        "id": "chest_custom_1786013426715",
+        "name": "伏地挺身",
+        "unit": "reps",
+        "sets": "3"
+      },
+      {
+        "id": "chest_custom_1786013496786",
+        "name": "鑽石伏地挺身",
+        "unit": "reps",
+        "sets": "4"
+      }
+    ],
+    "shoulder": [
+      {
+        "id": "sh_1",
+        "name": "啞鈴肩推",
+        "unit": "kg",
+        "sets": "3"
+      },
+      {
+        "id": "sh_2",
+        "name": "啞鈴正手划船",
+        "unit": "kg",
+        "sets": "3"
+      },
+      {
+        "id": "sh_3",
+        "name": "啞鈴側平舉",
+        "unit": "kg",
+        "sets": "3"
+      },
+      {
+        "id": "sh_4",
+        "name": "啞鈴前平舉",
+        "unit": "kg",
+        "sets": "3"
+      },
+      {
+        "id": "shoulder_custom_1784718110905",
+        "name": "啞鈴俯身飛鳥",
+        "unit": "kg",
+        "sets": "3"
+      }
+    ],
+    "arm": [
+      {
+        "id": "arm_1",
+        "name": "啞鈴彎舉",
+        "unit": "kg"
+      },
+      {
+        "id": "arm_2",
+        "name": "啞鈴垂式彎舉",
+        "unit": "kg"
+      },
+      {
+        "id": "arm_3",
+        "name": "啞鈴俯後臂屈伸",
+        "unit": "kg"
+      },
+      {
+        "id": "arm_4",
+        "name": "啞鈴頸後臂屈伸",
+        "unit": "kg"
+      }
+    ],
+    "abs": [
+      {
+        "id": "abs_1",
+        "name": "強力跨越",
+        "unit": "reps",
+        "sets": "3"
+      },
+      {
+        "id": "abs_custom_1784719265273",
+        "name": "滾輪捲腹",
+        "unit": "reps",
+        "sets": "3"
+      },
+      {
+        "id": "abs_3",
+        "name": "仰臥捲腹",
+        "unit": "reps",
+        "sets": "3"
+      },
+      {
+        "id": "abs_2",
+        "name": "側身抬腹",
+        "unit": "reps",
+        "sets": "3"
+      },
+      {
+        "id": "abs_custom_1784373175679",
+        "name": "單槓螺旋式（簡）",
+        "unit": "reps",
+        "sets": "3"
+      },
+      {
+        "id": "abs_4",
+        "name": "單槓螺旋式",
+        "unit": "reps",
+        "sets": "3"
+      },
+      {
+        "id": "abs_custom_1783256651909",
+        "name": "俯臥登山跑",
+        "unit": "sec",
+        "sets": "3"
+      },
+      {
+        "id": "abs_custom_1786262066040",
+        "name": "平板撐轉體",
+        "unit": "reps",
+        "sets": "3"
+      }
+    ],
+    "leg-strength": [
+      {
+        "id": "leg-strength_custom_1784631656054",
+        "name": "槓鈴硬舉",
+        "unit": "kg",
+        "sets": "3"
+      },
+      {
+        "id": "leg_str_1",
+        "name": "啞鈴硬舉",
+        "unit": "kg",
+        "sets": "3"
+      },
+      {
+        "id": "leg-strength_custom_1784635328736",
+        "name": "沙包分腿蹲",
+        "unit": "kg",
+        "sets": "3"
+      },
+      {
+        "id": "leg_str_2",
+        "name": "啞鈴分腿蹲",
+        "unit": "kg",
+        "sets": "4"
+      },
+      {
+        "id": "leg_str_3",
+        "name": "腿推機高腳位",
+        "unit": "kg",
+        "sets": "3"
+      },
+      {
+        "id": "leg-strength_custom_1781349598804",
+        "name": "腿推機寬腳位",
+        "unit": "kg",
+        "sets": "3"
+      }
+    ]
+  },
+  "current_weights": {
+    "leg_1": "0",
+    "leg_incline": "0",
+    "leg_hr": "0",
+    "leg_min": "0",
+    "leg_sec": "0",
+    "hiit_weight_min": "0",
+    "hiit_weight_sec": "0",
+    "body_weight": "66",
+    "hiit_weight": "66",
+    "chest_1": "30",
+    "chest_2": "0",
+    "chest_3": "0",
+    "sh_1": "15",
+    "sh_2": "15",
+    "sh_3": "0",
+    "arm_1": "9",
+    "arm_2": "0",
+    "arm_3": "9",
+    "arm_4": "0",
+    "sh_4": "0",
+    "chest_4": "0",
+    "abs_1": "30",
+    "abs_2": "0",
+    "abs_3": "0",
+    "abs_4": "0",
+    "leg_str_2": "15",
+    "leg_str_3": "0",
+    "leg-strength_custom_1781349598804": "0",
+    "chest_custom_1782119693047": "0",
+    "leg_str_1": "30",
+    "abs_custom_1783256651909": "0",
+    "chest_custom_1783400335398": "0",
+    "abs_custom_1784372819451": "20",
+    "abs_custom_1784373175679": "0",
+    "leg-strength_custom_1784631656054": "0",
+    "leg-strength_custom_1784635328736": "0",
+    "shoulder_custom_1784718110905": "0",
+    "abs_custom_1784719265273": "30",
+    "chest_custom_1786013426715": "30",
+    "chest_custom_1786013496786": "0",
+    "abs_custom_1786262066040": "0"
+  },
+  "cfg_rest_min": "2",
+  "cfg_switch_min": "4",
+  "cfg_sound_enable": "false",
+  "cfg_flash_enable": "true",
+  "cfg_dark_enable": "true",
+  "cfg_dark_auto": "false",
+  "cfg_wake_enable": "true"
+}
