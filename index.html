@@ -338,6 +338,10 @@
         .gym-account-email { margin-top: 6px; color: #716b75; font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .gym-account-login { min-height: 84px; border-radius: 16px; background: rgba(0,122,255,.08); }
         .gym-account-action { border: 0; border-radius: 10px; padding: 10px 12px; font-weight: 700; cursor: pointer; }
+        .gym-backup-card { min-height:110px; padding:16px; border:1px solid #d1d5db; border-radius:16px; background:#fff; color:#1c1c1e; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; text-align:left; cursor:pointer; }
+        .gym-backup-icon { display:block; font-size:1.35rem; font-weight:800; margin-bottom:10px; }
+        .gym-backup-card strong { display:block; font-size:.9rem; }
+        .gym-backup-card small { display:block; margin-top:5px; color:#8E8E93; font-size:.75rem; }
         #gym-account-modal { display: none; position: fixed; inset: 0; z-index: 12000; align-items: center; justify-content: center; padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom)); background: rgba(0,0,0,.72); backdrop-filter: blur(12px); box-sizing: border-box; }
         #gym-account-modal.active { display: flex; }
         .gym-account-modal-card { width: 100%; max-width: 380px; padding: 24px; border-radius: 24px; background: #fff; box-shadow: 0 24px 70px rgba(0,0,0,.28); box-sizing: border-box; }
@@ -349,6 +353,7 @@
         body.dark-mode .gym-account-avatar { background: #3a3840; color: #cbd5e1; }
         body.dark-mode .gym-account-name { color: #fff; }
         body.dark-mode .gym-account-email { color: #b8b4bf; }
+        body.dark-mode .gym-backup-card { background:#1C1C1E; border-color:#3A3A3C; color:#fff; }
 
             /* ==========================================================================
            8. FullCalendar 套件與外觀微調 (Calendar Tweaks)
@@ -898,16 +903,12 @@
     <div class="card" id="card-settings">
         <div class="card-header"><h3 style="color:var(--primary); margin:0;">系統設定</h3></div>
         <div style="display:flex; flex-direction:column; gap:15px; margin-top:10px;">
-            <form autocomplete="on" onsubmit="event.preventDefault()" style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
+            <section>
+                <h4 style="margin:0 0 10px;color:#8E8E93;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;">帳戶</h4>
                 <div id="gym-account-profile"></div>
                 <input type="email" id="sync-user-id" name="username" style="display:none" autocomplete="email">
                 <input type="password" id="sync-backup-password" name="current-password" style="display:none" autocomplete="current-password">
-                <div style="display:flex; gap:10px; justify-content:space-between; align-items:center; flex-wrap:nowrap; margin-top:14px;">
-                    <button class="btn-record import-export-btn" style="background:#5856D6; flex:0 0 48%; min-width:140px; padding:10px; font-size:14px; margin-top:0;" onclick="showImportChoiceModal()">匯入紀錄</button>
-                    <button class="btn-record import-export-btn" style="background:#007AFF; flex:0 0 48%; min-width:140px; padding:10px; font-size:14px; margin-top:0;" onclick="showExportChoiceModal()">匯出紀錄</button>
-                </div>
-                <p id="sync-user-message" style="font-size:0.82rem; color:#666; margin:8px 0 0; text-align:center;">忘記密碼無法還原雲端備份。</p>
-            </form>
+            </section>
             <div style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
                 <h4 style="margin:0 0 10px 0; color:#333;">自定義計時器 (分鐘)</h4>
                 <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;"><span style="font-size:0.9rem; flex:1; text-align:right;">組間間隔：</span><input type="number" inputmode="decimal" id="cfg-rest-min" class="weight-input" style="width:40px;" onfocus="this.dataset.oldVal=this.value; this.value='';" onblur="if(this.value===''){this.value=this.dataset.oldVal;}" placeholder="2"><span class="unit-text">分</span></div>
@@ -925,9 +926,16 @@
     <input type="checkbox" id="cfg-dark-auto" onchange="toggleAutoDarkTheme()">
 </label></div>
             </div>
-            <input type="file" id="import-file-local" accept=".json" style="display:none" onchange="importHistoryLocal(event)">
             <button type="button" class="btn-record" style="background:#E5F0FF;color:#007AFF;margin-top:0;" onclick="startTour()">重新觀看功能導覽</button>
-            <p style="font-size: 0.85rem; color: #666; text-align: center;">建議定期匯出備份，避免數據遺失。</p>
+            <section style="margin-top:4px;">
+                <h4 style="margin:0 0 10px;color:#8E8E93;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;">資料備份</h4>
+                <input type="file" id="import-file-local" accept=".json" style="display:none" onchange="importHistoryLocal(event)">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <button type="button" class="gym-backup-card" onclick="showExportChoiceModal()"><span class="gym-backup-icon" style="color:#007AFF;">↥</span><strong>匯出資料</strong><small>選擇位置</small></button>
+                    <button type="button" class="gym-backup-card" onclick="showImportChoiceModal()"><span class="gym-backup-icon" style="color:#34C759;">↧</span><strong>匯入資料</strong><small>選擇來源</small></button>
+                </div>
+                <p id="sync-user-message" style="font-size:.78rem;color:#8E8E93;margin:10px 0 0;text-align:center;">忘記密碼無法還原雲端備份。</p>
+            </section>
         </div>
     </div>
 
@@ -1438,7 +1446,7 @@ function renderGymAccountProfile(forceEditor = false) {
     const email = escapeHTML(localStorage.getItem('sync_user_id') || '');
     const profile = getGymAccountProfile();
     const name = escapeHTML(profile.name || (email.split('@')[0] || '健身帳戶'));
-    const avatar = profile.avatar ? `<img src="${profile.avatar}" alt="帳戶頭像" class="gym-account-avatar">` : `<span class="gym-account-avatar">${name.slice(0, 1).toUpperCase()}</span>`;
+    const avatar = profile.avatar ? `<img src="${profile.avatar}" alt="帳戶頭像" class="gym-account-avatar">` : `<span class="gym-account-avatar"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>`;
     if (!forceEditor && !gymAccountEditing) {
         target.innerHTML = `<button type="button" class="gym-account-card" onclick="openGymAccountEditor()" style="width:100%;display:flex;align-items:center;gap:16px;text-align:left;color:inherit;cursor:pointer;" aria-label="修改帳戶資料">${avatar}<span style="min-width:0;flex:1;"><span class="gym-account-name" style="display:block;">${name}</span><span class="gym-account-email" style="display:block;">${email}</span></span></button><button type="button" onclick="logoutGymCloudAccount()" style="width:100%;border:0;background:transparent;padding:10px 0 0;color:#8E8E93;font-size:.88rem;">登出</button>`;
         return;
