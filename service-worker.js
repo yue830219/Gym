@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gym-assistant-v10';
+const CACHE_NAME = 'gym-assistant-v11';
 const CORE_ASSETS = [
   './', './index.html', './manifest.json', './service-worker.js', './music.mp3',
   './favicon.png', './apple-touch-icon.png',
@@ -6,9 +6,6 @@ const CORE_ASSETS = [
   './assets/gym-icon-192.png', './assets/gym-icon-512.png'
 ];
 const CDN_ASSETS = [
-  'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css',
-  'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js',
-  'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/zh-tw.global.min.js',
   'https://cdn.jsdelivr.net/npm/dom-to-image-more@2.8.0/dist/dom-to-image-more.min.js'
 ];
 

@@ -23,8 +23,6 @@
     <title>健身助手 Pro</title>
     <meta name="apple-mobile-web-app-title" content="健身助手">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> 
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
-
     <style>
         /* ==========================================================================
            1. 基礎版面與全域變數 (Base Layout & Variables)
@@ -377,130 +375,41 @@
         body.dark-mode .gym-setting-copy strong { color:#fff; }
         body.dark-mode .gym-setting-number { background:#1C1C1E !important; color:#fff !important; }
 
-            /* ==========================================================================
-           8. FullCalendar 套件與外觀微調 (Calendar Tweaks)
+        /* ==========================================================================
+           8. 訓練日曆（與訂閱管理一致的滿版月曆）
            ========================================================================== */
-        /* 隱藏預設的生硬表格邊框，並將整個日曆的預設底色拿掉 */
-        .fc-theme-standard,
-        .fc-theme-standard th, 
-        .fc-theme-standard td, 
-        .fc-theme-standard .fc-scrollgrid { 
-            border: none !important; 
-            background: transparent !important; 
+        #card-calendar {
+            position: relative;
+            left: 50%;
+            width: min(calc(100vw - 32px), 672px);
+            transform: translateX(-50%);
+            padding: 16px;
+            box-sizing: border-box;
         }
-        
-        /* --- 1. 星期列樣式 --- */
-        .fc-col-header-cell { 
-            padding-bottom: 8px; 
-            background: transparent !important; 
-        }
-        .fc .fc-col-header-cell-cushion { 
-            font-size: 0.8rem; 
-            font-weight: bold; 
-            color: #1C1C1E !important; 
-            text-decoration: none;
-        }
-        body.dark-mode .fc .fc-col-header-cell-cushion { 
-            color: #FFFFFF !important; 
-        }
-        
-        /* --- 2. 日期格子 (調整寬高、上下間距、明亮風格陰影) --- */
-        .fc-daygrid-day {
-            padding: 0.5px !important;
-        }
-        .fc-daygrid-day-frame {
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 7px; 
-            margin: 1px !important;
-            min-height: 85px !important;
-            height: 85px !important; 
-            max-height: 85px !important; 
-            overflow: hidden; 
-            border: 1px solid rgba(255, 255, 255, 0.9) !important;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
-            display: flex;
-            flex-direction: column;
-        }
-        body.dark-mode .fc-daygrid-day-frame {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            box-shadow: none;
-        }
-        
-        /* 今天日期的強調樣式 */
-        .fc-day-today .fc-daygrid-day-frame {
-            border: 2px solid #007AFF !important;
-            background: rgba(255, 255, 255, 0.95);
-        }
-        body.dark-mode .fc-day-today .fc-daygrid-day-frame {
-            border: 2px solid #007AFF !important;
-            background: rgba(0, 122, 255, 0.12) !important;
-        }
-        
-        /* --- 3. 非當月日期的隱藏設定 (不顯示數字與紀錄) --- */
-        .fc-day-other .fc-daygrid-day-number,
-        .fc-day-other .fc-daygrid-day-top,
-        .fc-day-other .fc-daygrid-event-harness,
-        .fc-day-other .fc-event {
-            display: none !important; /* ★ 隱藏非當月的數字、頂部與所有活動紀錄 */
-        }
-        .fc-day-other .fc-daygrid-day-frame {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important; /* 非當月的格子完全透明且拿掉陰影 */
-        }
-        body.dark-mode .fc-day-other .fc-daygrid-day-frame {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-        }
-        
-        /* 日期數字靠上 */
-        .fc-daygrid-day-top {
-            display: flex;
-            justify-content: center !important;
-            align-items: flex-start !important; 
-            padding-top: 2px !important; 
-        }
-        .fc-daygrid-day-number {
-            font-size: 0.7rem;
-            font-weight: 800;
-            color: #1C1C1E !important;
-            text-decoration: none;
-            line-height: 1;
-            padding: 2px 0 0 0 !important;
-        }
-        body.dark-mode .fc-daygrid-day-number { color: #FFFFFF !important; }
-        
-        /* 訓練紀錄標籤微調與文字置中縮小 */
-        .fc-daygrid-event-harness { 
-            margin: 0 1px 1px 1px !important; 
-        }
-        .fc-event {
-            border-radius: 3px !important; 
-            border: none !important;
-            padding: 1px 2px !important; 
-            margin-bottom: 1px !important; 
-            text-align: center !important; 
-            justify-content: center !important; 
-            line-height: 1.1; 
-        }
-        .fc-event-title {
-            text-align: center;
-            display: block;
-            width: 100%; 
-            font-weight: bold;
-            font-size: 0.65rem; 
-            white-space: nowrap; 
-            overflow: hidden;
-            text-overflow: ellipsis; 
-        }
-        /* 日曆本體加寬 */
-        #calendar {
-            margin-top: 10px;
-            margin-left: -10px;
-            margin-right: -10px;
-        }
+        .gym-calendar-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+        .gym-calendar-title { margin:0; color:inherit; font-size:1.25rem; font-weight:800; }
+        .gym-calendar-nav { display:flex; align-items:center; gap:8px; }
+        .gym-calendar-nav button { width:32px; height:32px; padding:0; border:0; border-radius:999px; background:#fff; color:#6B7280; box-shadow:0 1px 3px rgba(15,23,42,.08); cursor:pointer; }
+        .gym-calendar-nav svg { width:16px; height:16px; }
+        #calendar-swipe-area { margin:0 -8px; padding:0 8px; touch-action:pan-y; user-select:none; -webkit-user-select:none; }
+        .gym-calendar-weekdays, #calendar { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; }
+        .gym-calendar-weekdays { margin-bottom:8px; color:#8E8E93; font-size:.75rem; font-weight:650; text-align:center; }
+        .gym-calendar-day { height:80px; min-width:0; padding:6px; border:1px solid #CBD5E1; border-radius:12px; background:#E7EAF0; color:#303038; display:flex; flex-direction:column; overflow:hidden; box-sizing:border-box; cursor:pointer; transition:transform .15s ease,border-color .2s ease,background-color .2s ease; }
+        .gym-calendar-day:active { transform:scale(.98); }
+        .gym-calendar-day.is-outside { background:#F5F6F8; border-color:#E5E7EB; cursor:default; }
+        .gym-calendar-day.is-today { background:rgba(0,122,255,.22); border-color:#007AFF; }
+        .gym-calendar-day-number { align-self:flex-start; font-size:.75rem; font-weight:700; line-height:1; }
+        .gym-calendar-day.is-today .gym-calendar-day-number { color:#005FCC; font-weight:800; }
+        .gym-calendar-events { min-height:0; width:30px; margin:4px auto 0; display:flex; flex:1; flex-direction:column; align-items:center; justify-content:flex-end; gap:2px; }
+        .gym-calendar-events.is-single { justify-content:center; }
+        .gym-calendar-events.is-stacked { position:relative; display:block; height:54px; flex:0 0 54px; }
+        .gym-calendar-event-mark { width:30px; height:30px; min-height:30px; padding:0; border:0; border-radius:8px; color:#fff; display:grid; place-items:center; font-size:.78rem; font-weight:800; line-height:1; box-shadow:0 2px 5px rgba(15,23,42,.16); cursor:pointer; }
+        .gym-calendar-events.is-stacked .gym-calendar-event-mark { position:absolute; left:0; top:calc(var(--stack-index) * var(--stack-offset)); z-index:calc(var(--stack-index) + 1); }
+        body.dark-mode .gym-calendar-nav button { background:#2C2C2E; color:#D1D5DB; box-shadow:none; }
+        body.dark-mode .gym-calendar-day { background:#2C2C2E; border-color:#3A3A3C; color:#E5E5EA; }
+        body.dark-mode .gym-calendar-day.is-outside { background:#202023; border-color:#303034; }
+        body.dark-mode .gym-calendar-day.is-today { background:rgba(0,122,255,.28); border-color:#0A84FF; }
+        body.dark-mode .gym-calendar-day.is-today .gym-calendar-day-number { color:#fff; }
 
         /* ==========================================================================
            9. 暗黑模式主題與漸變動畫 (Dark Mode Styles)
@@ -907,8 +816,17 @@
     </div>
     
     <div class="card" id="card-calendar">
-        <div class="card-header"><h3 style="color:var(--primary); margin:0;">訓練日曆</h3></div>
-        <div id="calendar"></div>
+        <div class="gym-calendar-header">
+            <h2 id="gym-calendar-month-year" class="gym-calendar-title"></h2>
+            <div class="gym-calendar-nav">
+                <button type="button" onclick="changeGymCalendarMonth(-1)" aria-label="上一個月"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+                <button type="button" onclick="changeGymCalendarMonth(1)" aria-label="下一個月"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+            </div>
+        </div>
+        <div id="calendar-swipe-area">
+            <div class="gym-calendar-weekdays"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+            <div id="calendar" aria-label="訓練日曆"></div>
+        </div>
         
         <!-- 新增：IG 分享按鈕區塊 -->
         <div id="share-btns-container" style="display: flex; gap: 10px; margin-top: 20px;">
@@ -1007,8 +925,6 @@
         </form>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/zh-tw.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@2.8.0/dist/dom-to-image-more.min.js"></script>
 
     
@@ -1105,7 +1021,7 @@ const defaultExercises = {
     }]
 };
 
-let calendar; // 存放 FullCalendar 的實例
+let calendar; // 存放訓練月曆的相容操作介面
 let countdown; // 存放 setInterval 的計時指標
 let timerEndsAt = Number(localStorage.getItem('gym_timer_ends_at')) || 0;
 let timerFinishedNotified = false;
@@ -2947,33 +2863,161 @@ document.addEventListener('visibilitychange', function() {
 /* ==========================================================================
    12. 日曆與歷史紀錄管理 (Calendar & History)
    ========================================================================== */
-// 初始化 FullCalendar 實例與參數
-function initCalendar() {
-    var calendarEl = document.getElementById('calendar');
-    calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        locale: 'zh-tw',
-        height: 'auto',
-        fixedWeekCount: false,
-        headerToolbar: {
-            left: 'prev',
-            center: 'title',
-            right: 'next'
+let gymCalendarDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+let gymCalendarEvents = [];
+
+function parseGymCalendarDate(dateValue) {
+    const parts = String(dateValue || '').split('-').map(Number);
+    return parts.length === 3 && parts.every(Number.isFinite) ? new Date(parts[0], parts[1] - 1, parts[2]) : null;
+}
+
+function createGymCalendarEvent(record) {
+    const eventDate = parseGymCalendarDate(record.start);
+    return {
+        id: String(record.id || ''),
+        title: String(record.title || ''),
+        start: eventDate,
+        startStr: String(record.start || ''),
+        backgroundColor: record.backgroundColor || record.borderColor || '#007AFF',
+        borderColor: record.borderColor || record.backgroundColor || '#007AFF',
+        extendedProps: record.extendedProps || {},
+        setExtendedProp: function(key, value) {
+            if (!record.extendedProps) record.extendedProps = {};
+            record.extendedProps[key] = value;
+            this.extendedProps = record.extendedProps;
+            renderGymCalendar();
         },
-        dayCellContent: function(arg) {
-            return arg.date.getDate();
-        },
-        dayHeaderContent: function(arg) {
-            const days = ['日', '一', '二', '三', '四', '五', '六'];
-            return days[arg.date.getDay()];
-        },        
-        eventOrder: "order",
-        events: getStoredJson('gym_history', []),
-        eventClick: function(info) {
-            currentEventInfo = info;
-            showNotice(info.event.title + " (" + info.event.startStr + ")", info.event.extendedProps.note || "無詳細內容", true);
+        remove: function() {
+            const recordId = String(record.id || '');
+            gymCalendarEvents = gymCalendarEvents.filter(item => item !== record && (!recordId || String(item.id || '') !== recordId));
+            renderGymCalendar();
         }
-    });
+    };
+}
+
+function getGymCalendarBadgeLabel(title) {
+    return ({ '練胸':'胸', '練肩':'肩', '練臂':'臂', '練腹':'腹', '練腿':'腿', '有氧':'跑', 'HIIT':'H' })[title] || String(title || '訓').slice(0, 1);
+}
+
+function openGymCalendarEvent(record) {
+    const event = createGymCalendarEvent(record);
+    currentEventInfo = { event: event };
+    showNotice(event.title + ' (' + event.startStr + ')', event.extendedProps.note || '無詳細內容', true);
+}
+
+function renderGymCalendar() {
+    const grid = document.getElementById('calendar');
+    const title = document.getElementById('gym-calendar-month-year');
+    if (!grid || !title) return;
+
+    const year = gymCalendarDate.getFullYear();
+    const month = gymCalendarDate.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+    title.textContent = year + '年 ' + (month + 1) + '月';
+    grid.innerHTML = '';
+
+    for (let index = 0; index < firstDay; index++) {
+        const blankCell = document.createElement('div');
+        blankCell.className = 'gym-calendar-day is-outside';
+        blankCell.setAttribute('aria-hidden', 'true');
+        grid.appendChild(blankCell);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateKey = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+        const dayEvents = gymCalendarEvents.filter(item => item.start === dateKey).sort((a, b) => (Number(a.order) || 99) - (Number(b.order) || 99));
+        const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+        const dayCell = document.createElement('div');
+        dayCell.className = 'gym-calendar-day' + (isToday ? ' is-today' : '');
+        dayCell.setAttribute('aria-label', year + '年' + (month + 1) + '月' + day + '日' + (dayEvents.length ? '，共 ' + dayEvents.length + ' 筆訓練' : '，沒有訓練紀錄'));
+
+        const dayNumber = document.createElement('span');
+        dayNumber.className = 'gym-calendar-day-number';
+        dayNumber.textContent = String(day);
+        dayCell.appendChild(dayNumber);
+
+        if (dayEvents.length) {
+            const eventContainer = document.createElement('div');
+            const isStacked = dayEvents.length > 2;
+            eventContainer.className = 'gym-calendar-events' + (dayEvents.length === 1 ? ' is-single' : '') + (isStacked ? ' is-stacked' : '');
+            const stackOffset = isStacked ? Math.min(10, 26 / (dayEvents.length - 1)) : 0;
+            dayEvents.forEach(function(record, index) {
+                const eventButton = document.createElement('button');
+                eventButton.type = 'button';
+                eventButton.className = 'gym-calendar-event-mark';
+                eventButton.textContent = getGymCalendarBadgeLabel(record.title);
+                eventButton.style.backgroundColor = record.backgroundColor || record.borderColor || '#007AFF';
+                eventButton.style.setProperty('--stack-index', index);
+                eventButton.style.setProperty('--stack-offset', stackOffset + 'px');
+                eventButton.setAttribute('aria-label', record.title + '，查看訓練內容');
+                eventButton.onclick = function(event) {
+                    event.stopPropagation();
+                    openGymCalendarEvent(record);
+                };
+                eventContainer.appendChild(eventButton);
+            });
+            dayCell.appendChild(eventContainer);
+            dayCell.onclick = function() {
+                if (dayEvents.length === 1) openGymCalendarEvent(dayEvents[0]);
+            };
+        }
+        grid.appendChild(dayCell);
+    }
+}
+
+function changeGymCalendarMonth(delta) {
+    gymCalendarDate.setMonth(gymCalendarDate.getMonth() + delta);
+    renderGymCalendar();
+}
+
+function setupGymCalendarSwipe() {
+    const swipeArea = document.getElementById('calendar-swipe-area');
+    if (!swipeArea || swipeArea.dataset.swipeBound === 'true') return;
+    swipeArea.dataset.swipeBound = 'true';
+    let startPoint = null;
+    let ignoreNextClick = false;
+
+    swipeArea.addEventListener('touchstart', function(event) {
+        if (event.touches.length !== 1) return;
+        const touch = event.touches[0];
+        startPoint = { x: touch.clientX, y: touch.clientY };
+    }, { passive: true });
+
+    swipeArea.addEventListener('touchend', function(event) {
+        if (!startPoint || !event.changedTouches.length) return;
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - startPoint.x;
+        const deltaY = touch.clientY - startPoint.y;
+        startPoint = null;
+        if (Math.abs(deltaX) < 50 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+        ignoreNextClick = true;
+        changeGymCalendarMonth(deltaX < 0 ? 1 : -1);
+        window.setTimeout(function() { ignoreNextClick = false; }, 350);
+    }, { passive: true });
+
+    swipeArea.addEventListener('click', function(event) {
+        if (!ignoreNextClick) return;
+        event.preventDefault();
+        event.stopPropagation();
+        ignoreNextClick = false;
+    }, true);
+}
+
+// 提供與原有日曆操作相同的介面，讓儲存、匯入、刪除與分享功能保持相容。
+function initCalendar() {
+    gymCalendarEvents = getStoredJson('gym_history', []);
+    calendar = {
+        render: renderGymCalendar,
+        getDate: function() { return new Date(gymCalendarDate); },
+        getEvents: function() { return gymCalendarEvents.map(createGymCalendarEvent); },
+        addEvent: function(record) { gymCalendarEvents.push(record); renderGymCalendar(); return createGymCalendarEvent(record); },
+        removeAllEvents: function() { gymCalendarEvents = []; renderGymCalendar(); },
+        prev: function() { changeGymCalendarMonth(-1); },
+        next: function() { changeGymCalendarMonth(1); }
+    };
+    setupGymCalendarSwipe();
     calendar.render();
 }
 
@@ -3620,10 +3664,12 @@ function convertUnit(source) {
     let touchStartY = 0;
     let touchEndX = 0;
     let touchEndY = 0;
+    let isCalendarSwipe = false;
     const SWIPE_MIN_DISTANCE = 70; // 判定手勢成立的最少水平滑行距離 (像素)
 
     window.addEventListener('touchstart', function(e) {
         if (document.body.classList.contains('tour-locked')) return;
+        isCalendarSwipe = Boolean(e.target && e.target.closest && e.target.closest('#calendar-swipe-area'));
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
     }, {
@@ -3640,6 +3686,12 @@ function convertUnit(source) {
 
     window.addEventListener('touchend', function(e) {
         if (document.body.classList.contains('tour-locked')) return;
+
+        if (isCalendarSwipe) {
+            touchStartX = touchStartY = touchEndX = touchEndY = 0;
+            isCalendarSwipe = false;
+            return;
+        }
 
         const sidebar = document.getElementById('sidebar');
         if (!sidebar) return;
