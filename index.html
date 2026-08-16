@@ -282,30 +282,32 @@
            7. 導覽教學與載入畫面 (Tour & Loading Screen)
            ========================================================================== */
         /* 圖像聚光燈式導覽遮罩 */
-        #tour-mask {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.75); z-index: 99998; display: none;
-            pointer-events: auto !important; 
-            clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%); 
-            transition: clip-path 0.25s ease-in-out;
-        }
+        #tour-mask { position: fixed; inset: 0; height: 100dvh; background: rgba(8, 12, 20, .72); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); z-index: 99996; display: none; pointer-events: auto; }
+        #tour-highlight { position: fixed; z-index: 99997; display: none; border: 2px solid rgba(255,255,255,.92); border-radius: 18px; box-shadow: 0 0 0 9999px rgba(8,12,20,.70), 0 0 0 6px rgba(0,122,255,.24), 0 14px 45px rgba(0,0,0,.32); pointer-events: none; transition: top .28s ease, left .28s ease, width .28s ease, height .28s ease, border-radius .28s ease; }
         
-        #tour-dialog {
-            position: fixed; z-index: 99999; background: white; padding: 20px;
-            border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); width: 280px;
-            display: none; flex-direction: column; gap: 12px; box-sizing: border-box;
-            transition: all 0.3s ease-in-out; animation: tourFade 0.2s ease-out;
-            pointer-events: auto; 
-        }
-        #tour-dialog::before { content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: auto; background: transparent; }
-        @keyframes tourFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .tour-header { display: flex; justify-content: flex-end; font-size: 0.85rem; color: #8e8e93; font-weight: bold; }
-        .tour-title { font-size: 1.15rem; font-weight: 800; color: #007AFF; margin: 0; }
-        .tour-body { font-size: 0.95rem; color: #1c1c1e; line-height: 1.6; }
-        .tour-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 5px; }
-        .tour-btn { padding: 10px 18px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; border: none; cursor: pointer; }
-        .tour-btn-skip { background: #E5E5EA; color: #3a3a3c; }
-        .tour-btn-next { background: #007AFF; color: white; }
+        #tour-dialog { position: fixed; z-index: 99999; width: min(360px, calc(100vw - 32px)); display: none; flex-direction: column; overflow: hidden; box-sizing: border-box; border: 1px solid rgba(255,255,255,.72); border-radius: 24px; background: rgba(255,255,255,.94); box-shadow: 0 24px 70px rgba(0,0,0,.38); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); pointer-events: auto; animation: tourFade .25s ease-out; }
+        @keyframes tourFade { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .tour-content { padding: 20px 20px 16px; }
+        .tour-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+        .tour-eyebrow { color: #007AFF; font-size: .72rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+        .tour-step-count { color: #8e8e93; font-size: .78rem; font-weight: 750; white-space: nowrap; }
+        .tour-title { display: flex; align-items: center; font-size: 1.2rem; font-weight: 850; color: #1c1c1e; margin: 0 0 10px; }
+        .tour-title svg { flex: 0 0 auto; color: #007AFF; }
+        .tour-body { font-size: .94rem; color: #545458; line-height: 1.65; }
+        .tour-progress { display: flex; gap: 6px; margin-top: 16px; }
+        .tour-progress-dot { height: 5px; flex: 1; border-radius: 999px; background: #D1D1D6; transition: background .25s, transform .25s; }
+        .tour-progress-dot.done { background: #8EC5FF; }
+        .tour-progress-dot.active { background: #007AFF; transform: scaleY(1.35); }
+        .tour-footer { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid rgba(60,60,67,.12); background: rgba(248,248,248,.78); }
+        .tour-btn { min-height: 42px; padding: 10px 15px; border-radius: 12px; font-weight: 750; font-size: .9rem; border: none; cursor: pointer; }
+        .tour-btn-skip { background: transparent; color: #8E8E93; }
+        .tour-btn-back { background: #E5E5EA; color: #3a3a3c; visibility: hidden; }
+        .tour-btn-next { min-width: 92px; background: linear-gradient(135deg,#007AFF,#5856D6); color: white; box-shadow: 0 8px 20px rgba(0,122,255,.24); }
+        body.dark-mode #tour-dialog { border-color: rgba(255,255,255,.12); background: rgba(35,35,38,.95); }
+        body.dark-mode .tour-title { color: #fff; }
+        body.dark-mode .tour-body { color: #C7C7CC; }
+        body.dark-mode .tour-footer { background: rgba(28,28,30,.82); border-color: rgba(255,255,255,.1); }
+        body.dark-mode .tour-btn-back { background: #3A3A3C; color: #fff; }
         body.tour-locked { overflow: hidden !important; height: 100vh !important; touch-action: none !important; }        
 
         /* 系統載入畫面：延續 iOS 毛玻璃風格的低調訓練提示。 */
@@ -329,6 +331,18 @@
         @keyframes loading-progress { 0% { transform: translateX(-115%); } 55%, 100% { transform: translateX(265%); } }
         @media (prefers-reduced-motion: reduce) { #loading-screen *, #loading-screen::before, #loading-screen::after { animation: none !important; } }
         body.loading-locked { overflow: hidden !important; height: 100vh !important; touch-action: none !important; }
+
+        .gym-account-card { background: linear-gradient(145deg, rgba(0,122,255,.10), rgba(88,86,214,.08)); border: 1px solid rgba(0,122,255,.18); border-radius: 16px; padding: 16px; }
+        .gym-account-avatar { width: 58px; height: 58px; border-radius: 18px; object-fit: cover; display: grid; place-items: center; background: #007AFF; color: #fff; font-size: 1.35rem; font-weight: 800; flex: 0 0 auto; }
+        .gym-account-action { border: 0; border-radius: 10px; padding: 10px 12px; font-weight: 700; cursor: pointer; }
+        #gym-account-modal { display: none; position: fixed; inset: 0; z-index: 12000; align-items: center; justify-content: center; padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom)); background: rgba(0,0,0,.72); backdrop-filter: blur(12px); box-sizing: border-box; }
+        #gym-account-modal.active { display: flex; }
+        .gym-account-modal-card { width: 100%; max-width: 380px; padding: 24px; border-radius: 24px; background: #fff; box-shadow: 0 24px 70px rgba(0,0,0,.28); box-sizing: border-box; }
+        .gym-account-modal-card input { width: 100%; box-sizing: border-box; margin-top: 6px; padding: 12px; border: 1px solid #d1d5db; border-radius: 12px; font-size: 16px; }
+        .gym-account-modal-card label { display: block; margin-top: 12px; color: #666; font-size: .82rem; font-weight: 700; }
+        body.dark-mode .gym-account-modal-card { background: #1C1C1E; color: #fff; }
+        body.dark-mode .gym-account-modal-card input { background: #2C2C2E; border-color: #3A3A3C; color: #fff; }
+        body.dark-mode .gym-account-card { border-color: rgba(255,255,255,.12); }
 
             /* ==========================================================================
            8. FullCalendar 套件與外觀微調 (Calendar Tweaks)
@@ -666,12 +680,17 @@
     </div>
 
     <div id="tour-mask"></div>
-    <div id="tour-dialog">
-        <div class="tour-header"><span id="tour-step-idx">1/5</span></div>
-        <h3 class="tour-title" id="tour-title">標題</h3>
-        <div class="tour-body" id="tour-body">內容</div>
+    <div id="tour-highlight" aria-hidden="true"></div>
+    <div id="tour-dialog" role="dialog" aria-modal="true" aria-labelledby="tour-title" aria-describedby="tour-body">
+        <div class="tour-content">
+            <div class="tour-header"><span class="tour-eyebrow" id="tour-eyebrow">快速導覽</span><span class="tour-step-count" id="tour-step-idx">1 / 7</span></div>
+            <h3 class="tour-title" id="tour-title">歡迎使用</h3>
+            <div class="tour-body" id="tour-body">內容</div>
+            <div class="tour-progress" id="tour-progress" aria-hidden="true"></div>
+        </div>
         <div class="tour-footer">
             <button class="tour-btn tour-btn-skip" onclick="closeTour()">跳過</button>
+            <button class="tour-btn tour-btn-back" id="tour-back-btn" onclick="previousTourStep()">上一步</button>
             <button class="tour-btn tour-btn-next" id="tour-next-btn" onclick="nextTourStep()">下一步</button>
         </div>
     </div>
@@ -891,9 +910,10 @@
 </label></div>
             </div>
             <form autocomplete="on" onsubmit="event.preventDefault()" style="background:#f8f8f8; padding:15px; border-radius:12px; border:1px solid #eee;">
-                <h4 style="margin:0 0 10px 0; color:#333;">信箱</h4>
-                <input type="email" id="sync-user-id" name="username" style="width:100%; box-sizing:border-box; margin-bottom:10px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="例如 alice@gmail.com" autocomplete="email" inputmode="email" autocapitalize="none" autocorrect="off" spellcheck="false" oninput="validateSyncUserId()" onblur="saveSyncUserIdIfValid()">
-                <input type="password" id="sync-backup-password" name="current-password" style="width:100%; box-sizing:border-box; margin-bottom:8px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:1rem;" placeholder="備份密碼（至少 10 個字元）" autocomplete="current-password" spellcheck="false">
+                <h4 style="margin:0 0 10px 0; color:#333;">帳戶與資料備份</h4>
+                <div id="gym-account-profile" class="gym-account-card"></div>
+                <input type="email" id="sync-user-id" name="username" style="display:none" autocomplete="email">
+                <input type="password" id="sync-backup-password" name="current-password" style="display:none" autocomplete="current-password">
                 <div style="display:flex; gap:10px; justify-content:space-between; align-items:center; flex-wrap:nowrap;">
                     <button class="btn-record import-export-btn" style="background:#5856D6; flex:0 0 48%; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showImportChoiceModal()">匯入紀錄</button>
                     <button class="btn-record import-export-btn" style="background:#007AFF; flex:0 0 48%; min-width: 140px; padding: 10px; font-size: 14px; margin-top: 0;" onclick="showExportChoiceModal()">匯出紀錄</button>
@@ -901,6 +921,7 @@
                 <p id="sync-user-message" style="font-size:0.82rem; color:#666; margin:8px 0 10px 0;">忘記密碼無法還原雲端備份。</p>                
             </form>
             <input type="file" id="import-file-local" accept=".json" style="display:none" onchange="importHistoryLocal(event)">
+            <button type="button" class="btn-record" style="background:#E5F0FF;color:#007AFF;margin-top:0;" onclick="startTour()">重新觀看功能導覽</button>
             <p style="font-size: 0.85rem; color: #666; text-align: center;">建議定期匯出備份，避免數據遺失。</p>
         </div>
     </div>
@@ -925,6 +946,23 @@
                 <button class="btn-ok" onclick="closeChoiceModal()">取消</button>
             </div>
         </div>
+    </div>
+
+    <div id="gym-account-modal" role="dialog" aria-modal="true" aria-labelledby="gym-account-title">
+        <form class="gym-account-modal-card" autocomplete="on" onsubmit="submitGymAccount(event)">
+            <div style="text-align:center;">
+                <div style="width:58px;height:58px;margin:0 auto 14px;border-radius:18px;background:rgba(0,122,255,.12);display:grid;place-items:center;color:#007AFF;font-size:28px;">☁</div>
+                <h2 id="gym-account-title" style="margin:0;">登入雲端備份</h2>
+                <p id="gym-account-description" style="color:#777;font-size:.9rem;line-height:1.5;">輸入帳號後，可檢查並恢復加密備份。</p>
+            </div>
+            <label>E-mail<input id="gym-account-email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" required placeholder="name@example.com"></label>
+            <label>備份密碼<input id="gym-account-password" type="password" autocomplete="current-password" minlength="10" required placeholder="至少 10 個字元"></label>
+            <label id="gym-account-confirm-row" style="display:none;">確認備份密碼<input id="gym-account-confirm-password" type="password" autocomplete="new-password" minlength="10" placeholder="再次輸入備份密碼"></label>
+            <p id="gym-account-message" style="min-height:20px;text-align:center;color:#777;font-size:.8rem;line-height:1.5;">密碼只用於本機加密，無法為你找回。</p>
+            <button id="gym-account-submit" type="submit" class="btn-record" style="background:#007AFF;margin-top:8px;">登入</button>
+            <button id="gym-account-mode-toggle" type="button" onclick="toggleGymAccountMode()" style="width:100%;border:0;background:transparent;padding:12px;color:#007AFF;font-weight:700;">沒有帳戶？註冊</button>
+            <button id="gym-account-guest" type="button" onclick="continueGymAsGuest()" style="width:100%;border:0;background:transparent;padding:8px;color:#8E8E93;">暫不登入，直接使用</button>
+        </form>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
@@ -1251,7 +1289,10 @@ function initUserIdentity() {
     const saved = localStorage.getItem('sync_user_id');
     const initialValue = saved === null || saved === undefined ? '' : String(saved).trim();
     input.value = initialValue;
+    const passwordInput = document.getElementById('sync-backup-password');
+    if (passwordInput) passwordInput.value = localStorage.getItem('gym_sync_password') || '';
     validateSyncUserId();
+    renderGymAccountProfile();
 }
 
 function getGoogleSyncPayload() {
@@ -1268,12 +1309,14 @@ function getGoogleSyncPayload() {
         cfg_flash_enable: localStorage.getItem('cfg_flash_enable') || "true",
         cfg_dark_enable: localStorage.getItem('cfg_dark_enable') || "false",
         cfg_dark_auto: localStorage.getItem('cfg_dark_auto') || "false",
-        cfg_wake_enable: localStorage.getItem('cfg_wake_enable') || "false"
+        cfg_wake_enable: localStorage.getItem('cfg_wake_enable') || "false",
+        accountProfile: getGymAccountProfile(),
+        exportedAt: new Date().toISOString()
     };
 }
 
 function getGymCloudBackupPassword() {
-    return String(document.getElementById('sync-backup-password')?.value || '');
+    return String(document.getElementById('sync-backup-password')?.value || document.getElementById('gym-account-password')?.value || localStorage.getItem('gym_sync_password') || '');
 }
 
 function ensureGymCloudBackupReady(userId) {
@@ -1347,6 +1390,201 @@ async function requestGymCloudBackup(action, userId, payload) {
     if (!result || result.status === 'error') throw new Error(result?.message || '雲端服務回傳格式錯誤。');
     if (action === 'load' && result.found_user) return { status: 'ok', found_user: true, ...await decryptGymCloudBackup(result.record, credentials.encryptionKey) };
     return result;
+}
+
+let gymAccountMode = 'login';
+
+function isGymCloudAuthenticated() {
+    return localStorage.getItem('gym_cloud_login_completed') === 'true' && isValidEmail(localStorage.getItem('sync_user_id')) && getGymCloudBackupPassword().length >= 10;
+}
+
+function getGymAccountProfile() {
+    return {
+        name: String(localStorage.getItem('gym_account_name') || '').trim().slice(0, 60),
+        avatar: String(localStorage.getItem('gym_account_avatar') || '').startsWith('data:image/') ? localStorage.getItem('gym_account_avatar') : ''
+    };
+}
+
+function rememberGymCloudCredentials(email, password) {
+    setCurrentUserId(String(email || '').trim().toLowerCase());
+    localStorage.setItem('gym_sync_password', String(password || ''));
+    const passwordInput = document.getElementById('sync-backup-password');
+    if (passwordInput) passwordInput.value = String(password || '');
+    localStorage.setItem('gym_cloud_login_completed', 'true');
+    localStorage.removeItem('gym_cloud_login_dismissed');
+}
+
+function forgetGymCloudCredentials() {
+    localStorage.removeItem('gym_sync_password');
+    localStorage.removeItem('gym_cloud_login_completed');
+    const passwordInput = document.getElementById('sync-backup-password');
+    if (passwordInput) passwordInput.value = '';
+}
+
+function renderGymAccountProfile() {
+    const target = document.getElementById('gym-account-profile');
+    if (!target) return;
+    if (!isGymCloudAuthenticated()) {
+        target.innerHTML = `<button type="button" onclick="openGymAccountModal('login')" style="width:100%;border:0;background:transparent;padding:4px;display:flex;align-items:center;gap:14px;text-align:left;color:inherit;cursor:pointer;"><span class="gym-account-avatar">↪</span><span><strong style="display:block;font-size:1rem;">登入或註冊</strong><small style="display:block;margin-top:5px;color:#777;">登入後即可使用加密雲端備份</small></span></button>`;
+        return;
+    }
+    const email = escapeHTML(localStorage.getItem('sync_user_id') || '');
+    const profile = getGymAccountProfile();
+    const name = escapeHTML(profile.name || (email.split('@')[0] || '健身帳戶'));
+    const avatar = profile.avatar ? `<img src="${profile.avatar}" alt="帳戶頭像" class="gym-account-avatar">` : `<span class="gym-account-avatar">${name.slice(0, 1).toUpperCase()}</span>`;
+    target.innerHTML = `<div style="display:flex;align-items:center;gap:12px;">${avatar}<div style="min-width:0;flex:1;"><input id="gym-account-name" value="${name}" maxlength="60" aria-label="帳戶名稱" style="width:100%;border:0;border-bottom:1px solid rgba(0,0,0,.12);background:transparent;padding:4px 0;font-size:1rem;font-weight:800;color:inherit;box-sizing:border-box;"><div style="margin-top:5px;color:#777;font-size:.82rem;overflow:hidden;text-overflow:ellipsis;">${email}</div></div></div><input id="gym-account-avatar-file" type="file" accept="image/*" style="display:none" onchange="handleGymAccountAvatar(event)"><div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;"><button type="button" class="gym-account-action" style="background:#E5F0FF;color:#007AFF;" onclick="document.getElementById('gym-account-avatar-file').click()">更換頭像</button><button type="button" class="gym-account-action" style="background:#E5F9E7;color:#248A3D;" onclick="saveGymAccountProfile()">儲存帳戶</button><button type="button" class="gym-account-action" style="background:#F2F2F7;color:#8E8E93;" onclick="logoutGymCloudAccount()">登出</button></div>`;
+}
+
+function handleGymAccountAvatar(event) {
+    const file = event.target.files && event.target.files[0];
+    event.target.value = '';
+    if (!file) return;
+    if (file.size > 1536000) {
+        showNotice('圖片過大', '請選擇小於 1.5 MB 的圖片。', false);
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function() {
+        if (!String(reader.result || '').startsWith('data:image/')) return;
+        localStorage.setItem('gym_account_avatar', reader.result);
+        renderGymAccountProfile();
+    };
+    reader.readAsDataURL(file);
+}
+
+async function saveGymAccountProfile() {
+    const name = String(document.getElementById('gym-account-name')?.value || '').trim().slice(0, 60);
+    if (!name) {
+        showNotice('尚未完成', '請輸入帳戶名稱。', false);
+        return;
+    }
+    localStorage.setItem('gym_account_name', name);
+    renderGymAccountProfile();
+    await syncGymCloudBackup(true, '帳戶資料與健身紀錄已更新');
+}
+
+function openGymAccountModal(mode = 'login') {
+    const modal = document.getElementById('gym-account-modal');
+    document.getElementById('gym-account-email').value = localStorage.getItem('sync_user_id') || '';
+    document.getElementById('gym-account-password').value = '';
+    document.getElementById('gym-account-confirm-password').value = '';
+    setGymAccountMode(mode);
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeGymAccountModal() {
+    document.getElementById('gym-account-modal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function setGymAccountMode(mode) {
+    gymAccountMode = mode === 'register' ? 'register' : 'login';
+    const registering = gymAccountMode === 'register';
+    document.getElementById('gym-account-title').textContent = registering ? '建立雲端帳戶' : '登入雲端備份';
+    document.getElementById('gym-account-description').textContent = registering ? '建立後會立即將目前健身資料加密備份到雲端。' : '輸入帳號後，可檢查並恢復你的加密備份。';
+    document.getElementById('gym-account-submit').textContent = registering ? '註冊並建立備份' : '登入';
+    document.getElementById('gym-account-mode-toggle').textContent = registering ? '已有帳戶？登入' : '沒有帳戶？註冊';
+    document.getElementById('gym-account-confirm-row').style.display = registering ? 'block' : 'none';
+    document.getElementById('gym-account-confirm-password').required = registering;
+    document.getElementById('gym-account-guest').style.display = registering ? 'none' : 'block';
+    setGymAccountMessage(registering ? '請妥善保存密碼；遺失後無法恢復備份。' : '密碼只用於本機加密，無法為你找回。');
+}
+
+function toggleGymAccountMode() {
+    setGymAccountMode(gymAccountMode === 'login' ? 'register' : 'login');
+}
+
+function setGymAccountMessage(message, isError = false) {
+    const target = document.getElementById('gym-account-message');
+    target.textContent = message;
+    target.style.color = isError ? '#FF3B30' : '#777';
+}
+
+function setGymAccountBusy(busy) {
+    document.querySelectorAll('#gym-account-modal input, #gym-account-modal button').forEach(el => el.disabled = busy);
+    document.getElementById('gym-account-submit').style.opacity = busy ? '.6' : '1';
+}
+
+function continueGymAsGuest() {
+    localStorage.setItem('gym_cloud_login_dismissed', 'true');
+    closeGymAccountModal();
+    checkFirstTimeUser();
+}
+
+function initGymAccountFlow() {
+    renderGymAccountProfile();
+    if (localStorage.getItem('gym_cloud_login_completed') === 'true' || localStorage.getItem('gym_cloud_login_dismissed') === 'true') {
+        checkFirstTimeUser();
+        return;
+    }
+    openGymAccountModal('login');
+}
+
+function applyGymCloudData(data) {
+    if (!data || !Array.isArray(data.gym_history)) throw new Error('雲端備份資料不完整。');
+    localStorage.setItem('gym_history', JSON.stringify(data.gym_history));
+    if (data.custom_exercises) localStorage.setItem('custom_exercises', JSON.stringify(data.custom_exercises));
+    if (data.current_weights) localStorage.setItem('current_weights', JSON.stringify(data.current_weights));
+    ['cfg_rest_min','cfg_switch_min','cfg_sound_enable','cfg_flash_enable','cfg_dark_enable','cfg_dark_auto','cfg_wake_enable'].forEach(key => {
+        if (data[key] !== undefined && data[key] !== null) localStorage.setItem(key, String(data[key]));
+    });
+    if (data.accountProfile?.name) localStorage.setItem('gym_account_name', String(data.accountProfile.name).slice(0, 60));
+    if (String(data.accountProfile?.avatar || '').startsWith('data:image/')) localStorage.setItem('gym_account_avatar', data.accountProfile.avatar);
+}
+
+async function submitGymAccount(event) {
+    event.preventDefault();
+    const email = String(document.getElementById('gym-account-email').value || '').trim().toLowerCase();
+    const password = String(document.getElementById('gym-account-password').value || '');
+    const confirmation = String(document.getElementById('gym-account-confirm-password').value || '');
+    const registering = gymAccountMode === 'register';
+    if (!isValidEmail(email)) return setGymAccountMessage('請輸入有效的 E-mail。', true);
+    if (password.length < 10) return setGymAccountMessage('備份密碼至少需要 10 個字元。', true);
+    if (registering && password !== confirmation) return setGymAccountMessage('兩次輸入的備份密碼不相同。', true);
+    if (!navigator.onLine) return setGymAccountMessage('目前沒有網路連線。', true);
+
+    setGymAccountBusy(true);
+    setGymAccountMessage(registering ? '正在建立加密備份…' : '正在登入並檢查備份…');
+    rememberGymCloudCredentials(email, password);
+    try {
+        const remote = await requestGymCloudBackup('load', email);
+        if (registering) {
+            if (remote.found_user) throw new Error('此帳戶已建立，請改用登入。');
+            if (!localStorage.getItem('gym_account_name')) localStorage.setItem('gym_account_name', email.split('@')[0]);
+            await requestGymCloudBackup('sync', email, getGoogleSyncPayload());
+            closeGymAccountModal();
+            renderGymAccountProfile();
+            showNotice('註冊完成', '已建立帳戶並完成第一份加密雲端備份。', false);
+            checkFirstTimeUser();
+            return;
+        }
+        if (!remote.found_user) throw new Error('找不到此帳戶，請先註冊。');
+        closeGymAccountModal();
+        renderGymAccountProfile();
+        showChoiceModal('發現雲端備份', '是否使用雲端資料覆蓋目前的健身資料？', '恢復備份', function() {
+            closeChoiceModal();
+            applyGymCloudData(remote);
+            location.reload();
+        }, '保留本機', function() {
+            closeChoiceModal();
+            checkFirstTimeUser();
+        });
+    } catch (error) {
+        forgetGymCloudCredentials();
+        setGymAccountMessage(error.message || '無法完成登入或註冊。', true);
+    } finally {
+        setGymAccountBusy(false);
+    }
+}
+
+function logoutGymCloudAccount() {
+    showChoiceModal('確認登出', '登出後此裝置不會保留備份密碼，雲端備份不會被刪除。', '取消', closeChoiceModal, '登出', function() {
+        closeChoiceModal();
+        forgetGymCloudCredentials();
+        localStorage.setItem('gym_cloud_login_dismissed', 'true');
+        renderGymAccountProfile();
+    });
 }
 
 async function loadGymCloudData(userId) {
@@ -1473,6 +1711,8 @@ async function loadRemoteHistoryFromGoogleSheet() {
         if (importedData.cfg_dark_enable) localStorage.setItem('cfg_dark_enable', importedData.cfg_dark_enable);
         if (importedData.cfg_dark_auto) localStorage.setItem('cfg_dark_auto', importedData.cfg_dark_auto);
         if (importedData.cfg_wake_enable) localStorage.setItem('cfg_wake_enable', importedData.cfg_wake_enable);
+        if (importedData.accountProfile?.name) localStorage.setItem('gym_account_name', String(importedData.accountProfile.name).slice(0, 60));
+        if (String(importedData.accountProfile?.avatar || '').startsWith('data:image/')) localStorage.setItem('gym_account_avatar', importedData.accountProfile.avatar);
 
         localStorage.setItem('gym_history', JSON.stringify(importedData.gym_history || []));
 
@@ -1504,25 +1744,40 @@ const getIcon = (svgPath) => `<svg width="20" height="20" viewBox="0 0 24 24" fi
 
 // 新的導覽文案與 SVG
 const tourSteps = [{
+    target: null,
+    eyebrow: '歡迎使用',
+    title: `${getIcon('<path d="M6 3h12l3 6-9 12L3 9l3-6Z"/><path d="m3 9 9 4 9-4"/>')} 你的健身紀錄中心`,
+    desc: "用幾個步驟快速認識計時、訓練紀錄與備份功能。之後也能在系統設定中重新開啟導覽。"
+}, {
     target: '.timer-panel',
+    eyebrow: '掌握節奏',
     title: `${getIcon('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/>')} 專業間隔計時器`,
     desc: "點擊【組間】或【動作】間隔，時間到會自動播放鈴聲與閃爍畫面，幫你精準掌控休息時間！"
 }, {
     target: '.tab-menu',
+    eyebrow: '選擇課表',
     title: `${getIcon('<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>')} 切換訓練部位`,
     desc: "在這裡快速切換不同部位的紀錄卡片，有氧與 HIIT 分類還會幫你自動計算消耗熱量喔！"
 }, {
     target: '.card.active .card-header .btn-manage-toggle',
+    eyebrow: '自由自訂',
     title: `${getIcon('<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>')} 自訂你的專屬動作`,
     desc: "點擊這裡可以進入編輯模式。你可以自由更換動作名稱、修改計重單位，或是新增、刪除動作！"
 }, {
     target: '.card.active .card-note',
+    eyebrow: '留下狀態',
     title: `${getIcon('<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/><path d="M8 12h8"/><path d="M8 16h8"/>')} 紀錄訓練心得`,
     desc: "每張卡片底部都有備註欄，可以寫下今天訓練的狀態、遞減組資訊或心情。"
 }, {
     target: '.card.active .btn-record',
+    eyebrow: '完成紀錄',
     title: `${getIcon('<rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>')} 儲存到訓練日曆`,
-    desc: "輸入完數據後，點擊這裡就會將今日成果永久儲存。你可以隨時到側邊欄的「訓練日曆」查看歷史紀錄！"
+    desc: "輸入完數據後，點擊這裡就會將今日成果永久儲存。你可以隨時到訓練日曆查看歷史紀錄！"
+}, {
+    target: '.menu-icon',
+    eyebrow: '更多功能',
+    title: `${getIcon('<path d="M4 6h16M4 12h16M4 18h16"/>')} 日曆、換算與安全備份`,
+    desc: "從左上角選單開啟訓練日曆、單位換算與系統設定。登入帳戶後，還能使用加密雲端備份保護所有資料。"
 }];
 
 
@@ -1623,7 +1878,7 @@ function hideLoadingScreen() {
         loadingScreen.style.visibility = 'hidden';
         // 載入完成後，解除 body 的鎖定，恢復正常點選與滑動捲動，並檢查是否為第一次開啟程式
         document.body.classList.remove('loading-locked');
-        setTimeout(checkFirstTimeUser, 300);
+        setTimeout(initGymAccountFlow, 300);
     }
 }
 
@@ -1751,7 +2006,7 @@ function closeModal() {
    ========================================================================== */
 // 判斷使用者是否為首次開啟系統
 function checkFirstTimeUser() {
-    if (!localStorage.getItem('has_seen_tour_v2')) {
+    if (!localStorage.getItem('has_seen_tour_v3')) {
         startTour();
     }
 }
@@ -1765,14 +2020,15 @@ function preventTourScroll(e) {
 
 // 啟動新手導覽教學
 function startTour() {
+    switchTab(0);
+    window.scrollTo({ top: 0, behavior: 'auto' });
     currentTourStep = 0;
     isTourActive = true;
-    document.body.classList.add('tour-locked'); // 鎖定網頁滾動
-    document.addEventListener('touchmove', preventTourScroll, {
-        passive: false
-    });
+    document.body.classList.add('tour-locked');
+    document.addEventListener('touchmove', preventTourScroll, { passive: false });
     document.getElementById('tour-mask').style.display = 'block';
     document.getElementById('tour-dialog').style.display = 'flex';
+    document.addEventListener('keydown', handleTourKeyboard);
     highlightStep();
 }
 
@@ -1780,18 +2036,44 @@ function startTour() {
 function closeTour() {
     isTourActive = false;
     document.getElementById('tour-dialog').style.display = 'none';
-
-    const mask = document.getElementById('tour-mask');
-    mask.style.display = 'none'; // 解鎖網頁點擊限制
-
-    // 解鎖網頁滾動與點擊
+    document.getElementById('tour-mask').style.display = 'none';
+    document.getElementById('tour-highlight').style.display = 'none';
     document.body.classList.remove('tour-locked');
     document.removeEventListener('touchmove', preventTourScroll);
-
-    localStorage.setItem('has_seen_tour_v2', 'true'); // 在瀏覽器標記已看過教學
-    showNotice('導覽結束！', "開始記錄今天的訓練吧！", false);
-
+    document.removeEventListener('keydown', handleTourKeyboard);
+    localStorage.setItem('has_seen_tour_v3', 'true');
+    showNotice('準備完成！', '開始記錄今天的訓練吧！', false);
     document.getElementById('delete-modal').style.zIndex = "99999";
+}
+
+function handleTourKeyboard(event) {
+    if (!isTourActive) return;
+    if (event.key === 'ArrowRight' || event.key === 'Enter') nextTourStep();
+    if (event.key === 'ArrowLeft') previousTourStep();
+    if (event.key === 'Escape') closeTour();
+}
+
+function renderTourProgress() {
+    document.getElementById('tour-progress').innerHTML = tourSteps.map((_, index) => `<span class="tour-progress-dot ${index < currentTourStep ? 'done' : ''} ${index === currentTourStep ? 'active' : ''}"></span>`).join('');
+}
+
+function positionTourDialog(dialog, focusRect) {
+    const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    const viewportTop = window.visualViewport ? window.visualViewport.offsetTop : 0;
+    const edge = 16;
+    const gap = 14;
+    const dialogRect = dialog.getBoundingClientRect();
+    let top;
+    if (!focusRect) {
+        top = viewportTop + Math.max(edge, (viewportHeight - dialogRect.height) / 2);
+    } else {
+        const roomBelow = viewportTop + viewportHeight - focusRect.bottom - gap;
+        const roomAbove = focusRect.top - viewportTop - gap;
+        top = roomBelow >= dialogRect.height || roomBelow >= roomAbove ? focusRect.bottom + gap : focusRect.top - dialogRect.height - gap;
+        top = Math.max(viewportTop + edge, Math.min(top, viewportTop + viewportHeight - dialogRect.height - edge));
+    }
+    dialog.style.top = `${top}px`;
+    dialog.style.left = `${Math.max(edge, (window.innerWidth - dialogRect.width) / 2)}px`;
 }
 
 // 計算聚光燈裁剪位置，並讓畫面平滑滾動到目標物件
@@ -1799,56 +2081,53 @@ function highlightStep() {
     if (!isTourActive) return;
     const step = tourSteps[currentTourStep];
     const mask = document.getElementById('tour-mask');
+    const highlight = document.getElementById('tour-highlight');
     const dialog = document.getElementById('tour-dialog');
-    let element = document.querySelector(step.target);
+    let element = step.target ? document.querySelector(step.target) : null;
 
     // 例外處理：若是備註欄，則聚光燈照向其父節點
     if (step.target === '.card.active .card-note' && element) {
         element = element.parentElement;
     }
-    if (!element) {
+    if (step.target && !element) {
         element = document.querySelector('.card.active');
     }
+    document.getElementById('tour-step-idx').innerText = `${currentTourStep + 1} / ${tourSteps.length}`;
+    document.getElementById('tour-eyebrow').textContent = step.eyebrow || '快速導覽';
+    document.getElementById('tour-title').innerHTML = step.title;
+    document.getElementById('tour-body').textContent = step.desc;
+    document.getElementById('tour-back-btn').style.visibility = currentTourStep === 0 ? 'hidden' : 'visible';
+    document.getElementById('tour-next-btn').textContent = currentTourStep === tourSteps.length - 1 ? '開始使用' : '下一步';
+    renderTourProgress();
 
-    if (element) {
-        element.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-        }); // 網頁畫面平滑滾動至亮點區塊
-        setTimeout(() => {
-            const rect = element.getBoundingClientRect();
-            const padding = 8; // 預留亮點邊框間距
-            const top = rect.top - padding;
-            const left = rect.left - padding;
-            const bottom = rect.bottom + padding;
-            const right = rect.right + padding;
-
-            // 利用 CSS clip-path 的多邊形公式，鏤空目標元素，做出聚焦聚光燈特效
-            mask.style.clipPath = `polygon(
-                        0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%,
-                        ${left}px ${top}px, ${right}px ${top}px, 
-                        ${right}px ${bottom}px, ${left}px ${bottom}px, 
-                        ${left}px ${top}px
-                    )`;
-
-            // 置換對話盒文案
-            document.getElementById('tour-step-idx').innerText = `${currentTourStep + 1} / ${tourSteps.length}`;
-            // step.title 僅來自本檔案內固定的導覽資料，包含 SVG 圖示；不可改用於任何使用者輸入。
-            document.getElementById('tour-title').innerHTML = step.title;
-            document.getElementById('tour-body').textContent = step.desc;
-
-            // 動態計算對話盒的最佳顯示位置，防止超出螢幕邊界
-            let dialogTop = bottom + 12;
-            if (dialogTop + 240 > window.innerHeight) {
-                dialogTop = top - 240;
-            }
-            if (dialogTop < 10) dialogTop = 10;
-            let dialogLeft = (window.innerWidth / 2) - 140;
-
-            dialog.style.top = `${dialogTop}px`;
-            dialog.style.left = `${dialogLeft}px`;
-        }, 400);
+    if (!element) {
+        mask.style.background = 'rgba(8, 12, 20, .72)';
+        mask.style.backdropFilter = 'blur(3px)';
+        mask.style.webkitBackdropFilter = 'blur(3px)';
+        highlight.style.display = 'none';
+        requestAnimationFrame(() => positionTourDialog(dialog, null));
+        return;
     }
+
+    mask.style.background = 'transparent';
+    mask.style.backdropFilter = 'none';
+    mask.style.webkitBackdropFilter = 'none';
+    element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+    setTimeout(() => {
+        if (!isTourActive) return;
+        const rect = element.getBoundingClientRect();
+        const padding = 8;
+        const top = Math.max(6, rect.top - padding);
+        const left = Math.max(6, rect.left - padding);
+        const width = Math.min(window.innerWidth - left - 6, rect.width + padding * 2);
+        const height = Math.min(window.innerHeight - top - 6, rect.height + padding * 2);
+        highlight.style.display = 'block';
+        highlight.style.top = `${top}px`;
+        highlight.style.left = `${left}px`;
+        highlight.style.width = `${width}px`;
+        highlight.style.height = `${height}px`;
+        positionTourDialog(dialog, { top, left, right: left + width, bottom: top + height });
+    }, 360);
 }
 
 // 前往引導教學的下一個步驟
@@ -1865,6 +2144,11 @@ function nextTourStep() {
 window.addEventListener('resize', () => {
     if (isTourActive) highlightStep();
 });
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+        if (isTourActive) highlightStep();
+    });
+}
 
 /* ==========================================================================
    7. 重量訓練卡片管理 (Strength Training Management)
@@ -2376,6 +2660,12 @@ function resetTimer() {
     document.getElementById('set-counter').innerText = "";
 }
 
+function previousTourStep() {
+    if (currentTourStep <= 0) return;
+    currentTourStep--;
+    highlightStep();
+}
+
 async function requestTimerNotificationPermission() {
     if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) return null;
     if (Notification.permission === 'default') await Notification.requestPermission();
@@ -2788,7 +3078,10 @@ function exportHistoryToLocal() {
         cfg_flash_enable: localStorage.getItem('cfg_flash_enable') || "true",
         cfg_dark_enable: localStorage.getItem('cfg_dark_enable') || "false",
         cfg_dark_auto: localStorage.getItem('cfg_dark_auto') || "false",
-        cfg_wake_enable: localStorage.getItem('cfg_wake_enable') || "false"
+        cfg_wake_enable: localStorage.getItem('cfg_wake_enable') || "false",
+        accountProfile: getGymAccountProfile(),
+        exportedAt: new Date().toISOString(),
+        appVersion: "1.1.0"
     };
 
     if (backupData.gym_history.length === 0 && !backupData.custom_exercises) {
@@ -2811,6 +3104,10 @@ function exportHistoryToLocal() {
 }
 
 async function uploadHistoryToGoogle() {
+    if (!isGymCloudAuthenticated()) {
+        openGymAccountModal('login');
+        return;
+    }
     if (!navigator.onLine) {
         showNotice('離線上傳', '目前無法連線到雲端，請檢查網路後再試。', false);
         return;
@@ -2887,6 +3184,10 @@ function confirmImportIfLocalHistoryIsLarger(importedData, onConfirm) {
 
 // 從雲端匯入資料
 async function importHistory() {
+    if (!isGymCloudAuthenticated()) {
+        openGymAccountModal('login');
+        return;
+    }
     if (!navigator.onLine) {
         showNotice('離線載入', '目前無法連線至雲端，請檢查網路後再重新匯入。', false);
         return;
@@ -2921,6 +3222,8 @@ async function importHistory() {
             if (result.cfg_dark_enable) localStorage.setItem('cfg_dark_enable', result.cfg_dark_enable);
             if (result.cfg_dark_auto) localStorage.setItem('cfg_dark_auto', result.cfg_dark_auto);
             if (result.cfg_wake_enable) localStorage.setItem('cfg_wake_enable', result.cfg_wake_enable);
+            if (result.accountProfile?.name) localStorage.setItem('gym_account_name', String(result.accountProfile.name).slice(0, 60));
+            if (String(result.accountProfile?.avatar || '').startsWith('data:image/')) localStorage.setItem('gym_account_avatar', result.accountProfile.avatar);
 
             renderAllExerciseLists();
             loadAllWeights();
@@ -2982,6 +3285,8 @@ function importHistoryLocal(event) {
                     if (importedData.cfg_dark_enable) localStorage.setItem('cfg_dark_enable', importedData.cfg_dark_enable);
                     if (importedData.cfg_dark_auto) localStorage.setItem('cfg_dark_auto', importedData.cfg_dark_auto);
                     if (importedData.cfg_wake_enable) localStorage.setItem('cfg_wake_enable', importedData.cfg_wake_enable);
+                    if (importedData.accountProfile?.name) localStorage.setItem('gym_account_name', String(importedData.accountProfile.name).slice(0, 60));
+                    if (String(importedData.accountProfile?.avatar || '').startsWith('data:image/')) localStorage.setItem('gym_account_avatar', importedData.accountProfile.avatar);
                 } else {
                     throw new Error("格式錯誤");
                 }
