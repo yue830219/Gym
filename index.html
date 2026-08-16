@@ -3475,10 +3475,22 @@ function closeChoiceModal() {
    ========================================================================== */
 // 初始化載入暗黑主題相關設定
 function initDarkThemeSetting() {
-    const isDark = localStorage.getItem('cfg_dark_enable') === 'true';
-    const isAuto = localStorage.getItem('cfg_dark_auto') === 'true';
+    const savedDark = localStorage.getItem('cfg_dark_enable');
+    const savedAuto = localStorage.getItem('cfg_dark_auto');
+    const isFirstThemeSetup = savedDark === null && savedAuto === null;
+    const isInitialAccountPrompt = localStorage.getItem('gym_cloud_login_completed') !== 'true' && localStorage.getItem('gym_cloud_login_dismissed') !== 'true';
+    const shouldFollowCurrentTime = isFirstThemeSetup || isInitialAccountPrompt;
+    const isNight = isNightTimeNow();
+    const isDark = shouldFollowCurrentTime ? isNight : savedDark === 'true';
+    const isAuto = isFirstThemeSetup ? true : savedAuto === 'true';
     const darkCheckbox = document.getElementById('cfg-dark-enable');
     const autoCheckbox = document.getElementById('cfg-dark-auto');
+
+    // 初次開啟時預設啟用自動外觀，讓登入畫面立即符合目前時間。
+    if (isFirstThemeSetup) {
+        localStorage.setItem('cfg_dark_auto', 'true');
+        localStorage.setItem('cfg_dark_enable', String(isNight));
+    }
 
     if (autoCheckbox) autoCheckbox.checked = isAuto;
 
@@ -3497,6 +3509,11 @@ function initDarkThemeSetting() {
             document.body.classList.remove('dark-mode');
         }
     }
+}
+
+function isNightTimeNow() {
+    const currentHour = new Date().getHours();
+    return currentHour >= 18 || currentHour < 6;
 }
 
 // 手動觸發切換暗黑風格模式
@@ -3553,11 +3570,9 @@ function toggleAutoDarkTheme() {
 
 // 核心時間判斷：檢查目前時間是否處於夜間（18:00 到隔天 06:00）並執行畫面渲染
 function checkAutoDarkTheme() {
-    const now = new Date();
-    const currentHour = now.getHours();
     const darkCheckbox = document.getElementById('cfg-dark-enable');
     const bodyHasDark = document.body.classList.contains('dark-mode');
-    const isNight = (currentHour >= 18 || currentHour < 6);
+    const isNight = isNightTimeNow();
 
     // 只有當「目前頁面狀態」與「時間應該呈現的狀態」不同時，才觸發切換
     if (isNight && !bodyHasDark) {
@@ -3668,10 +3683,10 @@ document.body.classList.add('loading-locked');
     if (screen) {
         const savedDark = localStorage.getItem('cfg_dark_enable');
         const isAuto = localStorage.getItem('cfg_dark_auto') === 'true';
-        const hour = new Date().getHours();
-        const isNight = (hour >= 18 || hour < 6);
+        const isInitialAccountPrompt = localStorage.getItem('gym_cloud_login_completed') !== 'true' && localStorage.getItem('gym_cloud_login_dismissed') !== 'true';
+        const isNight = isNightTimeNow();
 
-        if (isAuto) {
+        if (isAuto || isInitialAccountPrompt) {
             if (isNight) {
                 screen.classList.add('dark-theme');
             }
