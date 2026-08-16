@@ -381,10 +381,16 @@
         #card-calendar {
             position: relative;
             left: 50%;
-            width: min(calc(100vw - 32px), 672px);
+            width: min(100vw, 672px);
             transform: translateX(-50%);
             padding: 16px;
             box-sizing: border-box;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
         }
         .gym-calendar-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
         .gym-calendar-title { margin:0; color:inherit; font-size:1.25rem; font-weight:800; }
@@ -400,11 +406,8 @@
         .gym-calendar-day.is-today { background:rgba(0,122,255,.22); border-color:#007AFF; }
         .gym-calendar-day-number { align-self:flex-start; font-size:.75rem; font-weight:700; line-height:1; }
         .gym-calendar-day.is-today .gym-calendar-day-number { color:#005FCC; font-weight:800; }
-        .gym-calendar-events { min-height:0; width:30px; margin:4px auto 0; display:flex; flex:1; flex-direction:column; align-items:center; justify-content:flex-end; gap:2px; }
-        .gym-calendar-events.is-single { justify-content:center; }
-        .gym-calendar-events.is-stacked { position:relative; display:block; height:54px; flex:0 0 54px; }
-        .gym-calendar-event-mark { width:30px; height:30px; min-height:30px; padding:0; border:0; border-radius:8px; color:#fff; display:grid; place-items:center; font-size:.78rem; font-weight:800; line-height:1; box-shadow:0 2px 5px rgba(15,23,42,.16); cursor:pointer; }
-        .gym-calendar-events.is-stacked .gym-calendar-event-mark { position:absolute; left:0; top:calc(var(--stack-index) * var(--stack-offset)); z-index:calc(var(--stack-index) + 1); }
+        .gym-calendar-events { min-height:0; width:100%; margin-top:4px; display:flex; flex:1; flex-direction:column; align-items:stretch; justify-content:flex-start; gap:1px; overflow:hidden; }
+        .gym-calendar-event-mark { width:100%; min-width:0; min-height:15px; padding:1px 2px; border:0; border-radius:3px; color:#fff; display:block; overflow:hidden; font-size:.65rem; font-weight:700; line-height:1.15; text-align:center; white-space:nowrap; text-overflow:ellipsis; box-shadow:none; cursor:pointer; }
         body.dark-mode .gym-calendar-nav button { background:#2C2C2E; color:#D1D5DB; box-shadow:none; }
         body.dark-mode .gym-calendar-day { background:#2C2C2E; border-color:#3A3A3C; color:#E5E5EA; }
         body.dark-mode .gym-calendar-day.is-outside { background:#202023; border-color:#303034; }
@@ -2895,10 +2898,6 @@ function createGymCalendarEvent(record) {
     };
 }
 
-function getGymCalendarBadgeLabel(title) {
-    return ({ '練胸':'胸', '練肩':'肩', '練臂':'臂', '練腹':'腹', '練腿':'腿', '有氧':'跑', 'HIIT':'H' })[title] || String(title || '訓').slice(0, 1);
-}
-
 function openGymCalendarEvent(record) {
     const event = createGymCalendarEvent(record);
     currentEventInfo = { event: event };
@@ -2940,17 +2939,13 @@ function renderGymCalendar() {
 
         if (dayEvents.length) {
             const eventContainer = document.createElement('div');
-            const isStacked = dayEvents.length > 2;
-            eventContainer.className = 'gym-calendar-events' + (dayEvents.length === 1 ? ' is-single' : '') + (isStacked ? ' is-stacked' : '');
-            const stackOffset = isStacked ? Math.min(10, 26 / (dayEvents.length - 1)) : 0;
-            dayEvents.forEach(function(record, index) {
+            eventContainer.className = 'gym-calendar-events';
+            dayEvents.forEach(function(record) {
                 const eventButton = document.createElement('button');
                 eventButton.type = 'button';
                 eventButton.className = 'gym-calendar-event-mark';
-                eventButton.textContent = getGymCalendarBadgeLabel(record.title);
+                eventButton.textContent = String(record.title || '訓練');
                 eventButton.style.backgroundColor = record.backgroundColor || record.borderColor || '#007AFF';
-                eventButton.style.setProperty('--stack-index', index);
-                eventButton.style.setProperty('--stack-offset', stackOffset + 'px');
                 eventButton.setAttribute('aria-label', record.title + '，查看訓練內容');
                 eventButton.onclick = function(event) {
                     event.stopPropagation();
