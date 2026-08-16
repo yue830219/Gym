@@ -83,6 +83,15 @@
             box-sizing: border-box;
             overscroll-behavior: none;
         }
+        body.training-main-locked {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden !important;
+            overscroll-behavior: none;
+            box-sizing: border-box;
+        }
         /* 側邊欄抽屜面板 */
         .sidebar { 
             position: fixed; 
@@ -114,8 +123,9 @@
         .sidebar-item:active { background: #f2f2f7; color: #007AFF; }
 
         /* 主畫面訓練部位分頁選單 */
-        .tab-menu { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 0px; }
-        .tab-btn { flex: 1 1 17%; min-width: 70px; padding: 12px 5px; border-radius: 12px; border: none; font-size: 0.9rem; font-weight: bold; color: white; opacity: 0.4; transition: 0.3s; margin-bottom: 5px; cursor: pointer;display: flex;flex-direction: column;align-items: center;gap: 4px; }
+        .tab-menu { display:flex; flex-wrap:nowrap; gap:6px; margin-bottom:4px; padding:1px 0 3px; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x proximity; overscroll-behavior-x:contain; touch-action:pan-x; scrollbar-width:none; }
+        .tab-menu::-webkit-scrollbar { display:none; }
+        .tab-btn { flex:0 0 auto; min-width:88px; padding:9px 12px; border-radius:12px; border:none; font-size:.86rem; font-weight:bold; color:white; opacity:.4; transition:.3s; margin:0; cursor:pointer; display:flex; flex-direction:row; align-items:center; gap:4px; scroll-snap-align:center; }
         .tab-btn.active { opacity: 1; transform: translateY(-2px); } /* 被選中的分頁會完全顯示並稍微往上浮動 */
         
         /* 讓按鈕內的 SVG 與文字水平居中對齊 */
@@ -158,7 +168,7 @@
         .btn-record { background: #34c759; color: white; padding: 14px; font-size: 16px; border-radius: 12px; width: 100%; margin-top: 15px; border: none; font-weight: bold; cursor: pointer; }
 
         /* 七種訓練卡片統一為原 HIIT 卡片高度，只有中央訓練內容可上下滑動。 */
-        .training-fixed-card { height: 340px; padding: 16px; box-sizing: border-box; overflow: hidden; }
+        .training-fixed-card { height: var(--training-card-height, 340px); padding: 16px; box-sizing: border-box; overflow: hidden; }
         .training-fixed-card.active { display: flex; flex-direction: column; }
         .training-fixed-card > .card-header { flex: 0 0 auto; margin-bottom: 7px; }
         .training-scroll-content { flex: 1 1 auto; min-height: 0; margin: 0 -4px; padding: 0 4px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
@@ -542,7 +552,7 @@
         
         /* 鎖定頁面滑動的類別 */
         .scroll-locked {
-            height: 105vh !important;
+            min-height: 100%;
         }
 
         /* ==========================================================================
@@ -1066,6 +1076,7 @@ let isTourActive = false; // 是否正在進行新手導覽
 let isNoticeOpen = false; // 追蹤提示卡片是否正開啟中
 let sidebarScrollLockEnabled = false; // 追蹤側邊欄是否已鎖定頁面捲動
 let converterScrollLockEnabled = false;
+let trainingMainScrollLockEnabled = false;
 
 function preventSidebarScroll(event) {
     const sidebar = document.getElementById('sidebar');
@@ -1097,8 +1108,8 @@ function disableSidebarScrollLock() {
     if (!sidebarScrollLockEnabled) return;
     sidebarScrollLockEnabled = false;
     document.body.classList.remove('sidebar-locked');
-    document.documentElement.style.overflow = converterScrollLockEnabled ? 'hidden' : '';
-    document.body.style.overflow = converterScrollLockEnabled ? 'hidden' : '';
+    document.documentElement.style.overflow = (converterScrollLockEnabled || trainingMainScrollLockEnabled) ? 'hidden' : '';
+    document.body.style.overflow = (converterScrollLockEnabled || trainingMainScrollLockEnabled) ? 'hidden' : '';
     document.removeEventListener('touchmove', preventSidebarScroll);
     document.removeEventListener('wheel', preventSidebarScroll, true);
     document.removeEventListener('keydown', preventSidebarScrollKeydown);
@@ -1143,12 +1154,50 @@ function disableConverterScrollLock() {
     if (!converterScrollLockEnabled) return;
     converterScrollLockEnabled = false;
     document.body.classList.remove('converter-locked');
-    document.documentElement.style.overflow = sidebarScrollLockEnabled ? 'hidden' : '';
-    document.body.style.overflow = sidebarScrollLockEnabled ? 'hidden' : '';
+    document.documentElement.style.overflow = (sidebarScrollLockEnabled || trainingMainScrollLockEnabled) ? 'hidden' : '';
+    document.body.style.overflow = (sidebarScrollLockEnabled || trainingMainScrollLockEnabled) ? 'hidden' : '';
     document.removeEventListener('touchmove', preventConverterScroll);
     document.removeEventListener('wheel', preventConverterScroll);
     window.removeEventListener('scroll', keepConverterAtTop);
 }
+
+function updateTrainingCardAvailableHeight() {
+    if (!trainingMainScrollLockEnabled) return;
+    const activeCard = document.querySelector('.training-fixed-card.active');
+    if (!activeCard) return;
+    const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    const cardTop = activeCard.getBoundingClientRect().top;
+    const availableHeight = Math.max(190, Math.floor(viewportHeight - cardTop - 12));
+    document.documentElement.style.setProperty('--training-card-height', availableHeight + 'px');
+}
+
+function enableTrainingMainScrollLock() {
+    trainingMainScrollLockEnabled = true;
+    document.body.classList.add('training-main-locked');
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    window.scrollTo(0, 0);
+    requestAnimationFrame(updateTrainingCardAvailableHeight);
+}
+
+function disableTrainingMainScrollLock() {
+    if (!trainingMainScrollLockEnabled) return;
+    trainingMainScrollLockEnabled = false;
+    document.body.classList.remove('training-main-locked');
+    document.documentElement.style.removeProperty('--training-card-height');
+    document.documentElement.style.overflow = (sidebarScrollLockEnabled || converterScrollLockEnabled) ? 'hidden' : '';
+    document.body.style.overflow = (sidebarScrollLockEnabled || converterScrollLockEnabled) ? 'hidden' : '';
+}
+
+function centerTrainingTab(button) {
+    const tabMenu = button && button.closest('.tab-menu');
+    if (!tabMenu) return;
+    const targetLeft = button.offsetLeft - (tabMenu.clientWidth - button.offsetWidth) / 2;
+    tabMenu.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
+}
+
+window.addEventListener('resize', updateTrainingCardAvailableHeight);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', updateTrainingCardAvailableHeight);
 
 /* ======================================================================
    2. Cloudflare 加密雲端備份
@@ -1914,6 +1963,7 @@ window.onload = function() {
 
     updateCardioStats();
     initTimerSettings();
+    enableTrainingMainScrollLock();
     // 嘗試呼叫原生 API 強制鎖定直向 (部分安裝為 PWA 的手機瀏覽器支援)
     if (screen.orientation && screen.orientation.lock) {
         screen.orientation.lock('portrait').catch(function(error) {
@@ -1979,6 +2029,7 @@ function handleMenuClick(action) {
     const mainTitle = document.getElementById('main-title');
     const timerTitle = document.getElementById('timer-title');
 
+    disableTrainingMainScrollLock();
     if (action === 'converter' || action === 'calendar') enableConverterScrollLock();
     else disableConverterScrollLock();
 
@@ -2029,8 +2080,15 @@ function switchTab(index) {
 
     const targetCards = document.querySelectorAll('.card');
     if (targetCards[index]) targetCards[index].classList.add('active');
+    let activeTabButton = null;
     document.querySelectorAll('.tab-btn').forEach(function(btn, i) {
         btn.classList.toggle('active', i === index);
+        if (i === index) activeTabButton = btn;
+    });
+    enableTrainingMainScrollLock();
+    requestAnimationFrame(function() {
+        centerTrainingTab(activeTabButton);
+        updateTrainingCardAvailableHeight();
     });
 }
 
@@ -3700,12 +3758,12 @@ function convertUnit(source) {
     let touchStartY = 0;
     let touchEndX = 0;
     let touchEndY = 0;
-    let isCalendarSwipe = false;
+    let isReservedHorizontalSwipe = false;
     const SWIPE_MIN_DISTANCE = 70; // 判定手勢成立的最少水平滑行距離 (像素)
 
     window.addEventListener('touchstart', function(e) {
         if (document.body.classList.contains('tour-locked')) return;
-        isCalendarSwipe = Boolean(e.target && e.target.closest && e.target.closest('#calendar-swipe-area'));
+        isReservedHorizontalSwipe = Boolean(e.target && e.target.closest && e.target.closest('#calendar-swipe-area, .tab-menu'));
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
     }, {
@@ -3723,9 +3781,9 @@ function convertUnit(source) {
     window.addEventListener('touchend', function(e) {
         if (document.body.classList.contains('tour-locked')) return;
 
-        if (isCalendarSwipe) {
+        if (isReservedHorizontalSwipe) {
             touchStartX = touchStartY = touchEndX = touchEndY = 0;
-            isCalendarSwipe = false;
+            isReservedHorizontalSwipe = false;
             return;
         }
 
