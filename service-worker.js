@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gym-assistant-v16';
+const CACHE_NAME = 'gym-assistant-v17';
 const CORE_ASSETS = [
   './', './index.html', './manifest.json', './service-worker.js', './music.mp3',
   './favicon.png', './apple-touch-icon.png',

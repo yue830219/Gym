@@ -168,8 +168,9 @@
         .btn-record { background: #34c759; color: white; padding: 14px; font-size: 16px; border-radius: 12px; width: 100%; margin-top: 15px; border: none; font-weight: bold; cursor: pointer; }
 
         /* 七種訓練卡片統一延伸到螢幕底部，只有中央訓練內容可上下滑動。 */
-        .training-fixed-card { height:var(--training-card-height,340px); padding:16px; padding-bottom:max(16px,env(safe-area-inset-bottom,0px)); box-sizing:border-box; overflow:hidden; }
+        .training-fixed-card { height:340px; padding:16px; box-sizing:border-box; overflow:hidden; }
         .training-fixed-card.active { display: flex; flex-direction: column; }
+        body.training-main-locked .training-fixed-card.active { position:fixed; top:var(--training-card-top,0px); right:15px; bottom:0; left:15px; width:auto; height:auto; margin:0; border-bottom:0; border-radius:18px 18px 0 0; z-index:20; }
         .training-fixed-card > .card-header { flex: 0 0 auto; margin-bottom: 7px; }
         .training-scroll-content { flex: 1 1 auto; min-height: 0; margin: 0 -4px; padding: 0 4px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .training-scroll-content::-webkit-scrollbar { display: none; }
@@ -1161,28 +1162,30 @@ function disableConverterScrollLock() {
     window.removeEventListener('scroll', keepConverterAtTop);
 }
 
-function updateTrainingCardAvailableHeight() {
+function updateTrainingCardViewportPosition() {
     if (!trainingMainScrollLockEnabled) return;
     const activeCard = document.querySelector('.training-fixed-card.active');
     if (!activeCard) return;
-    const cardTop = Math.max(0, Math.round(activeCard.getBoundingClientRect().top));
-    document.documentElement.style.setProperty('--training-card-height', 'calc(100dvh - ' + cardTop + 'px - 2px)');
+    const tabMenu = document.querySelector('.tab-menu');
+    const cardTop = tabMenu ? Math.round(tabMenu.getBoundingClientRect().bottom + 4) : Math.round(activeCard.getBoundingClientRect().top);
+    document.documentElement.style.setProperty('--training-card-top', Math.max(0, cardTop) + 'px');
 }
 
 function enableTrainingMainScrollLock() {
     trainingMainScrollLockEnabled = true;
+    updateTrainingCardViewportPosition();
     document.body.classList.add('training-main-locked');
     document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
     window.scrollTo(0, 0);
-    requestAnimationFrame(updateTrainingCardAvailableHeight);
+    requestAnimationFrame(updateTrainingCardViewportPosition);
 }
 
 function disableTrainingMainScrollLock() {
     if (!trainingMainScrollLockEnabled) return;
     trainingMainScrollLockEnabled = false;
     document.body.classList.remove('training-main-locked');
-    document.documentElement.style.removeProperty('--training-card-height');
+    document.documentElement.style.removeProperty('--training-card-top');
     document.documentElement.style.overflow = (sidebarScrollLockEnabled || converterScrollLockEnabled) ? 'hidden' : '';
     document.body.style.overflow = (sidebarScrollLockEnabled || converterScrollLockEnabled) ? 'hidden' : '';
 }
@@ -1194,8 +1197,8 @@ function centerTrainingTab(button) {
     tabMenu.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
 }
 
-window.addEventListener('resize', updateTrainingCardAvailableHeight);
-if (window.visualViewport) window.visualViewport.addEventListener('resize', updateTrainingCardAvailableHeight);
+window.addEventListener('resize', updateTrainingCardViewportPosition);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', updateTrainingCardViewportPosition);
 
 /* ======================================================================
    2. Cloudflare 加密雲端備份
@@ -2091,7 +2094,7 @@ function switchTab(index) {
     enableTrainingMainScrollLock();
     requestAnimationFrame(function() {
         centerTrainingTab(activeTabButton);
-        updateTrainingCardAvailableHeight();
+        updateTrainingCardViewportPosition();
     });
 }
 
