@@ -167,8 +167,8 @@
         /* 「儲存到日曆」大按鈕 */
         .btn-record { background: #34c759; color: white; padding: 14px; font-size: 16px; border-radius: 12px; width: 100%; margin-top: 15px; border: none; font-weight: bold; cursor: pointer; }
 
-        /* 七種訓練卡片統一為原 HIIT 卡片高度，只有中央訓練內容可上下滑動。 */
-        .training-fixed-card { height: var(--training-card-height, 340px); padding: 16px; box-sizing: border-box; overflow: hidden; }
+        /* 七種訓練卡片統一延伸到螢幕底部，只有中央訓練內容可上下滑動。 */
+        .training-fixed-card { height:var(--training-card-height,340px); padding:16px; padding-bottom:max(16px,env(safe-area-inset-bottom,0px)); box-sizing:border-box; overflow:hidden; }
         .training-fixed-card.active { display: flex; flex-direction: column; }
         .training-fixed-card > .card-header { flex: 0 0 auto; margin-bottom: 7px; }
         .training-scroll-content { flex: 1 1 auto; min-height: 0; margin: 0 -4px; padding: 0 4px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
@@ -1165,10 +1165,8 @@ function updateTrainingCardAvailableHeight() {
     if (!trainingMainScrollLockEnabled) return;
     const activeCard = document.querySelector('.training-fixed-card.active');
     if (!activeCard) return;
-    const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-    const cardTop = activeCard.getBoundingClientRect().top;
-    const availableHeight = Math.max(190, Math.floor(viewportHeight - cardTop - 12));
-    document.documentElement.style.setProperty('--training-card-height', availableHeight + 'px');
+    const cardTop = Math.max(0, Math.round(activeCard.getBoundingClientRect().top));
+    document.documentElement.style.setProperty('--training-card-height', 'calc(100dvh - ' + cardTop + 'px - 2px)');
 }
 
 function enableTrainingMainScrollLock() {
@@ -2079,7 +2077,12 @@ function switchTab(index) {
     });
 
     const targetCards = document.querySelectorAll('.card');
-    if (targetCards[index]) targetCards[index].classList.add('active');
+    const activeTrainingCard = targetCards[index];
+    if (activeTrainingCard) {
+        activeTrainingCard.classList.add('active');
+        const scrollContent = activeTrainingCard.querySelector('.training-scroll-content');
+        if (scrollContent) scrollContent.scrollTop = 0;
+    }
     let activeTabButton = null;
     document.querySelectorAll('.tab-btn').forEach(function(btn, i) {
         btn.classList.toggle('active', i === index);
