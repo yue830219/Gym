@@ -117,6 +117,13 @@
         .tab-menu { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 0px; }
         .tab-btn { flex: 1 1 17%; min-width: 70px; padding: 12px 5px; border-radius: 12px; border: none; font-size: 0.9rem; font-weight: bold; color: white; opacity: 0.4; transition: 0.3s; margin-bottom: 5px; cursor: pointer;display: flex;flex-direction: column;align-items: center;gap: 4px; }
         .tab-btn.active { opacity: 1; transform: translateY(-2px); } /* 被選中的分頁會完全顯示並稍微往上浮動 */
+        .training-title-row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+        .training-title-controls { display:flex; align-items:center; gap:7px; margin-left:auto; }
+        .training-title-edit { width:32px; height:32px; padding:0; border:0; border-radius:50%; background:transparent; color:#545456; cursor:pointer; }
+        .training-title-edit svg { width:21px; height:21px; }
+        .training-title-date { width:118px; padding:2px 0; border:0 !important; border-radius:0 !important; outline:0; background:transparent !important; box-shadow:none !important; color:#545456; font-size:.9rem; font-weight:700; text-align:right; -webkit-appearance:none; appearance:none; }
+        .training-title-date::-webkit-calendar-picker-indicator { margin-left:2px; opacity:.62; }
+        .card[data-type] > .card-header { display:none !important; }
         
         /* 讓按鈕內的 SVG 與文字水平居中對齊 */
         button {
@@ -683,7 +690,15 @@
         </div>
     </div>
 
-    <div id="main-title" style="margin: 0 0 10px 0;"><h3 style="color:var(--primary); margin:0;">紀錄訓練</h3></div>
+    <div id="main-title" style="margin: 0 0 10px 0;">
+        <div class="training-title-row">
+            <h3 style="color:var(--primary); margin:0;">紀錄訓練</h3>
+            <div class="training-title-controls">
+                <input id="training-title-date" type="date" class="date-input training-title-date" onchange="syncDate(this)" aria-label="訓練日期">
+                <button id="training-title-edit" class="training-title-edit" type="button" onclick="editActiveTrainingCard()" aria-label="編輯目前訓練項目"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            </div>
+        </div>
+    </div>
     <div class="tab-menu">
         <button class="tab-btn active" style="background:var(--chest)" onclick="switchTab(0)">🔥 練胸</button>
         <button class="tab-btn" style="background:var(--shoulder)" onclick="switchTab(1)">⚡ 練肩</button>
@@ -1831,6 +1846,7 @@ window.onload = function() {
     initFlashSetting(); // 載入畫面閃爍提醒開關狀態
     initDarkThemeSetting(); // 載入原有的暗黑狀態
     initNewSettings(); // 重新整理時記住常亮狀態
+    updateTrainingTitleControls();
 
     // 綁定「HIIT 卡片」數值的連動監聽（體重連動有氧卡片、即時算卡路里）
     var hiitIds = ['hiit_weight', 'hiit_weight_min', 'hiit_weight_sec'];
@@ -1974,6 +1990,23 @@ function handleMenuClick(action) {
 }
 
 
+function editActiveTrainingCard() {
+    const activeCard = document.querySelector('.card.active[data-type]');
+    const editButton = activeCard ? activeCard.querySelector('.btn-manage-toggle') : null;
+    if (editButton) toggleManageMode(editButton);
+}
+
+function updateTrainingTitleControls() {
+    const activeCard = document.querySelector('.card.active[data-type]');
+    const titleEdit = document.getElementById('training-title-edit');
+    const titleDate = document.getElementById('training-title-date');
+    if (!activeCard || !titleEdit || !titleDate) return;
+    const cardEdit = activeCard.querySelector('.btn-manage-toggle');
+    const cardDate = activeCard.querySelector('.date-input');
+    titleEdit.style.display = cardEdit ? 'inline-flex' : 'none';
+    if (cardDate) titleDate.value = cardDate.value;
+}
+
 // 點選訓練部位分頁 (Tab) 切換特定紀錄卡片展示
 function switchTab(index) {
     disableConverterScrollLock();
@@ -1991,6 +2024,7 @@ function switchTab(index) {
     document.querySelectorAll('.tab-btn').forEach(function(btn, i) {
         btn.classList.toggle('active', i === index);
     });
+    updateTrainingTitleControls();
 }
 
 /* ==========================================================================
