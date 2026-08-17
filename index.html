@@ -114,15 +114,15 @@
         .sidebar-item:active { background: #f2f2f7; color: #007AFF; }
 
         /* 主畫面訓練部位分頁選單 */
-        .tab-menu { display:flex; flex-wrap:nowrap; gap:6px; margin-bottom:4px; padding:1px 0 5px; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x proximity; overscroll-behavior-x:contain; touch-action:pan-x; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+        .tab-menu { display:flex; flex-wrap:nowrap; gap:6px; margin-bottom:4px; padding:4px 0 5px; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x proximity; overscroll-behavior-x:contain; touch-action:pan-x; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
         .tab-menu::-webkit-scrollbar { display:none; }
         .tab-btn { flex:0 0 auto; min-width:88px; padding:10px 12px; border-radius:12px; border:none; font-size:.88rem; font-weight:bold; color:white; opacity:.4; transition:.3s; margin:0; cursor:pointer; display:flex; flex-direction:row; align-items:center; justify-content:center; gap:4px; white-space:nowrap; scroll-snap-align:center; }
-        .tab-btn.active { opacity: 1; transform: translateY(-2px); } /* 被選中的分頁會完全顯示並稍微往上浮動 */
-        .training-title-row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-        .training-title-controls { display:flex; align-items:center; gap:8px; margin-left:auto; }
+        .tab-btn.active { opacity: 1; transform: translateY(-1px); } /* 被選中的分頁會完全顯示並稍微往上浮動 */
+        .training-title-row { display:flex; align-items:center; justify-content:flex-start; gap:10px; }
+        .training-title-controls { display:flex; align-items:center; gap:7px; }
         .training-title-edit { width:32px; height:32px; padding:0; border:0; border-radius:50%; background:transparent; color:#545456; cursor:pointer; }
         .training-title-edit svg { width:21px; height:21px; }
-        .training-title-date { width:126px; padding:3px 0; border:0 !important; border-radius:0; outline:0; background:transparent !important; box-shadow:none !important; color:#545456; font-size:.92rem; font-weight:700; text-align:right; }
+        .training-title-date { width:118px; padding:3px 0; border:0 !important; border-radius:0; outline:0; background:transparent !important; box-shadow:none !important; color:#545456; font-size:.9rem; font-weight:700; text-align:left; }
         .training-title-date::-webkit-calendar-picker-indicator { margin-left:2px; opacity:.62; }
         .card[data-type] > .card-header { display:none !important; }
         
@@ -161,11 +161,15 @@
         .training-scroll-content { flex: 1 1 auto; min-height: 0; margin: 0 -4px; padding: 0 4px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .training-scroll-content::-webkit-scrollbar { display: none; }
         .card[data-type] > .btn-calendar-only { flex: 0 0 auto; min-height: 46px; margin-top: 8px; }
-        .training-scroll-content .exercise-item { padding-top: 6px; padding-bottom: 6px; }
+        .training-scroll-content .exercise-item { padding-top: 5px; padding-bottom: 5px; }
+        .training-scroll-content .weight-input { padding-top: 4px; padding-bottom: 4px; }
         .training-scroll-content .exercise-item[style*="background:"] { margin-top: 6px !important; padding: 8px !important; }
         .training-scroll-content .bottom-manage-bar { gap: 7px; margin: 7px 0; }
         .training-scroll-content .training-note-row { margin: 6px 0 !important; }
         .training-scroll-content .card-note { height: 34px !important; padding: 6px 8px !important; }
+        .card[data-type] > .training-note-row { flex: 0 0 auto; margin: 6px 0 !important; }
+        .card[data-type] > .training-note-row .card-note { height: 34px !important; padding: 6px 8px !important; }
+        #card-leg .training-scroll-content, #card-hiit .training-scroll-content { display:flex; flex-direction:column; justify-content:space-evenly; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f9f9f9; transition: border-color 0.3s; }
@@ -706,8 +710,8 @@
         <div class="training-title-row">
             <h3 style="color:var(--primary); margin:0;">紀錄訓練</h3>
             <div class="training-title-controls">
-                <button id="training-title-edit" class="training-title-edit" type="button" onclick="editActiveTrainingCard()" aria-label="編輯目前訓練項目"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
                 <input id="training-title-date" type="date" class="date-input training-title-date" onchange="syncDate(this)" aria-label="訓練日期">
+                <button id="training-title-edit" class="training-title-edit" type="button" onclick="editActiveTrainingCard()" aria-label="編輯目前訓練項目"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
             </div>
         </div>
     </div>
@@ -2017,8 +2021,14 @@ function prepareTrainingCardScrolling() {
             scrollContent.appendChild(header.nextSibling);
         }
         const noteInput = scrollContent.querySelector('.card-note');
-        if (noteInput && noteInput.parentElement) noteInput.parentElement.classList.add('training-note-row');
-        card.insertBefore(scrollContent, saveButton);
+        let fixedNoteRow = null;
+        if (noteInput && noteInput.parentElement) {
+            const noteRow = noteInput.parentElement;
+            noteRow.classList.add('training-note-row');
+            card.insertBefore(noteRow, saveButton);
+            fixedNoteRow = noteRow;
+        }
+        card.insertBefore(scrollContent, fixedNoteRow || saveButton);
     });
 }
 
@@ -2069,6 +2079,8 @@ function switchTab(index) {
         btn.classList.toggle('active', i === index);
     });
     updateTrainingTitleControls();
+    const activeScrollContent = targetCards[index] ? targetCards[index].querySelector('.training-scroll-content') : null;
+    if (activeScrollContent) activeScrollContent.scrollTop = 0;
     requestAnimationFrame(updateTrainingCardHeight);
 }
 
