@@ -61,7 +61,7 @@
         .logo-container { flex-grow: 1; text-align: center; font-size: 1.25rem; font-weight: 800; margin-top: -5px; color: #007AFF; line-height: 1; display: flex; align-items: center; justify-content: center; }
 
         /* 背景半透明遮罩（側邊欄或導覽觸發時使用） */
-        .overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.4); backdrop-filter:blur(2px); display:none; z-index:2500; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); display: none; z-index: 2500; }
         .overlay.active { display: block; }
 
         /* ==========================================================================
@@ -83,23 +83,13 @@
             box-sizing: border-box;
             overscroll-behavior: none;
         }
-        body.training-main-locked {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100dvh;
-            overflow: hidden !important;
-            overscroll-behavior: none;
-            box-sizing: border-box;
-            padding-bottom: 0;
-        }
         /* 側邊欄抽屜面板 */
         .sidebar { 
             position: fixed; 
             top: 0; 
             left: -220px; 
             width: 200px; 
-            height: 100dvh;
+            height: 100dvh; 
             background: rgba(255, 255, 255, 0.6); 
             backdrop-filter: blur(20px); 
             -webkit-backdrop-filter: blur(20px); 
@@ -124,9 +114,8 @@
         .sidebar-item:active { background: #f2f2f7; color: #007AFF; }
 
         /* 主畫面訓練部位分頁選單 */
-        .tab-menu { display:flex; flex-wrap:nowrap; gap:6px; margin-bottom:4px; padding:1px 0 3px; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x proximity; overscroll-behavior-x:contain; touch-action:pan-x; scrollbar-width:none; }
-        .tab-menu::-webkit-scrollbar { display:none; }
-        .tab-btn { flex:0 0 auto; min-width:88px; padding:9px 12px; border-radius:12px; border:none; font-size:.86rem; font-weight:bold; color:white; opacity:.4; transition:.3s; margin:0; cursor:pointer; display:flex; flex-direction:row; align-items:center; gap:4px; scroll-snap-align:center; }
+        .tab-menu { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 0px; }
+        .tab-btn { flex: 1 1 17%; min-width: 70px; padding: 12px 5px; border-radius: 12px; border: none; font-size: 0.9rem; font-weight: bold; color: white; opacity: 0.4; transition: 0.3s; margin-bottom: 5px; cursor: pointer;display: flex;flex-direction: column;align-items: center;gap: 4px; }
         .tab-btn.active { opacity: 1; transform: translateY(-2px); } /* 被選中的分頁會完全顯示並稍微往上浮動 */
         
         /* 讓按鈕內的 SVG 與文字水平居中對齊 */
@@ -167,21 +156,6 @@
         .date-input { border: 1px solid #ddd; border-radius: 6px; padding: 6px; font-size: 1rem; font-weight: bold; background: #fff; transition: background 0.3s, border-color 0.3s, color 0.3s; }
         /* 「儲存到日曆」大按鈕 */
         .btn-record { background: #34c759; color: white; padding: 14px; font-size: 16px; border-radius: 12px; width: 100%; margin-top: 15px; border: none; font-weight: bold; cursor: pointer; }
-
-        /* 七種訓練卡片統一延伸到螢幕底部，只有中央訓練內容可上下滑動。 */
-        .training-fixed-card { height:340px; padding:16px; box-sizing:border-box; overflow:hidden; }
-        .training-fixed-card.active { display: flex; flex-direction: column; }
-        body.training-main-locked .training-fixed-card.active { position:fixed; top:var(--training-card-top,0px); right:15px; bottom:-20px; left:15px; width:auto; height:auto; z-index:20; }
-        .training-fixed-card > .card-header { flex: 0 0 auto; margin-bottom: 7px; }
-        .training-scroll-content { flex: 1 1 auto; min-height: 0; margin: 0 -4px; padding: 0 4px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-        .training-scroll-content::-webkit-scrollbar { display: none; }
-        .training-fixed-card > .btn-calendar-only { flex: 0 0 auto; min-height: 46px; margin-top: 8px; }
-        .training-scroll-content .exercise-item { padding: 6px 0; }
-        .training-scroll-content .exercise-item[style*="background:"] { margin-top: 6px !important; padding: 8px !important; }
-        .training-scroll-content .weight-input { padding-top: 4px; padding-bottom: 4px; }
-        .training-scroll-content .bottom-manage-bar { gap: 7px; margin: 7px 0; }
-        .training-scroll-content .training-note-row { margin: 6px 0 !important; }
-        .training-scroll-content .card-note { height: 34px !important; padding: 6px 8px !important; }
         
         /* 訓練日曆專用卡片樣式表 */
         .calendar-card { display: none; }
@@ -1078,7 +1052,6 @@ let isTourActive = false; // 是否正在進行新手導覽
 let isNoticeOpen = false; // 追蹤提示卡片是否正開啟中
 let sidebarScrollLockEnabled = false; // 追蹤側邊欄是否已鎖定頁面捲動
 let converterScrollLockEnabled = false;
-let trainingMainScrollLockEnabled = false;
 
 function preventSidebarScroll(event) {
     const sidebar = document.getElementById('sidebar');
@@ -1110,8 +1083,8 @@ function disableSidebarScrollLock() {
     if (!sidebarScrollLockEnabled) return;
     sidebarScrollLockEnabled = false;
     document.body.classList.remove('sidebar-locked');
-    document.documentElement.style.overflow = (converterScrollLockEnabled || trainingMainScrollLockEnabled) ? 'hidden' : '';
-    document.body.style.overflow = (converterScrollLockEnabled || trainingMainScrollLockEnabled) ? 'hidden' : '';
+    document.documentElement.style.overflow = converterScrollLockEnabled ? 'hidden' : '';
+    document.body.style.overflow = converterScrollLockEnabled ? 'hidden' : '';
     document.removeEventListener('touchmove', preventSidebarScroll);
     document.removeEventListener('wheel', preventSidebarScroll, true);
     document.removeEventListener('keydown', preventSidebarScrollKeydown);
@@ -1156,50 +1129,12 @@ function disableConverterScrollLock() {
     if (!converterScrollLockEnabled) return;
     converterScrollLockEnabled = false;
     document.body.classList.remove('converter-locked');
-    document.documentElement.style.overflow = (sidebarScrollLockEnabled || trainingMainScrollLockEnabled) ? 'hidden' : '';
-    document.body.style.overflow = (sidebarScrollLockEnabled || trainingMainScrollLockEnabled) ? 'hidden' : '';
+    document.documentElement.style.overflow = sidebarScrollLockEnabled ? 'hidden' : '';
+    document.body.style.overflow = sidebarScrollLockEnabled ? 'hidden' : '';
     document.removeEventListener('touchmove', preventConverterScroll);
     document.removeEventListener('wheel', preventConverterScroll);
     window.removeEventListener('scroll', keepConverterAtTop);
 }
-
-function updateTrainingCardViewportPosition() {
-    if (!trainingMainScrollLockEnabled) return;
-    const activeCard = document.querySelector('.training-fixed-card.active');
-    if (!activeCard) return;
-    const tabMenu = document.querySelector('.tab-menu');
-    const cardTop = tabMenu ? Math.round(tabMenu.getBoundingClientRect().bottom + 4) : Math.round(activeCard.getBoundingClientRect().top);
-    document.documentElement.style.setProperty('--training-card-top', Math.max(0, cardTop) + 'px');
-}
-
-function enableTrainingMainScrollLock() {
-    trainingMainScrollLockEnabled = true;
-    updateTrainingCardViewportPosition();
-    document.body.classList.add('training-main-locked');
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.overflow = 'hidden';
-    window.scrollTo(0, 0);
-    requestAnimationFrame(updateTrainingCardViewportPosition);
-}
-
-function disableTrainingMainScrollLock() {
-    if (!trainingMainScrollLockEnabled) return;
-    trainingMainScrollLockEnabled = false;
-    document.body.classList.remove('training-main-locked');
-    document.documentElement.style.removeProperty('--training-card-top');
-    document.documentElement.style.overflow = (sidebarScrollLockEnabled || converterScrollLockEnabled) ? 'hidden' : '';
-    document.body.style.overflow = (sidebarScrollLockEnabled || converterScrollLockEnabled) ? 'hidden' : '';
-}
-
-function centerTrainingTab(button) {
-    const tabMenu = button && button.closest('.tab-menu');
-    if (!tabMenu) return;
-    const targetLeft = button.offsetLeft - (tabMenu.clientWidth - button.offsetWidth) / 2;
-    tabMenu.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
-}
-
-window.addEventListener('resize', updateTrainingCardViewportPosition);
-if (window.visualViewport) window.visualViewport.addEventListener('resize', updateTrainingCardViewportPosition);
 
 /* ======================================================================
    2. Cloudflare 加密雲端備份
@@ -1876,34 +1811,7 @@ const tourSteps = [{
 /* ==========================================================================
    3. 系統初始化與生命週期 (Initialization & Lifecycle)
    ========================================================================== */
-function initializeFixedTrainingCards() {
-    const trainingCardIds = ['card-chest', 'card-shoulder', 'card-arm', 'card-abs', 'card-leg-strength', 'card-leg', 'card-hiit'];
-
-    trainingCardIds.forEach(function(cardId) {
-        const card = document.getElementById(cardId);
-        if (!card || card.querySelector(':scope > .training-scroll-content')) return;
-        const header = card.querySelector(':scope > .card-header');
-        const saveButton = card.querySelector(':scope > .btn-calendar-only');
-        if (!header || !saveButton) return;
-
-        const scrollContent = document.createElement('div');
-        scrollContent.className = 'training-scroll-content';
-        let currentNode = header.nextSibling;
-        while (currentNode && currentNode !== saveButton) {
-            const nextNode = currentNode.nextSibling;
-            scrollContent.appendChild(currentNode);
-            currentNode = nextNode;
-        }
-        card.insertBefore(scrollContent, saveButton);
-        card.classList.add('training-fixed-card');
-
-        const noteInput = scrollContent.querySelector('.card-note');
-        if (noteInput && noteInput.parentElement) noteInput.parentElement.classList.add('training-note-row');
-    });
-}
-
 window.onload = function() {
-    initializeFixedTrainingCards();
     // 初始化所有卡片的日期選擇器為「今天」
     var today = new Date().toLocaleDateString('sv-SE');
     document.querySelectorAll('.date-input').forEach(function(input) {
@@ -1965,7 +1873,6 @@ window.onload = function() {
 
     updateCardioStats();
     initTimerSettings();
-    enableTrainingMainScrollLock();
     // 嘗試呼叫原生 API 強制鎖定直向 (部分安裝為 PWA 的手機瀏覽器支援)
     if (screen.orientation && screen.orientation.lock) {
         screen.orientation.lock('portrait').catch(function(error) {
@@ -2031,7 +1938,6 @@ function handleMenuClick(action) {
     const mainTitle = document.getElementById('main-title');
     const timerTitle = document.getElementById('timer-title');
 
-    disableTrainingMainScrollLock();
     if (action === 'converter' || action === 'calendar') enableConverterScrollLock();
     else disableConverterScrollLock();
 
@@ -2081,21 +1987,9 @@ function switchTab(index) {
     });
 
     const targetCards = document.querySelectorAll('.card');
-    const activeTrainingCard = targetCards[index];
-    if (activeTrainingCard) {
-        activeTrainingCard.classList.add('active');
-        const scrollContent = activeTrainingCard.querySelector('.training-scroll-content');
-        if (scrollContent) scrollContent.scrollTop = 0;
-    }
-    let activeTabButton = null;
+    if (targetCards[index]) targetCards[index].classList.add('active');
     document.querySelectorAll('.tab-btn').forEach(function(btn, i) {
         btn.classList.toggle('active', i === index);
-        if (i === index) activeTabButton = btn;
-    });
-    enableTrainingMainScrollLock();
-    requestAnimationFrame(function() {
-        centerTrainingTab(activeTabButton);
-        updateTrainingCardViewportPosition();
     });
 }
 
@@ -3765,12 +3659,12 @@ function convertUnit(source) {
     let touchStartY = 0;
     let touchEndX = 0;
     let touchEndY = 0;
-    let isReservedHorizontalSwipe = false;
+    let isCalendarSwipe = false;
     const SWIPE_MIN_DISTANCE = 70; // 判定手勢成立的最少水平滑行距離 (像素)
 
     window.addEventListener('touchstart', function(e) {
         if (document.body.classList.contains('tour-locked')) return;
-        isReservedHorizontalSwipe = Boolean(e.target && e.target.closest && e.target.closest('#calendar-swipe-area, .tab-menu'));
+        isCalendarSwipe = Boolean(e.target && e.target.closest && e.target.closest('#calendar-swipe-area'));
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
     }, {
@@ -3788,9 +3682,9 @@ function convertUnit(source) {
     window.addEventListener('touchend', function(e) {
         if (document.body.classList.contains('tour-locked')) return;
 
-        if (isReservedHorizontalSwipe) {
+        if (isCalendarSwipe) {
             touchStartX = touchStartY = touchEndX = touchEndY = 0;
-            isReservedHorizontalSwipe = false;
+            isCalendarSwipe = false;
             return;
         }
 
