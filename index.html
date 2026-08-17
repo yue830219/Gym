@@ -2967,6 +2967,8 @@ function changeGymCalendarMonth(delta) {
     renderGymCalendar();
 }
 
+const CALENDAR_SIDEBAR_EDGE_WIDTH = 72;
+
 function setupGymCalendarSwipe() {
     const swipeArea = document.getElementById('calendar-swipe-area');
     if (!swipeArea || swipeArea.dataset.swipeBound === 'true') return;
@@ -2985,7 +2987,9 @@ function setupGymCalendarSwipe() {
         const touch = event.changedTouches[0];
         const deltaX = touch.clientX - startPoint.x;
         const deltaY = touch.clientY - startPoint.y;
+        const startedInSidebarEdge = startPoint.x <= CALENDAR_SIDEBAR_EDGE_WIDTH;
         startPoint = null;
+        if (startedInSidebarEdge && deltaX > 0) return;
         if (Math.abs(deltaX) < 50 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
         ignoreNextClick = true;
         changeGymCalendarMonth(deltaX < 0 ? 1 : -1);
@@ -3664,9 +3668,10 @@ function convertUnit(source) {
 
     window.addEventListener('touchstart', function(e) {
         if (document.body.classList.contains('tour-locked')) return;
-        isCalendarSwipe = Boolean(e.target && e.target.closest && e.target.closest('#calendar-swipe-area'));
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
+        const startedInCalendar = Boolean(e.target && e.target.closest && e.target.closest('#calendar-swipe-area'));
+        isCalendarSwipe = startedInCalendar && touchStartX > CALENDAR_SIDEBAR_EDGE_WIDTH;
     }, {
         passive: true
     });
