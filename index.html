@@ -114,17 +114,9 @@
         .sidebar-item:active { background: #f2f2f7; color: #007AFF; }
 
         /* 主畫面訓練部位分頁選單 */
-        .tab-menu { display:flex; flex-wrap:nowrap; gap:6px; margin-bottom:4px; padding:4px 0 5px; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x proximity; overscroll-behavior-x:contain; touch-action:pan-x; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
-        .tab-menu::-webkit-scrollbar { display:none; }
-        .tab-btn { flex:0 0 auto; min-width:88px; padding:10px 12px; border-radius:12px; border:none; font-size:.88rem; font-weight:bold; color:white; opacity:.4; transition:.3s; margin:0; cursor:pointer; display:flex; flex-direction:row; align-items:center; justify-content:center; gap:4px; white-space:nowrap; scroll-snap-align:center; }
-        .tab-btn.active { opacity: 1; transform: translateY(-1px); } /* 被選中的分頁會完全顯示並稍微往上浮動 */
-        .training-title-row { display:flex; align-items:center; justify-content:flex-start; gap:10px; }
-        .training-title-controls { display:flex; align-items:center; gap:7px; }
-        .training-title-edit { width:32px; height:32px; padding:0; border:0; border-radius:50%; background:transparent; color:#545456; cursor:pointer; }
-        .training-title-edit svg { width:21px; height:21px; }
-        .training-title-date { width:118px; padding:3px 0; border:0 !important; border-radius:0; outline:0; background:transparent !important; box-shadow:none !important; color:#545456; font-size:.9rem; font-weight:700; text-align:left; }
-        .training-title-date::-webkit-calendar-picker-indicator { margin-left:2px; opacity:.62; }
-        .card[data-type] > .card-header { display:none !important; }
+        .tab-menu { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 0px; }
+        .tab-btn { flex: 1 1 17%; min-width: 70px; padding: 12px 5px; border-radius: 12px; border: none; font-size: 0.9rem; font-weight: bold; color: white; opacity: 0.4; transition: 0.3s; margin-bottom: 5px; cursor: pointer;display: flex;flex-direction: column;align-items: center;gap: 4px; }
+        .tab-btn.active { opacity: 1; transform: translateY(-2px); } /* 被選中的分頁會完全顯示並稍微往上浮動 */
         
         /* 讓按鈕內的 SVG 與文字水平居中對齊 */
         button {
@@ -155,22 +147,6 @@
             transition: background 0.3s, border-color 0.3s;
         }
         .card.active { display: block; animation: fadeIn 0.3s; } /* 只有啟動狀態的卡片才會顯示 */
-        .card[data-type] { height: var(--training-card-height, auto); box-sizing: border-box; overflow: hidden; }
-        .card[data-type].active { display: flex; flex-direction: column; }
-        .card[data-type] > .card-header { flex: 0 0 auto; margin-bottom: 7px; }
-        .training-scroll-content { flex: 1 1 auto; min-height: 0; margin: 0 -4px; padding: 0 4px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-        .training-scroll-content::-webkit-scrollbar { display: none; }
-        .card[data-type] > .btn-calendar-only { flex: 0 0 auto; min-height: 46px; margin-top: 8px; }
-        .training-scroll-content .exercise-item { padding-top: 5px; padding-bottom: 5px; }
-        .training-scroll-content .weight-input { padding-top: 4px; padding-bottom: 4px; }
-        .training-scroll-content .exercise-item[style*="background:"] { margin-top: 6px !important; padding: 8px !important; }
-        .training-scroll-content .bottom-manage-bar { gap: 7px; margin: 7px 0; }
-        .training-scroll-content .training-note-row { margin: 6px 0 !important; }
-        .training-scroll-content .card-note { height: 34px !important; padding: 6px 8px !important; }
-        .card[data-type] > .training-note-row { flex: 0 0 auto; margin: 6px 0 !important; }
-        .card[data-type] > .training-note-row .card-note { height: 34px !important; padding: 6px 8px !important; }
-        #card-leg .training-scroll-content > .exercise-item[style*="background:"],
-        #card-hiit .training-scroll-content > .exercise-item[style*="background:"] { min-height: 72px; box-sizing: border-box; display:flex; align-items:center; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f9f9f9; transition: border-color 0.3s; }
@@ -707,15 +683,7 @@
         </div>
     </div>
 
-    <div id="main-title" style="margin: 0 0 10px 0;">
-        <div class="training-title-row">
-            <h3 style="color:var(--primary); margin:0;">紀錄訓練</h3>
-            <div class="training-title-controls">
-                <input id="training-title-date" type="date" class="date-input training-title-date" onchange="syncDate(this)" aria-label="訓練日期">
-                <button id="training-title-edit" class="training-title-edit" type="button" onclick="editActiveTrainingCard()" aria-label="編輯目前訓練項目"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-            </div>
-        </div>
-    </div>
+    <div id="main-title" style="margin: 0 0 10px 0;"><h3 style="color:var(--primary); margin:0;">紀錄訓練</h3></div>
     <div class="tab-menu">
         <button class="tab-btn active" style="background:var(--chest)" onclick="switchTab(0)">🔥 練胸</button>
         <button class="tab-btn" style="background:var(--shoulder)" onclick="switchTab(1)">⚡ 練肩</button>
@@ -1863,7 +1831,6 @@ window.onload = function() {
     initFlashSetting(); // 載入畫面閃爍提醒開關狀態
     initDarkThemeSetting(); // 載入原有的暗黑狀態
     initNewSettings(); // 重新整理時記住常亮狀態
-    updateTrainingTitleControls();
 
     // 綁定「HIIT 卡片」數值的連動監聽（體重連動有氧卡片、即時算卡路里）
     var hiitIds = ['hiit_weight', 'hiit_weight_min', 'hiit_weight_sec'];
@@ -1906,8 +1873,6 @@ window.onload = function() {
 
     updateCardioStats();
     initTimerSettings();
-    prepareTrainingCardScrolling();
-    requestAnimationFrame(updateTrainingCardHeight);
     // 嘗試呼叫原生 API 強制鎖定直向 (部分安裝為 PWA 的手機瀏覽器支援)
     if (screen.orientation && screen.orientation.lock) {
         screen.orientation.lock('portrait').catch(function(error) {
@@ -2009,78 +1974,6 @@ function handleMenuClick(action) {
 }
 
 
-// 將卡片中央項目整理成可捲動區，並固定上下標題與儲存按鈕。
-function prepareTrainingCardScrolling() {
-    document.querySelectorAll('.card[data-type]').forEach(function(card) {
-        if (card.querySelector(':scope > .training-scroll-content')) return;
-        const header = card.querySelector(':scope > .card-header');
-        const saveButton = card.querySelector(':scope > .btn-calendar-only');
-        if (!header || !saveButton) return;
-        const scrollContent = document.createElement('div');
-        scrollContent.className = 'training-scroll-content';
-        while (header.nextSibling && header.nextSibling !== saveButton) {
-            scrollContent.appendChild(header.nextSibling);
-        }
-        const noteInput = scrollContent.querySelector('.card-note');
-        let fixedNoteRow = null;
-        if (noteInput && noteInput.parentElement) {
-            const noteRow = noteInput.parentElement;
-            noteRow.classList.add('training-note-row');
-            card.insertBefore(noteRow, saveButton);
-            fixedNoteRow = noteRow;
-            noteInput.addEventListener('pointerdown', focusTrainingNoteWithoutJump);
-        }
-        card.insertBefore(scrollContent, fixedNoteRow || saveButton);
-    });
-}
-
-// 依目前可視螢幕高度，讓訓練卡片剛好延伸到畫面底部。
-function updateTrainingCardHeight() {
-    const activeCard = document.querySelector('.card.active[data-type]');
-    if (!activeCard) return;
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-    const cardTop = activeCard.getBoundingClientRect().top;
-    document.documentElement.style.setProperty('--training-card-height', Math.max(200, Math.floor(viewportHeight - cardTop - 10)) + 'px');
-}
-
-window.addEventListener('resize', updateTrainingCardHeight);
-if (window.visualViewport) window.visualViewport.addEventListener('resize', updateTrainingCardHeight);
-
-function editActiveTrainingCard() {
-    const activeCard = document.querySelector('.card.active[data-type]');
-    const editButton = activeCard ? activeCard.querySelector('.btn-manage-toggle') : null;
-    if (editButton) toggleManageMode(editButton);
-}
-
-function focusTrainingNoteWithoutJump(event) {
-    event.preventDefault();
-    const input = event.currentTarget;
-    const scrollLeft = window.scrollX;
-    const scrollTop = window.scrollY;
-    try {
-        input.focus({ preventScroll: true });
-    } catch (error) {
-        input.focus();
-    }
-    const restorePosition = function() { window.scrollTo(scrollLeft, scrollTop); };
-    restorePosition();
-    requestAnimationFrame(restorePosition);
-    window.setTimeout(restorePosition, 80);
-    window.setTimeout(restorePosition, 260);
-    window.setTimeout(restorePosition, 520);
-}
-
-function updateTrainingTitleControls() {
-    const activeCard = document.querySelector('.card.active[data-type]');
-    const titleEdit = document.getElementById('training-title-edit');
-    const titleDate = document.getElementById('training-title-date');
-    if (!activeCard || !titleEdit || !titleDate) return;
-    const cardEdit = activeCard.querySelector('.btn-manage-toggle');
-    const cardDate = activeCard.querySelector('.date-input');
-    titleEdit.style.display = cardEdit ? 'inline-flex' : 'none';
-    if (cardDate) titleDate.value = cardDate.value;
-}
-
 // 點選訓練部位分頁 (Tab) 切換特定紀錄卡片展示
 function switchTab(index) {
     disableConverterScrollLock();
@@ -2098,10 +1991,6 @@ function switchTab(index) {
     document.querySelectorAll('.tab-btn').forEach(function(btn, i) {
         btn.classList.toggle('active', i === index);
     });
-    updateTrainingTitleControls();
-    const activeScrollContent = targetCards[index] ? targetCards[index].querySelector('.training-scroll-content') : null;
-    if (activeScrollContent) activeScrollContent.scrollTop = 0;
-    requestAnimationFrame(updateTrainingCardHeight);
 }
 
 /* ==========================================================================
@@ -3775,7 +3664,7 @@ function convertUnit(source) {
 
     window.addEventListener('touchstart', function(e) {
         if (document.body.classList.contains('tour-locked')) return;
-        isCalendarSwipe = Boolean(e.target && e.target.closest && e.target.closest('#calendar-swipe-area, .tab-menu'));
+        isCalendarSwipe = Boolean(e.target && e.target.closest && e.target.closest('#calendar-swipe-area'));
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
     }, {
