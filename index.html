@@ -61,7 +61,7 @@
         .logo-container { flex-grow: 1; text-align: center; font-size: 1.25rem; font-weight: 800; margin-top: -5px; color: #007AFF; line-height: 1; display: flex; align-items: center; justify-content: center; }
 
         /* 背景半透明遮罩（側邊欄或導覽觸發時使用） */
-        .overlay { position:fixed; top:0; left:0; width:100%; height:calc(100dvh + env(safe-area-inset-bottom,0px)); background:rgba(0,0,0,.4); backdrop-filter:blur(2px); display:none; z-index:2500; }
+        .overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.4); backdrop-filter:blur(2px); display:none; z-index:2500; }
         .overlay.active { display: block; }
 
         /* ==========================================================================
@@ -87,7 +87,7 @@
             position: fixed;
             inset: 0;
             width: 100%;
-            height: calc(100dvh + env(safe-area-inset-bottom, 0px));
+            height: 100dvh;
             overflow: hidden !important;
             overscroll-behavior: none;
             box-sizing: border-box;
@@ -99,7 +99,7 @@
             top: 0; 
             left: -220px; 
             width: 200px; 
-            height: calc(100dvh + env(safe-area-inset-bottom, 0px));
+            height: 100dvh;
             background: rgba(255, 255, 255, 0.6); 
             backdrop-filter: blur(20px); 
             -webkit-backdrop-filter: blur(20px); 
@@ -172,8 +172,6 @@
         .training-fixed-card { height:340px; padding:16px; box-sizing:border-box; overflow:hidden; }
         .training-fixed-card.active { display: flex; flex-direction: column; }
         body.training-main-locked .training-fixed-card.active { position:fixed; top:var(--training-card-top,0px); right:15px; bottom:-20px; left:15px; width:auto; height:auto; z-index:20; }
-        body.training-main-locked::after { content:""; position:fixed; right:15px; bottom:0; left:15px; height:calc(env(safe-area-inset-bottom,0px) + 20px); background:rgba(255,255,255,.72); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); pointer-events:none; z-index:19; }
-        body.dark-mode.training-main-locked::after { background:rgba(44,44,46,.82); }
         .training-fixed-card > .card-header { flex: 0 0 auto; margin-bottom: 7px; }
         .training-scroll-content { flex: 1 1 auto; min-height: 0; margin: 0 -4px; padding: 0 4px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .training-scroll-content::-webkit-scrollbar { display: none; }
@@ -556,7 +554,7 @@
         
         /* 鎖定頁面滑動的類別 */
         .scroll-locked {
-            min-height: 100%;
+            height: 105vh !important;
         }
 
         /* ==========================================================================
