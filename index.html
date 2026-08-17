@@ -114,8 +114,9 @@
         .sidebar-item:active { background: #f2f2f7; color: #007AFF; }
 
         /* 主畫面訓練部位分頁選單 */
-        .tab-menu { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 0px; }
-        .tab-btn { flex: 1 1 17%; min-width: 70px; padding: 12px 5px; border-radius: 12px; border: none; font-size: 0.9rem; font-weight: bold; color: white; opacity: 0.4; transition: 0.3s; margin-bottom: 5px; cursor: pointer;display: flex;flex-direction: column;align-items: center;gap: 4px; }
+        .tab-menu { display:flex; flex-wrap:nowrap; gap:6px; margin-bottom:4px; padding:1px 0 5px; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x proximity; overscroll-behavior-x:contain; touch-action:pan-x; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+        .tab-menu::-webkit-scrollbar { display:none; }
+        .tab-btn { flex:0 0 auto; min-width:88px; padding:10px 12px; border-radius:12px; border:none; font-size:.88rem; font-weight:bold; color:white; opacity:.4; transition:.3s; margin:0; cursor:pointer; display:flex; flex-direction:row; align-items:center; justify-content:center; gap:4px; white-space:nowrap; scroll-snap-align:center; }
         .tab-btn.active { opacity: 1; transform: translateY(-2px); } /* 被選中的分頁會完全顯示並稍微往上浮動 */
         
         /* 讓按鈕內的 SVG 與文字水平居中對齊 */
@@ -3664,7 +3665,7 @@ function convertUnit(source) {
 
     window.addEventListener('touchstart', function(e) {
         if (document.body.classList.contains('tour-locked')) return;
-        isCalendarSwipe = Boolean(e.target && e.target.closest && e.target.closest('#calendar-swipe-area'));
+        isCalendarSwipe = Boolean(e.target && e.target.closest && e.target.closest('#calendar-swipe-area, .tab-menu'));
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
     }, {
