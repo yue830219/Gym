@@ -123,8 +123,10 @@
         .training-title-edit svg { width:21px; height:21px; }
         .training-title-date { width:142px; min-width:142px; flex:0 0 142px; padding:2px 0; border:0 !important; border-radius:0 !important; outline:0; background:transparent !important; box-shadow:none !important; color:#545456; font-size:.9rem; font-weight:700; text-align:left; white-space:nowrap; -webkit-appearance:none; appearance:none; }
         .training-title-date::-webkit-calendar-picker-indicator { margin-left:2px; opacity:.62; }
-        .card[data-type] { padding-top:12px; }
         .card[data-type] > .card-header { display:none !important; }
+        .card[data-type] > .exercise-list { margin-top:-8px; }
+        #card-leg > .card-header + .exercise-item,
+        #card-hiit > .card-header + .exercise-item { margin-top:-8px; }
         
         /* 讓按鈕內的 SVG 與文字水平居中對齊 */
         button {
