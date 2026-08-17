@@ -148,6 +148,7 @@
             transition: background 0.3s, border-color 0.3s;
         }
         .card.active { display: block; animation: fadeIn 0.3s; } /* 只有啟動狀態的卡片才會顯示 */
+        .card[data-type] { height: var(--training-card-height, auto); box-sizing: border-box; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f9f9f9; transition: border-color 0.3s; }
@@ -1874,6 +1875,7 @@ window.onload = function() {
 
     updateCardioStats();
     initTimerSettings();
+    requestAnimationFrame(updateTrainingCardHeight);
     // 嘗試呼叫原生 API 強制鎖定直向 (部分安裝為 PWA 的手機瀏覽器支援)
     if (screen.orientation && screen.orientation.lock) {
         screen.orientation.lock('portrait').catch(function(error) {
@@ -1975,6 +1977,18 @@ function handleMenuClick(action) {
 }
 
 
+// 依目前可視螢幕高度，讓訓練卡片剛好延伸到畫面底部。
+function updateTrainingCardHeight() {
+    const activeCard = document.querySelector('.card.active[data-type]');
+    if (!activeCard) return;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const cardTop = activeCard.getBoundingClientRect().top;
+    document.documentElement.style.setProperty('--training-card-height', Math.max(200, Math.floor(viewportHeight - cardTop)) + 'px');
+}
+
+window.addEventListener('resize', updateTrainingCardHeight);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', updateTrainingCardHeight);
+
 // 點選訓練部位分頁 (Tab) 切換特定紀錄卡片展示
 function switchTab(index) {
     disableConverterScrollLock();
@@ -1992,6 +2006,7 @@ function switchTab(index) {
     document.querySelectorAll('.tab-btn').forEach(function(btn, i) {
         btn.classList.toggle('active', i === index);
     });
+    requestAnimationFrame(updateTrainingCardHeight);
 }
 
 /* ==========================================================================
