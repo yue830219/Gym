@@ -83,6 +83,15 @@
             box-sizing: border-box;
             overscroll-behavior: none;
         }
+        body.scroll-locked.training-main-locked {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100dvh !important;
+            overflow: hidden !important;
+            box-sizing: border-box;
+            overscroll-behavior: none;
+        }
         /* 側邊欄抽屜面板 */
         .sidebar { 
             position: fixed; 
@@ -148,9 +157,12 @@
             transition: background 0.3s, border-color 0.3s;
         }
         .card.active { display: block; animation: fadeIn 0.3s; } /* 只有啟動狀態的卡片才會顯示 */
-        .card[data-type] { height: var(--training-card-height, auto); box-sizing: border-box; overflow: hidden; }
+        .card[data-type] { height: var(--training-card-height, auto); padding-top: 12px; box-sizing: border-box; overflow: hidden; }
         .card[data-type].active { display: flex; flex-direction: column; }
-        .card[data-type] > .card-header { flex: 0 0 auto; margin-bottom: 7px; }
+        .card[data-type] > .card-header { flex: 0 0 auto; margin-bottom: 4px; }
+        .card[data-type] > .card-header h3 { font-size: 1.05rem; line-height: 1.2; }
+        .card[data-type] > .card-header .date-input { padding: 4px 5px; font-size: .9rem; }
+        .card[data-type] > .card-header .btn-manage-toggle { margin-left: 18px; margin-right: 18px; }
         .training-scroll-content { flex: 1 1 auto; min-height: 0; margin: 0 -4px; padding: 0 4px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .training-scroll-content::-webkit-scrollbar { display: none; }
         .card[data-type] > .btn-calendar-only { flex: 0 0 auto; min-height: 46px; margin-top: 8px; }
@@ -1824,6 +1836,7 @@ const tourSteps = [{
    3. 系統初始化與生命週期 (Initialization & Lifecycle)
    ========================================================================== */
 window.onload = function() {
+    document.body.classList.add('training-main-locked');
     // 初始化所有卡片的日期選擇器為「今天」
     var today = new Date().toLocaleDateString('sv-SE');
     document.querySelectorAll('.date-input').forEach(function(input) {
@@ -1952,6 +1965,7 @@ function handleMenuClick(action) {
     const mainTitle = document.getElementById('main-title');
     const timerTitle = document.getElementById('timer-title');
 
+    document.body.classList.toggle('training-main-locked', action === 'add');
     if (action === 'converter' || action === 'calendar') enableConverterScrollLock();
     else disableConverterScrollLock();
 
@@ -2012,7 +2026,7 @@ function updateTrainingCardHeight() {
     if (!activeCard) return;
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
     const cardTop = activeCard.getBoundingClientRect().top;
-    document.documentElement.style.setProperty('--training-card-height', Math.max(200, Math.floor(viewportHeight - cardTop)) + 'px');
+    document.documentElement.style.setProperty('--training-card-height', Math.max(200, Math.floor(viewportHeight - cardTop - 12)) + 'px');
 }
 
 window.addEventListener('resize', updateTrainingCardHeight);
@@ -2020,6 +2034,7 @@ if (window.visualViewport) window.visualViewport.addEventListener('resize', upda
 
 // 點選訓練部位分頁 (Tab) 切換特定紀錄卡片展示
 function switchTab(index) {
+    document.body.classList.add('training-main-locked');
     disableConverterScrollLock();
     cancelAllEditing(); // 離開原卡片前自動中斷並還原未儲存的動作自訂編輯
     document.querySelector('.timer-panel').style.display = 'block';
