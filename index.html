@@ -2026,7 +2026,7 @@ function updateTrainingCardHeight() {
     if (!activeCard) return;
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
     const cardTop = activeCard.getBoundingClientRect().top;
-    document.documentElement.style.setProperty('--training-card-height', Math.max(200, Math.floor(viewportHeight - cardTop - 12)) + 'px');
+    document.documentElement.style.setProperty('--training-card-height', Math.max(200, Math.floor(viewportHeight - cardTop)) + 'px');
 }
 
 window.addEventListener('resize', updateTrainingCardHeight);
