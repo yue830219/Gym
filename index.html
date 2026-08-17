@@ -148,7 +148,17 @@
             transition: background 0.3s, border-color 0.3s;
         }
         .card.active { display: block; animation: fadeIn 0.3s; } /* 只有啟動狀態的卡片才會顯示 */
-        .card[data-type] { height: var(--training-card-height, auto); box-sizing: border-box; }
+        .card[data-type] { height: var(--training-card-height, auto); box-sizing: border-box; overflow: hidden; }
+        .card[data-type].active { display: flex; flex-direction: column; }
+        .card[data-type] > .card-header { flex: 0 0 auto; margin-bottom: 7px; }
+        .training-scroll-content { flex: 1 1 auto; min-height: 0; margin: 0 -4px; padding: 0 4px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .training-scroll-content::-webkit-scrollbar { display: none; }
+        .card[data-type] > .btn-calendar-only { flex: 0 0 auto; min-height: 46px; margin-top: 8px; }
+        .training-scroll-content .exercise-item { padding-top: 6px; padding-bottom: 6px; }
+        .training-scroll-content .exercise-item[style*="background:"] { margin-top: 6px !important; padding: 8px !important; }
+        .training-scroll-content .bottom-manage-bar { gap: 7px; margin: 7px 0; }
+        .training-scroll-content .training-note-row { margin: 6px 0 !important; }
+        .training-scroll-content .card-note { height: 34px !important; padding: 6px 8px !important; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f9f9f9; transition: border-color 0.3s; }
@@ -1875,6 +1885,7 @@ window.onload = function() {
 
     updateCardioStats();
     initTimerSettings();
+    prepareTrainingCardScrolling();
     requestAnimationFrame(updateTrainingCardHeight);
     // 嘗試呼叫原生 API 強制鎖定直向 (部分安裝為 PWA 的手機瀏覽器支援)
     if (screen.orientation && screen.orientation.lock) {
@@ -1976,6 +1987,24 @@ function handleMenuClick(action) {
     });
 }
 
+
+// 將卡片中央項目整理成可捲動區，並固定上下標題與儲存按鈕。
+function prepareTrainingCardScrolling() {
+    document.querySelectorAll('.card[data-type]').forEach(function(card) {
+        if (card.querySelector(':scope > .training-scroll-content')) return;
+        const header = card.querySelector(':scope > .card-header');
+        const saveButton = card.querySelector(':scope > .btn-calendar-only');
+        if (!header || !saveButton) return;
+        const scrollContent = document.createElement('div');
+        scrollContent.className = 'training-scroll-content';
+        while (header.nextSibling && header.nextSibling !== saveButton) {
+            scrollContent.appendChild(header.nextSibling);
+        }
+        const noteInput = scrollContent.querySelector('.card-note');
+        if (noteInput && noteInput.parentElement) noteInput.parentElement.classList.add('training-note-row');
+        card.insertBefore(scrollContent, saveButton);
+    });
+}
 
 // 依目前可視螢幕高度，讓訓練卡片剛好延伸到畫面底部。
 function updateTrainingCardHeight() {
