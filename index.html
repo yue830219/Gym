@@ -169,7 +169,8 @@
         .training-scroll-content .card-note { height: 34px !important; padding: 6px 8px !important; }
         .card[data-type] > .training-note-row { flex: 0 0 auto; margin: 6px 0 !important; }
         .card[data-type] > .training-note-row .card-note { height: 34px !important; padding: 6px 8px !important; }
-        #card-leg .training-scroll-content, #card-hiit .training-scroll-content { display:flex; flex-direction:column; justify-content:space-evenly; }
+        #card-leg .training-scroll-content > .exercise-item[style*="background:"],
+        #card-hiit .training-scroll-content > .exercise-item[style*="background:"] { min-height: 72px; box-sizing: border-box; display:flex; align-items:center; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f9f9f9; transition: border-color 0.3s; }
@@ -2027,6 +2028,7 @@ function prepareTrainingCardScrolling() {
             noteRow.classList.add('training-note-row');
             card.insertBefore(noteRow, saveButton);
             fixedNoteRow = noteRow;
+            noteInput.addEventListener('pointerdown', focusTrainingNoteWithoutJump);
         }
         card.insertBefore(scrollContent, fixedNoteRow || saveButton);
     });
@@ -2048,6 +2050,24 @@ function editActiveTrainingCard() {
     const activeCard = document.querySelector('.card.active[data-type]');
     const editButton = activeCard ? activeCard.querySelector('.btn-manage-toggle') : null;
     if (editButton) toggleManageMode(editButton);
+}
+
+function focusTrainingNoteWithoutJump(event) {
+    event.preventDefault();
+    const input = event.currentTarget;
+    const scrollLeft = window.scrollX;
+    const scrollTop = window.scrollY;
+    try {
+        input.focus({ preventScroll: true });
+    } catch (error) {
+        input.focus();
+    }
+    const restorePosition = function() { window.scrollTo(scrollLeft, scrollTop); };
+    restorePosition();
+    requestAnimationFrame(restorePosition);
+    window.setTimeout(restorePosition, 80);
+    window.setTimeout(restorePosition, 260);
+    window.setTimeout(restorePosition, 520);
 }
 
 function updateTrainingTitleControls() {
