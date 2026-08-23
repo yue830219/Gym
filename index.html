@@ -3781,6 +3781,15 @@ function convertUnit(source) {
     let isTrainingTabSwipe = false;
     const SWIPE_MIN_DISTANCE = 70; // 判定手勢成立的最少水平滑行距離 (像素)
 
+    const trainingTabMenu = document.querySelector('.tab-menu');
+    if (trainingTabMenu) {
+        ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(function(eventName) {
+            trainingTabMenu.addEventListener(eventName, function(event) {
+                event.stopPropagation();
+            }, { passive: true });
+        });
+    }
+
     window.addEventListener('touchstart', function(e) {
         if (document.body.classList.contains('tour-locked')) return;
         touchStartX = e.touches[0].clientX;
