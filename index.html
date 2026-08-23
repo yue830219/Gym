@@ -141,7 +141,7 @@
         .training-scroll-content > .exercise-list { margin-top:0; }
         #card-leg .training-scroll-content > .exercise-item:first-child,
         #card-hiit .training-scroll-content > .exercise-item:first-child { margin-top:0; }
-        #card-leg .training-scroll-content > .exercise-item:not(:last-child) { padding-top:6px; padding-bottom:6px; }
+        #card-leg .training-scroll-content > .exercise-item:not(:last-child) { padding-top:2px; padding-bottom:2px; }
         #card-leg .training-scroll-content { overflow-y:hidden; touch-action:auto; }
         #card-hiit .training-scroll-content { display:flex; flex-direction:column; }
         #card-hiit .training-scroll-content > .exercise-item:last-child { flex:1 0 auto; }
@@ -2075,7 +2075,7 @@ function updateTrainingFourRowHeights() {
         }, 0);
         if (visibleItems.length < 4) fourRowHeight += firstRowHeight * (4 - visibleItems.length);
         if (card.id === 'card-hiit') fourRowHeight = firstRowHeight * 4;
-        if (card.id === 'card-leg') fourRowHeight += 50;
+        if (card.id === 'card-leg') fourRowHeight += 82;
         if (card.id === 'card-hiit') fourRowHeight += 46;
         scrollContent.style.height = Math.ceil(fourRowHeight) + 'px';
     });
