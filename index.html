@@ -3778,6 +3778,7 @@ function convertUnit(source) {
     let touchEndX = 0;
     let touchEndY = 0;
     let isCalendarSwipe = false;
+    let isTrainingTabSwipe = false;
     const SWIPE_MIN_DISTANCE = 70; // 判定手勢成立的最少水平滑行距離 (像素)
 
     window.addEventListener('touchstart', function(e) {
@@ -3786,6 +3787,7 @@ function convertUnit(source) {
         touchStartY = e.touches[0].clientY;
         const startedInCalendar = Boolean(e.target && e.target.closest && e.target.closest('#calendar-swipe-area'));
         isCalendarSwipe = startedInCalendar && touchStartX > CALENDAR_SIDEBAR_EDGE_WIDTH;
+        isTrainingTabSwipe = Boolean(e.target && e.target.closest && e.target.closest('.tab-menu'));
     }, {
         passive: true
     });
@@ -3801,9 +3803,10 @@ function convertUnit(source) {
     window.addEventListener('touchend', function(e) {
         if (document.body.classList.contains('tour-locked')) return;
 
-        if (isCalendarSwipe) {
+        if (isCalendarSwipe || isTrainingTabSwipe) {
             touchStartX = touchStartY = touchEndX = touchEndY = 0;
             isCalendarSwipe = false;
+            isTrainingTabSwipe = false;
             return;
         }
 
