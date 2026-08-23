@@ -130,17 +130,17 @@
         .training-title-date { width:142px; min-width:142px; flex:0 0 142px; padding:2px 0; border:0 !important; border-radius:0 !important; outline:0; background:transparent !important; box-shadow:none !important; color:#545456; font-size:.9rem; font-weight:700; text-align:left; white-space:nowrap; -webkit-appearance:none; appearance:none; }
         .training-title-date::-webkit-calendar-picker-indicator { margin-left:2px; opacity:.62; }
         .card[data-type] > .card-header { display:none !important; }
-        .card[data-type] > .exercise-list { margin-top:-15px; }
+        .card[data-type] > .exercise-list { margin-top:0; }
         #card-leg > .card-header + .exercise-item,
-        #card-hiit > .card-header + .exercise-item { margin-top:-15px; }
+        #card-hiit > .card-header + .exercise-item { margin-top:0; }
         .card[data-type] { overflow:hidden; }
         .card[data-type].active { display:flex; flex-direction:column; }
         .training-scroll-content { flex:0 0 auto; height:var(--training-four-row-height,220px); min-height:0; margin:0 -4px; padding:0 4px; overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
         .training-scroll-content::-webkit-scrollbar { display:none; }
-        .training-scroll-content > .exercise-list { margin-top:-15px; }
+        .training-scroll-content > .exercise-list { margin-top:0; }
         #card-leg .training-scroll-content > .exercise-item:first-child,
-        #card-hiit .training-scroll-content > .exercise-item:first-child { margin-top:-15px; }
-        #card-leg .training-scroll-content > .exercise-item:last-child { height:46px; min-height:46px; box-sizing:border-box; margin-top:0 !important; padding:2px 12px !important; }
+        #card-hiit .training-scroll-content > .exercise-item:first-child { margin-top:0; }
+        #card-leg .training-scroll-content > .exercise-item:not(:last-child) { padding-top:6px; padding-bottom:6px; }
         #card-hiit .training-scroll-content { display:flex; flex-direction:column; }
         #card-hiit .training-scroll-content > .exercise-item:last-child { flex:1 0 auto; }
         .card[data-type] > .training-note-row { flex:0 0 auto; margin:8px 0 0 !important; }
@@ -2073,7 +2073,8 @@ function updateTrainingFourRowHeights() {
         }, 0);
         if (visibleItems.length < 4) fourRowHeight += firstRowHeight * (4 - visibleItems.length);
         if (card.id === 'card-hiit') fourRowHeight = firstRowHeight * 4;
-        if (card.id === 'card-leg' || card.id === 'card-hiit') fourRowHeight += 46;
+        if (card.id === 'card-leg') fourRowHeight += 78;
+        if (card.id === 'card-hiit') fourRowHeight += 46;
         scrollContent.style.height = Math.ceil(fourRowHeight) + 'px';
     });
 }
