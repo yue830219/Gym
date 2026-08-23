@@ -134,6 +134,8 @@
         .training-scroll-content > .exercise-list { margin-top:-12px; }
         #card-leg .training-scroll-content > .exercise-item:first-child,
         #card-hiit .training-scroll-content > .exercise-item:first-child { margin-top:-12px; }
+        #card-hiit .training-scroll-content { display:flex; flex-direction:column; }
+        #card-hiit .training-scroll-content > .exercise-item:last-child { flex:1 0 auto; }
         .card[data-type] > .training-note-row { flex:0 0 auto; margin:8px 0 0 !important; }
         .card[data-type] > .btn-calendar-only { flex:0 0 auto; }
         
@@ -2060,6 +2062,8 @@ function updateTrainingFourRowHeights() {
             return total + item.getBoundingClientRect().height;
         }, 0);
         if (visibleItems.length < 4) fourRowHeight += firstRowHeight * (4 - visibleItems.length);
+        if (card.id === 'card-hiit') fourRowHeight = firstRowHeight * 4;
+        if (card.id === 'card-leg' || card.id === 'card-hiit') fourRowHeight += 46;
         scrollContent.style.height = Math.ceil(fourRowHeight) + 'px';
     });
 }
