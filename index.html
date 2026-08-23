@@ -134,14 +134,13 @@
         #card-leg > .card-header + .exercise-item,
         #card-hiit > .card-header + .exercise-item { margin-top:0; }
         .card[data-type] { overflow:hidden; }
-        .card[data-type] .exercise-item { padding-top:6.5px; padding-bottom:6.5px; }
         .card[data-type].active { display:flex; flex-direction:column; }
         .training-scroll-content { flex:0 0 auto; height:var(--training-four-row-height,220px); min-height:0; margin:0 -4px; padding:0 4px; overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
         .training-scroll-content::-webkit-scrollbar { display:none; }
         .training-scroll-content > .exercise-list { margin-top:0; }
         #card-leg .training-scroll-content > .exercise-item:first-child,
         #card-hiit .training-scroll-content > .exercise-item:first-child { margin-top:0; }
-        #card-leg .training-scroll-content > .exercise-item:not(:last-child) { padding-top:2px; padding-bottom:2px; }
+        #card-leg .training-scroll-content > .exercise-item:not(:last-child) { padding-top:6px; padding-bottom:6px; }
         #card-leg .training-scroll-content { overflow-y:hidden; touch-action:auto; }
         #card-hiit .training-scroll-content { display:flex; flex-direction:column; }
         #card-hiit .training-scroll-content > .exercise-item:last-child { flex:1 0 auto; }
@@ -2075,7 +2074,7 @@ function updateTrainingFourRowHeights() {
         }, 0);
         if (visibleItems.length < 4) fourRowHeight += firstRowHeight * (4 - visibleItems.length);
         if (card.id === 'card-hiit') fourRowHeight = firstRowHeight * 4;
-        if (card.id === 'card-leg') fourRowHeight += 82;
+        if (card.id === 'card-leg') fourRowHeight += 78;
         if (card.id === 'card-hiit') fourRowHeight += 46;
         scrollContent.style.height = Math.ceil(fourRowHeight) + 'px';
     });
