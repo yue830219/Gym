@@ -127,6 +127,15 @@
         .card[data-type] > .exercise-list { margin-top:-8px; }
         #card-leg > .card-header + .exercise-item,
         #card-hiit > .card-header + .exercise-item { margin-top:-8px; }
+        .card[data-type] { overflow:hidden; }
+        .card[data-type].active { display:flex; flex-direction:column; }
+        .training-scroll-content { flex:0 0 auto; height:var(--training-four-row-height,220px); min-height:0; margin:0 -4px; padding:0 4px; overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+        .training-scroll-content::-webkit-scrollbar { display:none; }
+        .training-scroll-content > .exercise-list { margin-top:-8px; }
+        #card-leg .training-scroll-content > .exercise-item:first-child,
+        #card-hiit .training-scroll-content > .exercise-item:first-child { margin-top:-8px; }
+        .card[data-type] > .training-note-row { flex:0 0 auto; margin:8px 0 0 !important; }
+        .card[data-type] > .btn-calendar-only { flex:0 0 auto; }
         
         /* 讓按鈕內的 SVG 與文字水平居中對齊 */
         button {
@@ -1842,6 +1851,8 @@ window.onload = function() {
     // 初始化並載入各模組元件與設定
     initUserIdentity(); // 載入使用者 E-mail
     renderAllExerciseLists(); // 渲染所有部位的動作清單
+    prepareTrainingCardScrolling();
+    requestAnimationFrame(updateTrainingFourRowHeights);
     initCalendar(); // 載入日曆套件
     loadAllWeights(); // 從暫存區(localStorage)載入各動作上次輸入的值
     initAutoJump(); // 有氧卡片的時間欄位自動跳格功能
@@ -2010,6 +2021,51 @@ function updateTrainingTitleControls() {
     if (cardDate) titleDate.value = cardDate.value;
 }
 
+function prepareTrainingCardScrolling() {
+    document.querySelectorAll('.card[data-type]').forEach(function(card) {
+        if (card.querySelector(':scope > .training-scroll-content')) return;
+        const header = card.querySelector(':scope > .card-header');
+        const saveButton = card.querySelector(':scope > .btn-calendar-only');
+        if (!header || !saveButton) return;
+
+        const scrollContent = document.createElement('div');
+        scrollContent.className = 'training-scroll-content';
+        while (header.nextSibling && header.nextSibling !== saveButton) {
+            scrollContent.appendChild(header.nextSibling);
+        }
+
+        const noteInput = scrollContent.querySelector('.card-note');
+        let fixedNoteRow = null;
+        if (noteInput && noteInput.parentElement) {
+            fixedNoteRow = noteInput.parentElement;
+            fixedNoteRow.classList.add('training-note-row');
+            card.insertBefore(fixedNoteRow, saveButton);
+        }
+        card.insertBefore(scrollContent, fixedNoteRow || saveButton);
+    });
+}
+
+function updateTrainingFourRowHeights() {
+    document.querySelectorAll('.card[data-type]').forEach(function(card) {
+        if (!card.classList.contains('active')) return;
+        const scrollContent = card.querySelector(':scope > .training-scroll-content');
+        if (!scrollContent) return;
+        let items = Array.from(scrollContent.querySelectorAll('.exercise-list .exercise-item'));
+        if (!items.length) items = Array.from(scrollContent.querySelectorAll(':scope > .exercise-item'));
+        if (!items.length) return;
+
+        const visibleItems = items.slice(0, 4);
+        const firstRowHeight = Math.max(1, items[0].getBoundingClientRect().height);
+        let fourRowHeight = visibleItems.reduce(function(total, item) {
+            return total + item.getBoundingClientRect().height;
+        }, 0);
+        if (visibleItems.length < 4) fourRowHeight += firstRowHeight * (4 - visibleItems.length);
+        scrollContent.style.height = Math.ceil(fourRowHeight) + 'px';
+    });
+}
+
+window.addEventListener('resize', updateTrainingFourRowHeights);
+
 // 點選訓練部位分頁 (Tab) 切換特定紀錄卡片展示
 function switchTab(index) {
     disableConverterScrollLock();
@@ -2028,6 +2084,9 @@ function switchTab(index) {
         btn.classList.toggle('active', i === index);
     });
     updateTrainingTitleControls();
+    const activeScrollContent = targetCards[index] ? targetCards[index].querySelector('.training-scroll-content') : null;
+    if (activeScrollContent) activeScrollContent.scrollTop = 0;
+    requestAnimationFrame(updateTrainingFourRowHeights);
 }
 
 /* ==========================================================================
