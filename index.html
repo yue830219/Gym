@@ -83,6 +83,12 @@
             box-sizing: border-box;
             overscroll-behavior: none;
         }
+        body.main-screen-locked {
+            height: 100dvh !important;
+            overflow: hidden !important;
+            box-sizing: border-box;
+            overscroll-behavior: none;
+        }
         /* 側邊欄抽屜面板 */
         .sidebar { 
             position: fixed; 
@@ -966,6 +972,7 @@
    ====================================================================== */
 // 頁面初始化時，確保沒有不必要的滑動
 document.body.classList.add('scroll-locked');
+document.body.classList.add('main-screen-locked');
 /* ======================================================================
    1. 全域變數與預設資料 (Global Variables & Defaults)
    ====================================================================== */
@@ -1971,6 +1978,8 @@ function handleMenuClick(action) {
     const mainTitle = document.getElementById('main-title');
     const timerTitle = document.getElementById('timer-title');
 
+    if (action === 'add') document.body.classList.add('main-screen-locked');
+    else document.body.classList.remove('main-screen-locked');
     if (action === 'converter' || action === 'calendar') enableConverterScrollLock();
     else disableConverterScrollLock();
 
@@ -2073,6 +2082,7 @@ window.addEventListener('resize', updateTrainingFourRowHeights);
 
 // 點選訓練部位分頁 (Tab) 切換特定紀錄卡片展示
 function switchTab(index) {
+    document.body.classList.add('main-screen-locked');
     disableConverterScrollLock();
     cancelAllEditing(); // 離開原卡片前自動中斷並還原未儲存的動作自訂編輯
     document.querySelector('.timer-panel').style.display = 'block';
