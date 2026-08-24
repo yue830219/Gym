@@ -493,8 +493,8 @@
         body.dark-mode .tab-menu .tab-btn:hover { opacity: 0.9; color: #ffffff !important; }
         body.dark-mode .tab-menu button:nth-child(1).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--chest) !important; box-shadow: 0 0 14px rgba(255, 77, 77, 0.6) !important; }
         body.dark-mode .tab-menu button:nth-child(2).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--shoulder) !important; box-shadow: 0 0 14px rgba(255, 159, 67, 0.6) !important; }
-        body.dark-mode .tab-menu button:nth-child(3).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--arm) !important; box-shadow: 0 0 14px rgba(38, 230, 168, 0.6) !important; }
-        body.dark-mode .tab-menu button:nth-child(4).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--abs) !important; box-shadow: 0 0 14px rgba(179, 136, 255, 0.6) !important; }
+        body.dark-mode .tab-menu button:nth-child(3).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--abs) !important; box-shadow: 0 0 14px rgba(179, 136, 255, 0.6) !important; }
+        body.dark-mode .tab-menu button:nth-child(4).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--arm) !important; box-shadow: 0 0 14px rgba(38, 230, 168, 0.6) !important; }
         body.dark-mode .tab-menu button:nth-child(5).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--leg-strength) !important; box-shadow: 0 0 14px rgba(0, 191, 165, 0.6) !important; }
         body.dark-mode .tab-menu button:nth-child(6).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--leg) !important; box-shadow: 0 0 14px rgba(0, 229, 255, 0.6) !important; }
         body.dark-mode .tab-menu button:nth-child(7).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--hiit) !important; box-shadow: 0 0 14px rgba(124, 77, 255, 0.6) !important; }
@@ -723,13 +723,13 @@
         </div>
     </div>
     <div class="tab-menu">
-        <button class="tab-btn active" style="background:var(--chest)" onclick="switchTab(0)">🔥 練胸</button>
-        <button class="tab-btn" style="background:var(--shoulder)" onclick="switchTab(1)">⚡ 練肩</button>
-        <button class="tab-btn" style="background:var(--arm)" onclick="switchTab(2)">💪 練臂</button>
-        <button class="tab-btn" style="background:var(--abs)" onclick="switchTab(3)">🍫 練腹</button>
-        <button class="tab-btn" style="background:var(--leg-strength)" onclick="switchTab(4)">🦵 練腿</button>
-        <button class="tab-btn" style="background:var(--leg)" onclick="switchTab(5)">🏃 有氧</button>
-        <button class="tab-btn" style="background:var(--hiit)" onclick="switchTab(6)">⏱️ HIIT</button>
+        <button class="tab-btn active" data-card-index="0" style="background:var(--chest)" onclick="switchTab(0)">🔥 練胸</button>
+        <button class="tab-btn" data-card-index="1" style="background:var(--shoulder)" onclick="switchTab(1)">⚡ 練肩</button>
+        <button class="tab-btn" data-card-index="3" style="background:var(--abs)" onclick="switchTab(3)">🍫 練腹</button>
+        <button class="tab-btn" data-card-index="2" style="background:var(--arm)" onclick="switchTab(2)">💪 練臂</button>
+        <button class="tab-btn" data-card-index="4" style="background:var(--leg-strength)" onclick="switchTab(4)">🦵 練腿</button>
+        <button class="tab-btn" data-card-index="5" style="background:var(--leg)" onclick="switchTab(5)">🏃 有氧</button>
+        <button class="tab-btn" data-card-index="6" style="background:var(--hiit)" onclick="switchTab(6)">⏱️ HIIT</button>
     </div>
 
     <div class="card active" id="card-chest" data-type="chest">
@@ -1089,6 +1089,7 @@ let tempTimerVal = ""; // 計時設定欄位聚焦時，暫存舊數據用
 let currentTourStep = 0; // 當前新手導覽的進度索引
 let isTourActive = false; // 是否正在進行新手導覽
 let isNoticeOpen = false; // 追蹤提示卡片是否正開啟中
+let activeTrainingCardIndex = 0; // 記住離開主畫面前所選擇的訓練分類
 let sidebarScrollLockEnabled = false; // 追蹤側邊欄是否已鎖定頁面捲動
 let converterScrollLockEnabled = false;
 
@@ -1992,7 +1993,7 @@ function handleMenuClick(action) {
         tabMenu.style.display = 'flex';
         if (mainTitle) mainTitle.style.display = 'block';
         if (timerTitle) timerTitle.style.display = 'block';
-        switchTab(0);
+        switchTab(activeTrainingCardIndex);
     } else { // 前往工具或獨立設定大頁面
         timerPanel.style.display = 'none';
         tabMenu.style.display = 'none';
@@ -2085,6 +2086,7 @@ window.addEventListener('resize', updateTrainingFourRowHeights);
 
 // 點選訓練部位分頁 (Tab) 切換特定紀錄卡片展示
 function switchTab(index) {
+    activeTrainingCardIndex = index;
     document.body.classList.add('main-screen-locked');
     disableConverterScrollLock();
     cancelAllEditing(); // 離開原卡片前自動中斷並還原未儲存的動作自訂編輯
@@ -2098,8 +2100,8 @@ function switchTab(index) {
 
     const targetCards = document.querySelectorAll('.card');
     if (targetCards[index]) targetCards[index].classList.add('active');
-    document.querySelectorAll('.tab-btn').forEach(function(btn, i) {
-        btn.classList.toggle('active', i === index);
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+        btn.classList.toggle('active', Number(btn.dataset.cardIndex) === index);
     });
     updateTrainingTitleControls();
     const activeScrollContent = targetCards[index] ? targetCards[index].querySelector('.training-scroll-content') : null;
