@@ -448,6 +448,19 @@
         body.dark-mode .gym-calendar-day.is-today { background:rgba(0,122,255,.28); border-color:#0A84FF; }
         body.dark-mode .gym-calendar-day.is-today .gym-calendar-day-number { color:#fff; }
 
+        /* i珍食獵人：以 Friendly-Cat 的即時庫存服務嵌入獨立工具頁。 */
+        #card-food-hunter {
+            width: 100%;
+            height: calc(100dvh - env(safe-area-inset-top, 0px) - 70px);
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            box-sizing: border-box;
+            background: #fff;
+        }
+        .food-hunter-frame { width:100%; height:100%; display:block; border:0; background:#fff; }
+        body.dark-mode #card-food-hunter { background:#1C1C1E; border-color:#3A3A3C; }
+
         /* ==========================================================================
            9. 暗黑模式主題與漸變動畫 (Dark Mode Styles)
            ========================================================================== */
@@ -694,6 +707,10 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
             單位換算
         </div>
+        <div class="sidebar-item" onclick="handleMenuClick('food-hunter')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/><path d="M8 3.5 6.5 2M16 3.5 17.5 2"/></svg>
+            i珍食獵人
+        </div>
         <div class="sidebar-item" onclick="handleMenuClick('settings')">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
             系統設定
@@ -886,6 +903,10 @@
         </div>
     </div>
     
+    <div class="card" id="card-food-hunter" aria-label="i珍食獵人">
+        <iframe class="food-hunter-frame" id="food-hunter-frame" title="i珍食獵人－7-ELEVEN 與全家即期品查詢" data-src="https://friendlycat.alan-cheng.com/" allow="geolocation" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+
     <div class="card" id="card-settings">
         <div class="card-header"><h3 style="color:var(--primary); margin:0;">系統設定</h3></div>
         <div class="gym-settings-stack">
@@ -2019,6 +2040,11 @@ function handleMenuClick(action) {
             setTimeout(() => {
                 calendar.render();
             }, 100);
+        } else if (action === 'food-hunter') {
+            const hunterCard = document.getElementById('card-food-hunter');
+            const hunterFrame = document.getElementById('food-hunter-frame');
+            hunterCard.classList.add('active');
+            if (hunterFrame && !hunterFrame.src) hunterFrame.src = hunterFrame.dataset.src;
         } else if (action === 'settings') {
             document.getElementById('card-settings').classList.add('active');
         }
