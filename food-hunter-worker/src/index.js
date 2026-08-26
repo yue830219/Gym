@@ -1,0 +1,116 @@
+const FAMILY_STORES_URL = 'https://family.map.com.tw/famiport/api/dropdownlist/Select_StoreName';
+const FAMILY_INVENTORY_URL = 'https://stamp.family.com.tw/api/maps/MapProductInfo';
+const ALLOWED_ORIGINS = new Set([
+  'https://yue830219.github.io',
+  'http://localhost:8765',
+  'http://127.0.0.1:8765',
+  'null'
+]);
+
+function corsHeaders(request) {
+  const origin = request.headers.get('Origin') || '';
+  const allowed = ALLOWED_ORIGINS.has(origin) ? origin : 'https://yue830219.github.io';
+  return {
+    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Max-Age': '86400',
+    'Vary': 'Origin'
+  };
+}
+
+function json(request, data, status = 200) {
+  return Response.json(data, {
+    status,
+    headers: {
+      ...corsHeaders(request),
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff'
+    }
+  });
+}
+
+function normalize(value) {
+  return String(value || '').toLocaleLowerCase('zh-TW').replace(/\s+/g, '');
+}
+
+async function fetchFamilyStores() {
+  const cache = caches.default;
+  const key = new Request('https://worker.internal/familymart-stores');
+  const cached = await cache.match(key);
+  if (cached) return cached.json();
+
+  const upstream = await fetch(FAMILY_STORES_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: '{}'
+  });
+  if (!upstream.ok) throw new Error(`FamilyMart store list failed: ${upstream.status}`);
+  const stores = await upstream.json();
+  await cache.put(key, Response.json(stores, { headers: { 'Cache-Control': 'public, max-age=21600' } }));
+  return stores;
+}
+
+async function searchFamilyStores(request, url) {
+  const query = normalize(url.searchParams.get('q'));
+  if (query.length < 2 || query.length > 40) return json(request, { error: '請輸入至少 2 個字元' }, 400);
+  const stores = await fetchFamilyStores();
+  const matches = stores
+    .filter((store) => normalize(`${store.Name}${store.addr}`).includes(query))
+    .slice(0, 20)
+    .map((store) => ({
+      id: store.pkeynew,
+      name: store.Name,
+      address: store.addr,
+      telephone: store.Tel,
+      latitude: Number(store.py_wgs84),
+      longitude: Number(store.px_wgs84)
+    }));
+  return json(request, { stores: matches });
+}
+
+async function familyInventory(request) {
+  const contentLength = Number(request.headers.get('Content-Length') || 0);
+  if (contentLength > 2048) return json(request, { error: '請求內容過大' }, 413);
+  const body = await request.json().catch(() => null);
+  const latitude = Number(body?.latitude);
+  const longitude = Number(body?.longitude);
+  if (!Number.isFinite(latitude) || latitude < 20 || latitude > 27 ||
+      !Number.isFinite(longitude) || longitude < 118 || longitude > 123) {
+    return json(request, { error: '定位座標無效' }, 400);
+  }
+
+  const upstream = await fetch(FAMILY_INVENTORY_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      ProjectCode: '202106302',
+      OldPKeys: [],
+      PostInfo: '',
+      Latitude: latitude,
+      Longitude: longitude
+    })
+  });
+  if (!upstream.ok) throw new Error(`FamilyMart inventory failed: ${upstream.status}`);
+  const payload = await upstream.json();
+  return json(request, { stores: Array.isArray(payload?.data) ? payload.data : [] });
+}
+
+export default {
+  async fetch(request) {
+    const origin = request.headers.get('Origin') || '';
+    if (origin && !ALLOWED_ORIGINS.has(origin)) return new Response('Forbidden', { status: 403 });
+    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(request) });
+
+    const url = new URL(request.url);
+    try {
+      if (request.method === 'GET' && url.pathname === '/health') return json(request, { ok: true });
+      if (request.method === 'GET' && url.pathname === '/familymart/stores') return searchFamilyStores(request, url);
+      if (request.method === 'POST' && url.pathname === '/familymart/inventory') return familyInventory(request);
+      return json(request, { error: 'Not found' }, 404);
+    } catch (error) {
+      console.error(JSON.stringify({ event: 'food_hunter_error', path: url.pathname, message: error instanceof Error ? error.message : String(error) }));
+      return json(request, { error: '即時庫存服務暫時無法使用' }, 502);
+    }
+  }
+};

@@ -448,18 +448,41 @@
         body.dark-mode .gym-calendar-day.is-today { background:rgba(0,122,255,.28); border-color:#0A84FF; }
         body.dark-mode .gym-calendar-day.is-today .gym-calendar-day-number { color:#fff; }
 
-        /* i珍食獵人：以 Friendly-Cat 的即時庫存服務嵌入獨立工具頁。 */
-        #card-food-hunter {
-            width: 100%;
-            height: calc(100dvh - env(safe-area-inset-top, 0px) - 70px);
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            box-sizing: border-box;
-            background: #fff;
-        }
-        .food-hunter-frame { width:100%; height:100%; display:block; border:0; background:#fff; }
-        body.dark-mode #card-food-hunter { background:#1C1C1E; border-color:#3A3A3C; }
+        /* i珍食獵人：健身助手原生即時庫存介面。 */
+        #card-food-hunter { height:calc(100dvh - env(safe-area-inset-top,0px) - 70px); margin:0; padding:14px; overflow:hidden; box-sizing:border-box; }
+        #card-food-hunter.active { display:flex; flex-direction:column; }
+        .food-hunter-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px; }
+        .food-hunter-header h2 { margin:0; color:#1C1C1E; font-size:1.25rem; }
+        .food-hunter-header p { margin:4px 0 0; color:#8E8E93; font-size:.76rem; }
+        .food-hunter-brand-tabs { display:flex; gap:8px; margin-bottom:10px; }
+        .food-hunter-brand { min-height:40px; flex:1; border:1px solid #D7D9DF; border-radius:12px; background:#F5F6F8; color:#52525A; font-weight:800; }
+        .food-hunter-brand.active { border-color:#00A650; background:#EAF8F0; color:#008A43; box-shadow:0 4px 12px rgba(0,166,80,.12); }
+        .food-hunter-brand[disabled] { opacity:.58; }
+        .food-hunter-search { display:grid; grid-template-columns:minmax(0,1fr) 46px; gap:8px; margin-bottom:8px; }
+        .food-hunter-search input { min-width:0; height:44px; padding:0 13px; border:1px solid #D7D9DF; border-radius:12px; background:#F8F8FA; color:#1C1C1E; font-size:16px; box-sizing:border-box; outline:none; }
+        .food-hunter-search input:focus { border-color:#00A650; box-shadow:0 0 0 3px rgba(0,166,80,.12); }
+        .food-hunter-search button, .food-hunter-location { border:0; border-radius:12px; color:#fff; background:#00A650; font-weight:800; }
+        .food-hunter-location { width:100%; min-height:42px; margin-bottom:10px; }
+        .food-hunter-location svg, .food-hunter-search svg { width:20px; height:20px; }
+        .food-hunter-status { min-height:20px; margin:0 2px 8px; color:#6B7280; font-size:.78rem; line-height:1.4; }
+        .food-hunter-results { min-height:0; flex:1; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+        .food-hunter-results::-webkit-scrollbar { display:none; }
+        .food-store-card { margin-bottom:10px; padding:13px; border:1px solid #E5E7EB; border-radius:15px; background:#FFF; box-shadow:0 4px 14px rgba(15,23,42,.05); }
+        .food-store-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+        .food-store-name { margin:0; color:#1C1C1E; font-size:.98rem; font-weight:850; }
+        .food-store-address { margin:4px 0 0; color:#7C7C84; font-size:.74rem; line-height:1.35; }
+        .food-store-distance { flex:0 0 auto; padding:4px 7px; border-radius:999px; background:#EAF8F0; color:#008A43; font-size:.7rem; font-weight:800; }
+        .food-product-list { margin-top:10px; border-top:1px solid #EEF0F3; }
+        .food-product-row { min-height:38px; display:flex; align-items:center; justify-content:space-between; gap:10px; border-bottom:1px solid #F1F2F4; font-size:.8rem; }
+        .food-product-row:last-child { border-bottom:0; }
+        .food-product-qty { color:#00A650; font-weight:850; white-space:nowrap; }
+        .food-store-updated { margin-top:7px; color:#A0A0A7; font-size:.68rem; text-align:right; }
+        .food-hunter-empty { padding:34px 18px; color:#8E8E93; text-align:center; font-size:.86rem; line-height:1.55; }
+        body.dark-mode #card-food-hunter { background:#242426; border-color:#3A3A3C; }
+        body.dark-mode .food-hunter-header h2, body.dark-mode .food-store-name { color:#FFF; }
+        body.dark-mode .food-hunter-brand, body.dark-mode .food-hunter-search input, body.dark-mode .food-store-card { background:#2C2C2E; border-color:#3A3A3C; color:#FFF; }
+        body.dark-mode .food-hunter-brand.active { background:rgba(48,209,88,.13); border-color:#30D158; color:#30D158; }
+        body.dark-mode .food-product-list, body.dark-mode .food-product-row { border-color:#3A3A3C; }
 
         /* ==========================================================================
            9. 暗黑模式主題與漸變動畫 (Dark Mode Styles)
@@ -904,7 +927,20 @@
     </div>
     
     <div class="card" id="card-food-hunter" aria-label="i珍食獵人">
-        <iframe class="food-hunter-frame" id="food-hunter-frame" title="i珍食獵人－7-ELEVEN 與全家即期品查詢" data-src="https://friendlycat.alan-cheng.com/" allow="geolocation" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        <div class="food-hunter-header">
+            <div><h2>i珍食獵人</h2><p>附近即期品庫存，實際數量以門市為準</p></div>
+        </div>
+        <div class="food-hunter-brand-tabs" role="tablist" aria-label="便利商店品牌">
+            <button type="button" class="food-hunter-brand active" role="tab" aria-selected="true">全家友善食光</button>
+            <button type="button" class="food-hunter-brand" role="tab" aria-selected="false" disabled title="等待 7-ELEVEN 合法服務憑證">7‑ELEVEN i珍食</button>
+        </div>
+        <div class="food-hunter-search">
+            <input type="search" id="food-hunter-query" placeholder="搜尋全家門市名稱或地址" autocomplete="off" enterkeyhint="search" onkeydown="if(event.key==='Enter') searchFoodHunterStores()">
+            <button type="button" onclick="searchFoodHunterStores()" aria-label="搜尋門市"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+        </div>
+        <button type="button" class="food-hunter-location" onclick="findFoodHunterNearby()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>使用目前位置尋找</button>
+        <div class="food-hunter-status" id="food-hunter-status" role="status">可搜尋門市，或使用定位查看附近 1 公里庫存。</div>
+        <div class="food-hunter-results" id="food-hunter-results"><div class="food-hunter-empty">輸入門市名稱／地址，或使用目前位置開始搜尋。</div></div>
     </div>
 
     <div class="card" id="card-settings">
@@ -1098,6 +1134,7 @@ let alarmAudioContext = null;
 let alarmAudioBuffer = null;
 let alarmAudioSource = null;
 const GYM_NOTIFICATION_WORKER_URL = 'https://subscription-notifications.yue830219.workers.dev';
+const FOOD_HUNTER_WORKER_URL = 'https://gym-food-hunter.yue830219.workers.dev';
 const GYM_NOTIFICATION_DEVICE_ID = (() => {
     const saved = localStorage.getItem('gym_notification_device_id');
     if (saved) return saved;
@@ -2042,9 +2079,7 @@ function handleMenuClick(action) {
             }, 100);
         } else if (action === 'food-hunter') {
             const hunterCard = document.getElementById('card-food-hunter');
-            const hunterFrame = document.getElementById('food-hunter-frame');
             hunterCard.classList.add('active');
-            if (hunterFrame && !hunterFrame.src) hunterFrame.src = hunterFrame.dataset.src;
         } else if (action === 'settings') {
             document.getElementById('card-settings').classList.add('active');
         }
@@ -2053,6 +2088,173 @@ function handleMenuClick(action) {
         top: 0,
         behavior: 'auto'
     });
+}
+
+function setFoodHunterStatus(message) {
+    const status = document.getElementById('food-hunter-status');
+    if (status) status.textContent = message;
+}
+
+function showFoodHunterEmpty(message) {
+    const results = document.getElementById('food-hunter-results');
+    if (!results) return;
+    results.replaceChildren();
+    const empty = document.createElement('div');
+    empty.className = 'food-hunter-empty';
+    empty.textContent = message;
+    results.appendChild(empty);
+}
+
+function foodHunterDistance(distance) {
+    const meters = Number(distance);
+    if (!Number.isFinite(meters)) return '';
+    return meters >= 1000 ? `${(meters / 1000).toFixed(1)} km` : `${Math.round(meters)} m`;
+}
+
+function renderFoodHunterInventory(stores) {
+    const results = document.getElementById('food-hunter-results');
+    if (!results) return;
+    results.replaceChildren();
+    const allAvailableStores = (Array.isArray(stores) ? stores : []).filter(store =>
+        Array.isArray(store.info) && store.info.some(group => Number(group.qty) > 0)
+    );
+    const availableStores = allAvailableStores.slice(0, 20);
+    if (!availableStores.length) {
+        showFoodHunterEmpty('附近門市目前沒有可顯示的友善食光庫存。');
+        return;
+    }
+
+    availableStores.forEach(store => {
+        const card = document.createElement('article');
+        card.className = 'food-store-card';
+        const top = document.createElement('div');
+        top.className = 'food-store-top';
+        const copy = document.createElement('div');
+        const name = document.createElement('h3');
+        name.className = 'food-store-name';
+        name.textContent = store.name || '全家便利商店';
+        const address = document.createElement('p');
+        address.className = 'food-store-address';
+        address.textContent = store.address || '';
+        copy.append(name, address);
+        top.appendChild(copy);
+        const distanceText = foodHunterDistance(store.distance);
+        if (distanceText) {
+            const distance = document.createElement('span');
+            distance.className = 'food-store-distance';
+            distance.textContent = distanceText;
+            top.appendChild(distance);
+        }
+        card.appendChild(top);
+
+        const productList = document.createElement('div');
+        productList.className = 'food-product-list';
+        store.info.forEach(group => {
+            (group.categories || []).forEach(category => {
+                (category.products || []).forEach(product => {
+                    if (Number(product.qty) <= 0) return;
+                    const row = document.createElement('div');
+                    row.className = 'food-product-row';
+                    const productName = document.createElement('span');
+                    productName.textContent = product.name || category.name || group.name;
+                    const qty = document.createElement('span');
+                    qty.className = 'food-product-qty';
+                    qty.textContent = `${product.qty} 件`;
+                    row.append(productName, qty);
+                    productList.appendChild(row);
+                });
+            });
+        });
+        card.appendChild(productList);
+        if (store.updateDate) {
+            const updated = document.createElement('div');
+            updated.className = 'food-store-updated';
+            const date = new Date(store.updateDate);
+            updated.textContent = Number.isNaN(date.getTime()) ? '' : `更新 ${date.toLocaleString('zh-TW', { hour12: false })}`;
+            card.appendChild(updated);
+        }
+        results.appendChild(card);
+    });
+    setFoodHunterStatus(allAvailableStores.length > availableStores.length
+        ? `找到 ${allAvailableStores.length} 間有庫存門市，顯示距離最近的 20 間。`
+        : `找到 ${availableStores.length} 間有庫存的全家門市。`);
+}
+
+async function loadFoodHunterInventory(latitude, longitude, label) {
+    setFoodHunterStatus(`正在查詢${label || '附近'}門市庫存…`);
+    showFoodHunterEmpty('正在取得即時庫存…');
+    try {
+        const response = await fetch(`${FOOD_HUNTER_WORKER_URL}/familymart/inventory`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ latitude, longitude })
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || '查詢失敗');
+        renderFoodHunterInventory(payload.stores);
+    } catch (error) {
+        setFoodHunterStatus(error.message || '即時庫存服務暫時無法使用。');
+        showFoodHunterEmpty('目前無法取得庫存，請稍後再試。');
+    }
+}
+
+async function searchFoodHunterStores() {
+    const input = document.getElementById('food-hunter-query');
+    const query = input ? input.value.trim() : '';
+    if (query.length < 2) {
+        setFoodHunterStatus('請輸入至少 2 個字元。');
+        return;
+    }
+    setFoodHunterStatus('正在搜尋全家門市…');
+    showFoodHunterEmpty('正在搜尋門市…');
+    try {
+        const response = await fetch(`${FOOD_HUNTER_WORKER_URL}/familymart/stores?q=${encodeURIComponent(query)}`);
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || '搜尋失敗');
+        const stores = Array.isArray(payload.stores) ? payload.stores : [];
+        if (!stores.length) {
+            setFoodHunterStatus('找不到符合的全家門市。');
+            showFoodHunterEmpty('請嘗試較短的門市名稱或地址關鍵字。');
+            return;
+        }
+        const results = document.getElementById('food-hunter-results');
+        results.replaceChildren();
+        stores.forEach(store => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'food-store-card';
+            button.style.cssText = 'width:100%;text-align:left;color:inherit;display:block;cursor:pointer;';
+            const name = document.createElement('div');
+            name.className = 'food-store-name';
+            name.textContent = store.name;
+            const address = document.createElement('div');
+            address.className = 'food-store-address';
+            address.textContent = store.address;
+            button.append(name, address);
+            button.addEventListener('click', () => loadFoodHunterInventory(store.latitude, store.longitude, store.name));
+            results.appendChild(button);
+        });
+        setFoodHunterStatus(`找到 ${stores.length} 間門市，點選門市查看附近即時庫存。`);
+    } catch (error) {
+        setFoodHunterStatus(error.message || '門市搜尋暫時無法使用。');
+        showFoodHunterEmpty('目前無法搜尋門市，請稍後再試。');
+    }
+}
+
+function findFoodHunterNearby() {
+    if (!navigator.geolocation) {
+        setFoodHunterStatus('此裝置不支援定位功能。');
+        return;
+    }
+    setFoodHunterStatus('正在取得目前位置…');
+    navigator.geolocation.getCurrentPosition(
+        position => loadFoodHunterInventory(position.coords.latitude, position.coords.longitude, '附近'),
+        error => {
+            const message = error.code === 1 ? '定位權限未開啟，請允許定位後重試。' : '無法取得位置，請改用門市搜尋。';
+            setFoodHunterStatus(message);
+        },
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 300000 }
+    );
 }
 
 
