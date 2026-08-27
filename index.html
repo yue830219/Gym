@@ -479,6 +479,7 @@
         .food-product-price-original { text-decoration:line-through; }
         .food-product-price-discount { margin-left:6px; color:#E8502A; font-weight:850; }
         .food-product-qty { color:#00A650; font-weight:850; white-space:nowrap; }
+        .food-product-unavailable { min-height:42px; display:flex; align-items:center; color:#8E8E93; font-size:.75rem; line-height:1.4; }
         .food-store-updated { margin-top:7px; color:#A0A0A7; font-size:.68rem; text-align:right; }
         .food-hunter-family-panel { min-height:0; flex:1; display:flex; flex-direction:column; }
         .food-hunter-seven-panel { min-height:0; flex:1; overflow:hidden; border:1px solid #E5E7EB; border-radius:15px; background:#FFF; }
@@ -2146,16 +2147,17 @@ function renderFoodHunterInventory(stores) {
     const results = document.getElementById('food-hunter-results');
     if (!results) return;
     results.replaceChildren();
-    const allAvailableStores = (Array.isArray(stores) ? stores : []).filter(store =>
+    const allStores = Array.isArray(stores) ? stores : [];
+    const visibleStores = allStores.slice(0, 20);
+    const availableStoreCount = allStores.filter(store =>
         Array.isArray(store.info) && store.info.some(group => Number(group.qty) > 0)
-    );
-    const availableStores = allAvailableStores.slice(0, 20);
-    if (!availableStores.length) {
-        showFoodHunterEmpty('附近門市目前沒有可顯示的友善食光庫存。');
+    ).length;
+    if (!visibleStores.length) {
+        showFoodHunterEmpty('附近找不到全家門市。');
         return;
     }
 
-    availableStores.forEach(store => {
+    visibleStores.forEach(store => {
         const card = document.createElement('article');
         card.className = 'food-store-card';
         const top = document.createElement('div');
@@ -2180,10 +2182,12 @@ function renderFoodHunterInventory(stores) {
 
         const productList = document.createElement('div');
         productList.className = 'food-product-list';
-        store.info.forEach(group => {
+        let productCount = 0;
+        (store.info || []).forEach(group => {
             (group.categories || []).forEach(category => {
                 (category.products || []).forEach(product => {
                     if (Number(product.qty) <= 0) return;
+                    productCount += 1;
                     const row = document.createElement('div');
                     row.className = 'food-product-row';
                     const copy = document.createElement('span');
@@ -2218,6 +2222,12 @@ function renderFoodHunterInventory(stores) {
                 });
             });
         });
+        if (!productCount) {
+            const unavailable = document.createElement('div');
+            unavailable.className = 'food-product-unavailable';
+            unavailable.textContent = '目前沒有可查詢的友善食光商品';
+            productList.appendChild(unavailable);
+        }
         card.appendChild(productList);
         if (store.updateDate) {
             const updated = document.createElement('div');
@@ -2228,9 +2238,8 @@ function renderFoodHunterInventory(stores) {
         }
         results.appendChild(card);
     });
-    setFoodHunterStatus(allAvailableStores.length > availableStores.length
-        ? `找到 ${allAvailableStores.length} 間有庫存門市，顯示距離最近的 20 間。`
-        : `找到 ${availableStores.length} 間有庫存的全家門市。`);
+    const displayText = allStores.length > visibleStores.length ? `顯示距離最近的 ${visibleStores.length} 間` : `顯示 ${visibleStores.length} 間`;
+    setFoodHunterStatus(`附近共找到 ${allStores.length} 間全家門市，其中 ${availableStoreCount} 間有友善食光商品；${displayText}。`);
 }
 
 async function loadFoodHunterInventory(latitude, longitude, label) {
