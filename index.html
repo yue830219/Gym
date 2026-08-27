@@ -482,8 +482,11 @@
         .food-product-unavailable { min-height:42px; display:flex; align-items:center; color:#8E8E93; font-size:.75rem; line-height:1.4; }
         .food-store-updated { margin-top:7px; color:#A0A0A7; font-size:.68rem; text-align:right; }
         .food-hunter-family-panel { min-height:0; flex:1; display:flex; flex-direction:column; }
-        .food-hunter-seven-panel { min-height:0; flex:1; overflow:hidden; border:1px solid #E5E7EB; border-radius:15px; background:#FFF; }
-        .food-hunter-seven-frame { width:100%; height:100%; display:block; border:0; background:#FFF; }
+        .food-hunter-seven-panel { min-height:0; flex:1; overflow:auto; border:1px solid #E5E7EB; border-radius:15px; background:#FFF; }
+        .food-hunter-seven-placeholder { min-height:100%; padding:36px 24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; text-align:center; }
+        .food-hunter-seven-placeholder svg { width:42px; height:42px; color:#00843D; }
+        .food-hunter-seven-placeholder h3 { margin:0; color:#1C1C1E; font-size:1rem; }
+        .food-hunter-seven-placeholder p { margin:0; max-width:310px; color:#8E8E93; font-size:.8rem; line-height:1.6; }
         [hidden] { display:none !important; }
         .food-hunter-empty { padding:34px 18px; color:#8E8E93; text-align:center; font-size:.86rem; line-height:1.55; }
         body.dark-mode #card-food-hunter { background:#242426; border-color:#3A3A3C; }
@@ -491,7 +494,8 @@
         body.dark-mode .food-hunter-brand, body.dark-mode .food-hunter-search input, body.dark-mode .food-store-card { background:#2C2C2E; border-color:#3A3A3C; color:#FFF; }
         body.dark-mode .food-hunter-brand.active { background:rgba(48,209,88,.13); border-color:#30D158; color:#30D158; }
         body.dark-mode .food-product-list, body.dark-mode .food-product-row { border-color:#3A3A3C; }
-        body.dark-mode .food-hunter-seven-panel, body.dark-mode .food-hunter-seven-frame { background:#2C2C2E; border-color:#3A3A3C; }
+        body.dark-mode .food-hunter-seven-panel { background:#2C2C2E; border-color:#3A3A3C; }
+        body.dark-mode .food-hunter-seven-placeholder h3 { color:#FFF; }
 
         /* ==========================================================================
            9. 暗黑模式主題與漸變動畫 (Dark Mode Styles)
@@ -953,7 +957,11 @@
             <div class="food-hunter-results" id="food-hunter-results"><div class="food-hunter-empty">輸入門市名稱／地址，或使用目前位置開始搜尋。</div></div>
         </div>
         <div class="food-hunter-seven-panel" id="food-hunter-seven-panel" hidden>
-            <iframe id="food-hunter-seven-frame" class="food-hunter-seven-frame" title="Friendly Cat 7-ELEVEN i珍食" data-src="https://friendlycat.alan-cheng.com/" allow="geolocation" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            <div class="food-hunter-seven-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9h18"/><path d="M5 9V5h14v4"/><path d="M5 9v10h14V9"/><path d="M9 13h6"/></svg>
+                <h3>7‑ELEVEN i珍食</h3>
+                <p>第三方內嵌頁面已移除。目前 7‑ELEVEN 沒有提供可直接供本網頁使用的公開庫存介面，入口會保留供後續串接。</p>
+            </div>
         </div>
     </div>
 
@@ -2137,10 +2145,6 @@ function switchFoodHunterBrand(brand) {
     sevenButton.setAttribute('aria-selected', String(isSeven));
     familyPanel.hidden = isSeven;
     sevenPanel.hidden = !isSeven;
-    if (isSeven) {
-        const frame = document.getElementById('food-hunter-seven-frame');
-        if (!frame.getAttribute('src')) frame.src = frame.dataset.src;
-    }
 }
 
 function renderFoodHunterInventory(stores) {
