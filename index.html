@@ -2191,11 +2191,14 @@ function renderFoodHunterInventory(stores) {
                     const productName = document.createElement('span');
                     productName.textContent = product.name || category.name || group.name;
                     copy.appendChild(productName);
-                    const originalPrice = Number(product.originalPrice);
-                    const discountedPrice = Number(product.discountedPrice);
+                    const hasPrice = product.originalPrice !== null && product.originalPrice !== undefined &&
+                        product.discountedPrice !== null && product.discountedPrice !== undefined;
+                    const originalPrice = hasPrice ? Number(product.originalPrice) : NaN;
+                    const discountedPrice = hasPrice ? Number(product.discountedPrice) : NaN;
                     const price = document.createElement('span');
                     price.className = 'food-product-price';
-                    if (Number.isFinite(originalPrice) && Number.isFinite(discountedPrice)) {
+                    if (Number.isFinite(originalPrice) && originalPrice > 0 &&
+                        Number.isFinite(discountedPrice) && discountedPrice > 0) {
                         const original = document.createElement('span');
                         original.className = 'food-product-price-original';
                         original.textContent = `原價 $${originalPrice}`;
