@@ -1,5 +1,6 @@
 const FAMILY_STORES_URL = 'https://family.map.com.tw/famiport/api/dropdownlist/Select_StoreName';
 const FAMILY_INVENTORY_URL = 'https://stamp.family.com.tw/api/maps/MapProductInfo';
+const FAMILY_PRODUCTS_URL = 'https://www.family.com.tw/Marketing/zh/FreshFood/Product';
 const ALLOWED_ORIGINS = new Set([
   'https://yue830219.github.io',
   'http://localhost:8765',
@@ -32,6 +33,82 @@ function json(request, data, status = 200) {
 
 function normalize(value) {
   return String(value || '').toLocaleLowerCase('zh-TW').replace(/\s+/g, '');
+}
+
+function decodeHtml(value) {
+  return String(value || '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/<[^>]*>/g, '')
+    .trim();
+}
+
+async function readTextWithLimit(response, maximumBytes) {
+  if (!response.body) return '';
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let size = 0;
+  let text = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > maximumBytes) {
+      await reader.cancel('response too large');
+      throw new Error('FamilyMart product page exceeded size limit');
+    }
+    text += decoder.decode(value, { stream: true });
+  }
+  return text + decoder.decode();
+}
+
+async function fetchFamilyPrices() {
+  const cache = caches.default;
+  const key = new Request('https://worker.internal/familymart-prices-v1');
+  const cached = await cache.match(key);
+  if (cached) return cached.json();
+  const response = await fetch(FAMILY_PRODUCTS_URL, { headers: { 'Accept': 'text/html' } });
+  if (!response.ok) throw new Error(`FamilyMart product page failed: ${response.status}`);
+  const html = await readTextWithLimit(response, 2_000_000);
+  const prices = [];
+  for (const match of html.matchAll(/<div class="food__name">([\s\S]*?)<\/div>[\s\S]*?<span class="food__price">\s*原價\$([0-9]+)元<\/span>/gi)) {
+    const name = decodeHtml(match[1]);
+    const price = Number(match[2]);
+    if (name && Number.isFinite(price)) prices.push({ name, normalizedName: normalize(name), price });
+  }
+  if (!prices.length) throw new Error('FamilyMart product prices returned no items');
+  await cache.put(key, Response.json(prices, { headers: { 'Cache-Control': 'public, max-age=21600' } }));
+  return prices;
+}
+
+function findFamilyPrice(productName, prices) {
+  const target = normalize(productName).replace(/^[一二三四五六七八九十]配/, '');
+  if (!target) return null;
+  const matches = prices.filter((item) => target.includes(item.normalizedName) || item.normalizedName.includes(target));
+  matches.sort((a, b) => b.normalizedName.length - a.normalizedName.length);
+  return matches[0]?.price ?? null;
+}
+
+function addFamilyPrices(stores, prices) {
+  return stores.map((store) => ({
+    ...store,
+    info: (store.info || []).map((group) => ({
+      ...group,
+      categories: (group.categories || []).map((category) => ({
+        ...category,
+        products: (category.products || []).map((product) => {
+          const originalPrice = findFamilyPrice(product.name, prices);
+          return {
+            ...product,
+            originalPrice,
+            discountedPrice: originalPrice == null ? null : Math.ceil(originalPrice * 0.7)
+          };
+        })
+      }))
+    }))
+  }));
 }
 
 async function fetchFamilyStores() {
@@ -80,7 +157,7 @@ async function familyInventory(request) {
     return json(request, { error: '定位座標無效' }, 400);
   }
 
-  const upstream = await fetch(FAMILY_INVENTORY_URL, {
+  const [upstream, prices] = await Promise.all([fetch(FAMILY_INVENTORY_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify({
@@ -90,10 +167,11 @@ async function familyInventory(request) {
       Latitude: latitude,
       Longitude: longitude
     })
-  });
+  }), fetchFamilyPrices().catch(() => [])]);
   if (!upstream.ok) throw new Error(`FamilyMart inventory failed: ${upstream.status}`);
   const payload = await upstream.json();
-  return json(request, { stores: Array.isArray(payload?.data) ? payload.data : [] });
+  const stores = Array.isArray(payload?.data) ? payload.data : [];
+  return json(request, { stores: addFamilyPrices(stores, prices) });
 }
 
 export default {

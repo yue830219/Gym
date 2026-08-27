@@ -457,7 +457,6 @@
         .food-hunter-brand-tabs { display:flex; gap:8px; margin-bottom:10px; }
         .food-hunter-brand { min-height:40px; flex:1; border:1px solid #D7D9DF; border-radius:12px; background:#F5F6F8; color:#52525A; font-weight:800; }
         .food-hunter-brand.active { border-color:#00A650; background:#EAF8F0; color:#008A43; box-shadow:0 4px 12px rgba(0,166,80,.12); }
-        .food-hunter-brand[disabled] { opacity:.58; }
         .food-hunter-search { display:grid; grid-template-columns:minmax(0,1fr) 46px; gap:8px; margin-bottom:8px; }
         .food-hunter-search input { min-width:0; height:44px; padding:0 13px; border:1px solid #D7D9DF; border-radius:12px; background:#F8F8FA; color:#1C1C1E; font-size:16px; box-sizing:border-box; outline:none; }
         .food-hunter-search input:focus { border-color:#00A650; box-shadow:0 0 0 3px rgba(0,166,80,.12); }
@@ -475,14 +474,23 @@
         .food-product-list { margin-top:10px; border-top:1px solid #EEF0F3; }
         .food-product-row { min-height:38px; display:flex; align-items:center; justify-content:space-between; gap:10px; border-bottom:1px solid #F1F2F4; font-size:.8rem; }
         .food-product-row:last-child { border-bottom:0; }
+        .food-product-copy { min-width:0; display:flex; flex-direction:column; gap:3px; }
+        .food-product-price { color:#8E8E93; font-size:.7rem; line-height:1.3; }
+        .food-product-price-original { text-decoration:line-through; }
+        .food-product-price-discount { margin-left:6px; color:#E8502A; font-weight:850; }
         .food-product-qty { color:#00A650; font-weight:850; white-space:nowrap; }
         .food-store-updated { margin-top:7px; color:#A0A0A7; font-size:.68rem; text-align:right; }
+        .food-hunter-family-panel { min-height:0; flex:1; display:flex; flex-direction:column; }
+        .food-hunter-seven-panel { min-height:0; flex:1; overflow:hidden; border:1px solid #E5E7EB; border-radius:15px; background:#FFF; }
+        .food-hunter-seven-frame { width:100%; height:100%; display:block; border:0; background:#FFF; }
+        [hidden] { display:none !important; }
         .food-hunter-empty { padding:34px 18px; color:#8E8E93; text-align:center; font-size:.86rem; line-height:1.55; }
         body.dark-mode #card-food-hunter { background:#242426; border-color:#3A3A3C; }
         body.dark-mode .food-hunter-header h2, body.dark-mode .food-store-name { color:#FFF; }
         body.dark-mode .food-hunter-brand, body.dark-mode .food-hunter-search input, body.dark-mode .food-store-card { background:#2C2C2E; border-color:#3A3A3C; color:#FFF; }
         body.dark-mode .food-hunter-brand.active { background:rgba(48,209,88,.13); border-color:#30D158; color:#30D158; }
         body.dark-mode .food-product-list, body.dark-mode .food-product-row { border-color:#3A3A3C; }
+        body.dark-mode .food-hunter-seven-panel, body.dark-mode .food-hunter-seven-frame { background:#2C2C2E; border-color:#3A3A3C; }
 
         /* ==========================================================================
            9. 暗黑模式主題與漸變動畫 (Dark Mode Styles)
@@ -931,16 +939,21 @@
             <div><h2>i珍食獵人</h2><p>附近即期品庫存，實際數量以門市為準</p></div>
         </div>
         <div class="food-hunter-brand-tabs" role="tablist" aria-label="便利商店品牌">
-            <button type="button" class="food-hunter-brand active" role="tab" aria-selected="true">全家友善食光</button>
-            <button type="button" class="food-hunter-brand" role="tab" aria-selected="false" disabled title="等待 7-ELEVEN 合法服務憑證">7‑ELEVEN i珍食</button>
+            <button type="button" id="food-brand-familymart" class="food-hunter-brand active" role="tab" aria-selected="true" onclick="switchFoodHunterBrand('familymart')">全家友善食光</button>
+            <button type="button" id="food-brand-seven" class="food-hunter-brand" role="tab" aria-selected="false" onclick="switchFoodHunterBrand('seven')">7‑ELEVEN i珍食</button>
         </div>
-        <div class="food-hunter-search">
-            <input type="search" id="food-hunter-query" placeholder="搜尋全家門市名稱或地址" autocomplete="off" enterkeyhint="search" onkeydown="if(event.key==='Enter') searchFoodHunterStores()">
-            <button type="button" onclick="searchFoodHunterStores()" aria-label="搜尋門市"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+        <div class="food-hunter-family-panel" id="food-hunter-family-panel">
+            <div class="food-hunter-search">
+                <input type="search" id="food-hunter-query" placeholder="搜尋全家門市名稱或地址" autocomplete="off" enterkeyhint="search" onkeydown="if(event.key==='Enter') searchFoodHunterStores()">
+                <button type="button" onclick="searchFoodHunterStores()" aria-label="搜尋門市"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+            </div>
+            <button type="button" class="food-hunter-location" onclick="findFoodHunterNearby()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>使用目前位置尋找</button>
+            <div class="food-hunter-status" id="food-hunter-status" role="status">可搜尋門市，或使用定位查看附近 1 公里庫存。</div>
+            <div class="food-hunter-results" id="food-hunter-results"><div class="food-hunter-empty">輸入門市名稱／地址，或使用目前位置開始搜尋。</div></div>
         </div>
-        <button type="button" class="food-hunter-location" onclick="findFoodHunterNearby()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>使用目前位置尋找</button>
-        <div class="food-hunter-status" id="food-hunter-status" role="status">可搜尋門市，或使用定位查看附近 1 公里庫存。</div>
-        <div class="food-hunter-results" id="food-hunter-results"><div class="food-hunter-empty">輸入門市名稱／地址，或使用目前位置開始搜尋。</div></div>
+        <div class="food-hunter-seven-panel" id="food-hunter-seven-panel" hidden>
+            <iframe id="food-hunter-seven-frame" class="food-hunter-seven-frame" title="Friendly Cat 7-ELEVEN i珍食" data-src="https://friendlycat.alan-cheng.com/" allow="geolocation" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
     </div>
 
     <div class="card" id="card-settings">
@@ -2111,6 +2124,24 @@ function foodHunterDistance(distance) {
     return meters >= 1000 ? `${(meters / 1000).toFixed(1)} km` : `${Math.round(meters)} m`;
 }
 
+function switchFoodHunterBrand(brand) {
+    const isSeven = brand === 'seven';
+    const familyButton = document.getElementById('food-brand-familymart');
+    const sevenButton = document.getElementById('food-brand-seven');
+    const familyPanel = document.getElementById('food-hunter-family-panel');
+    const sevenPanel = document.getElementById('food-hunter-seven-panel');
+    familyButton.classList.toggle('active', !isSeven);
+    sevenButton.classList.toggle('active', isSeven);
+    familyButton.setAttribute('aria-selected', String(!isSeven));
+    sevenButton.setAttribute('aria-selected', String(isSeven));
+    familyPanel.hidden = isSeven;
+    sevenPanel.hidden = !isSeven;
+    if (isSeven) {
+        const frame = document.getElementById('food-hunter-seven-frame');
+        if (!frame.getAttribute('src')) frame.src = frame.dataset.src;
+    }
+}
+
 function renderFoodHunterInventory(stores) {
     const results = document.getElementById('food-hunter-results');
     if (!results) return;
@@ -2155,12 +2186,31 @@ function renderFoodHunterInventory(stores) {
                     if (Number(product.qty) <= 0) return;
                     const row = document.createElement('div');
                     row.className = 'food-product-row';
+                    const copy = document.createElement('span');
+                    copy.className = 'food-product-copy';
                     const productName = document.createElement('span');
                     productName.textContent = product.name || category.name || group.name;
+                    copy.appendChild(productName);
+                    const originalPrice = Number(product.originalPrice);
+                    const discountedPrice = Number(product.discountedPrice);
+                    const price = document.createElement('span');
+                    price.className = 'food-product-price';
+                    if (Number.isFinite(originalPrice) && Number.isFinite(discountedPrice)) {
+                        const original = document.createElement('span');
+                        original.className = 'food-product-price-original';
+                        original.textContent = `原價 $${originalPrice}`;
+                        const discount = document.createElement('span');
+                        discount.className = 'food-product-price-discount';
+                        discount.textContent = `友善價 $${discountedPrice}`;
+                        price.append(original, discount);
+                    } else {
+                        price.textContent = '價格以門市結帳為準';
+                    }
+                    copy.appendChild(price);
                     const qty = document.createElement('span');
                     qty.className = 'food-product-qty';
                     qty.textContent = `${product.qty} 件`;
-                    row.append(productName, qty);
+                    row.append(copy, qty);
                     productList.appendChild(row);
                 });
             });
