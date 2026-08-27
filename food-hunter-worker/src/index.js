@@ -111,6 +111,39 @@ function addFamilyPrices(stores, prices) {
   }));
 }
 
+function distanceInMeters(latitude1, longitude1, latitude2, longitude2) {
+  const toRadians = (value) => value * Math.PI / 180;
+  const earthRadius = 6371000;
+  const latitudeDelta = toRadians(latitude2 - latitude1);
+  const longitudeDelta = toRadians(longitude2 - longitude1);
+  const a = Math.sin(latitudeDelta / 2) ** 2 +
+    Math.cos(toRadians(latitude1)) * Math.cos(toRadians(latitude2)) *
+    Math.sin(longitudeDelta / 2) ** 2;
+  return earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function findNearbyFamilyStores(stores, latitude, longitude) {
+  return stores
+    .map((store) => {
+      const storeLatitude = Number(store.py_wgs84);
+      const storeLongitude = Number(store.px_wgs84);
+      if (!Number.isFinite(storeLatitude) || !Number.isFinite(storeLongitude)) return null;
+      return {
+        id: store.pkeynew,
+        name: store.Name,
+        address: store.addr,
+        telephone: store.Tel,
+        latitude: storeLatitude,
+        longitude: storeLongitude,
+        distance: Math.round(distanceInMeters(latitude, longitude, storeLatitude, storeLongitude)),
+        info: []
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, 20);
+}
+
 async function fetchFamilyStores() {
   const cache = caches.default;
   const key = new Request('https://worker.internal/familymart-stores');
@@ -171,7 +204,15 @@ async function familyInventory(request) {
   if (!upstream.ok) throw new Error(`FamilyMart inventory failed: ${upstream.status}`);
   const payload = await upstream.json();
   const stores = Array.isArray(payload?.data) ? payload.data : [];
-  return json(request, { stores: addFamilyPrices(stores, prices) });
+  if (stores.length) {
+    return json(request, { stores: addFamilyPrices(stores, prices), inventoryAvailable: true });
+  }
+
+  const allStores = await fetchFamilyStores();
+  return json(request, {
+    stores: findNearbyFamilyStores(allStores, latitude, longitude),
+    inventoryAvailable: false
+  });
 }
 
 export default {

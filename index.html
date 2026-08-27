@@ -2147,7 +2147,7 @@ function switchFoodHunterBrand(brand) {
     sevenPanel.hidden = !isSeven;
 }
 
-function renderFoodHunterInventory(stores) {
+function renderFoodHunterInventory(stores, options = {}) {
     const results = document.getElementById('food-hunter-results');
     if (!results) return;
     results.replaceChildren();
@@ -2243,7 +2243,11 @@ function renderFoodHunterInventory(stores) {
         results.appendChild(card);
     });
     const displayText = allStores.length > visibleStores.length ? `顯示距離最近的 ${visibleStores.length} 間` : `顯示 ${visibleStores.length} 間`;
-    setFoodHunterStatus(`附近共找到 ${allStores.length} 間全家門市，其中 ${availableStoreCount} 間有友善食光商品；${displayText}。`);
+    if (options.inventoryAvailable === false) {
+        setFoodHunterStatus(`友善食光即時庫存暫無資料，先顯示附近距離最近的 ${visibleStores.length} 間全家門市。`);
+    } else {
+        setFoodHunterStatus(`附近共找到 ${allStores.length} 間全家門市，其中 ${availableStoreCount} 間有友善食光商品；${displayText}。`);
+    }
 }
 
 async function loadFoodHunterInventory(latitude, longitude, label) {
@@ -2257,7 +2261,7 @@ async function loadFoodHunterInventory(latitude, longitude, label) {
         });
         const payload = await response.json();
         if (!response.ok) throw new Error(payload.error || '查詢失敗');
-        renderFoodHunterInventory(payload.stores);
+        renderFoodHunterInventory(payload.stores, { inventoryAvailable: payload.inventoryAvailable !== false });
     } catch (error) {
         setFoodHunterStatus(error.message || '即時庫存服務暫時無法使用。');
         showFoodHunterEmpty('目前無法取得庫存，請稍後再試。');
