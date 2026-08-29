@@ -1219,7 +1219,9 @@ function disableSidebarScrollLock() {
 }
 
 function preventConverterScroll(event) {
-    if (document.body.classList.contains('converter-locked')) event.preventDefault();
+    if (!document.body.classList.contains('converter-locked')) return;
+    if (event.target instanceof Element && event.target.closest('.food-hunter-results, .food-hunter-seven-panel')) return;
+    event.preventDefault();
 }
 
 function keepConverterAtTop() {
@@ -2078,7 +2080,7 @@ function handleMenuClick(action) {
         document.body.classList.remove('main-screen-locked');
         document.body.classList.add('secondary-page-active');
     }
-    if (action === 'converter' || action === 'calendar') enableConverterScrollLock();
+    if (action === 'converter' || action === 'calendar' || action === 'food-hunter') enableConverterScrollLock();
     else disableConverterScrollLock();
 
     document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
