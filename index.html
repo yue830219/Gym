@@ -259,6 +259,8 @@
         #floating-timer { position:fixed; top:calc(env(safe-area-inset-top, 0px) + 58px); right:16px; z-index:2400; display:none; align-items:center; gap:7px; min-width:78px; padding:9px 13px; border:1px solid rgba(255,255,255,.72); border-radius:999px; background:rgba(255,255,255,.9); color:#1c1c1e; box-shadow:0 8px 24px rgba(0,0,0,.16); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); font-size:1rem; font-weight:800; font-variant-numeric:tabular-nums; pointer-events:none; }
         #floating-timer svg { width:18px; height:18px; color:var(--primary); }
         body.secondary-page-active #floating-timer.is-running { display:flex; }
+        body.calendar-page-active #floating-timer.is-running { left:50%; right:auto; transform:translateX(-50%); }
+        body.calendar-page-active #floating-timer.is-running { left:50%; right:auto; transform:translateX(-50%); }
         #set-counter { font-size: 1.2rem; font-weight: bold; color: #34c759; text-align: right; }
         .btn-group { display: flex; gap: 8px; }
         .btn-group button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
@@ -2066,6 +2068,8 @@ function handleMenuClick(action) {
     const tabMenu = document.querySelector('.tab-menu');
     const mainTitle = document.getElementById('main-title');
     const timerTitle = document.getElementById('timer-title');
+    document.body.classList.toggle('calendar-page-active', action === 'calendar');
+    document.body.classList.toggle('calendar-page-active', action === 'calendar');
 
     if (action === 'add') {
         document.body.classList.add('main-screen-locked');
