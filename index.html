@@ -256,7 +256,8 @@
         }
         .timer-header { display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
         #timer-display { font-size: 3.5rem; font-weight: 800; margin: 5px 0; color: #1c1c1e; line-height: 1.2; text-align: left; transition: color 0.3s; }
-        #floating-timer { position:fixed; top:calc(env(safe-area-inset-top, 0px) + 58px); right:16px; z-index:2400; display:none; align-items:center; gap:7px; min-width:78px; padding:9px 13px; border:1px solid rgba(255,255,255,.72); border-radius:999px; background:rgba(255,255,255,.9); color:#1c1c1e; box-shadow:0 8px 24px rgba(0,0,0,.16); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); font-size:1rem; font-weight:800; font-variant-numeric:tabular-nums; pointer-events:none; }
+        #floating-timer { position:fixed; top:calc(env(safe-area-inset-top, 0px) + 58px); right:16px; z-index:2400; display:none; align-items:center; gap:7px; min-width:78px; padding:9px 13px; border:1px solid rgba(255,255,255,.72); border-radius:999px; background:rgba(255,255,255,.9); color:#1c1c1e; box-shadow:0 8px 24px rgba(0,0,0,.16); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); font-size:1rem; font-weight:800; font-variant-numeric:tabular-nums; pointer-events:auto; cursor:pointer; }
+        #floating-timer:active { transform:scale(.96); }
         #floating-timer svg { width:18px; height:18px; color:var(--primary); }
         body.secondary-page-active #floating-timer.is-running { display:flex; }
         body.calendar-page-active #floating-timer.is-running { left:50%; right:auto; transform:translateX(-50%); }
@@ -782,7 +783,7 @@
             </div>
         </div>
     </div>
-    <div id="floating-timer" role="timer" aria-live="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/></svg><span id="floating-timer-value">00:00</span></div>
+    <div id="floating-timer" role="button" tabindex="0" aria-label="返回主畫面計時器" onclick="returnToMainTimer()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();returnToMainTimer();}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/></svg><span id="floating-timer-value">00:00</span></div>
     <div class="tab-menu">
         <button class="tab-btn active" data-card-index="0" style="background:var(--chest)" onclick="switchTab(0)">🔥 練胸</button>
         <button class="tab-btn" data-card-index="1" style="background:var(--shoulder)" onclick="switchTab(1)">⚡ 練肩</button>
@@ -2065,7 +2066,8 @@ function toggleSidebar() {
 
 // 處理由側邊欄選單點擊後的主面板頁面流轉切換
 function handleMenuClick(action) {
-    toggleSidebar();
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar && sidebar.classList.contains('active')) toggleSidebar();
     const timerPanel = document.querySelector('.timer-panel');
     const tabMenu = document.querySelector('.tab-menu');
     const mainTitle = document.getElementById('main-title');
@@ -2115,6 +2117,14 @@ function handleMenuClick(action) {
     window.scrollTo({
         top: 0,
         behavior: 'auto'
+    });
+}
+
+function returnToMainTimer() {
+    handleMenuClick('add');
+    requestAnimationFrame(() => {
+        const timerPanel = document.querySelector('.timer-panel');
+        if (timerPanel) timerPanel.scrollIntoView({ block: 'start', behavior: 'auto' });
     });
 }
 
