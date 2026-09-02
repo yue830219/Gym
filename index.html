@@ -29,9 +29,9 @@
            ========================================================================== */
         /* 定義專案專屬的色碼變數（iOS 風格色彩） */
         :root { 
-            --primary: #007AFF; --chest: #FF3B30; --shoulder: #FF9500; --arm: #008080;
+            --primary: #007AFF; --chest: #FF3B30; --shoulder: #FF9500; --arm: #4CD964;
             --leg: #5AC8FA; --abs: #AF52DE; --bg: #F2F2F7; --danger: #FF3B30; 
-            --leg-strength: #4CD964; --hiit: #5856D6;
+            --leg-strength: #008080; --hiit: #5856D6;
         }
 
         /* 保留頁面捲動功能，但隱藏右側捲動條。 */
@@ -551,8 +551,8 @@
         body.dark-mode .tab-menu button:nth-child(1).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--chest) !important; box-shadow: 0 0 14px rgba(255, 77, 77, 0.6) !important; }
         body.dark-mode .tab-menu button:nth-child(2).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--shoulder) !important; box-shadow: 0 0 14px rgba(255, 159, 67, 0.6) !important; }
         body.dark-mode .tab-menu button:nth-child(3).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--abs) !important; box-shadow: 0 0 14px rgba(179, 136, 255, 0.6) !important; }
-        body.dark-mode .tab-menu button:nth-child(4).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--leg-strength) !important; box-shadow: 0 0 14px rgba(76, 217, 100, 0.6) !important; }
-        body.dark-mode .tab-menu button:nth-child(5).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--arm) !important; box-shadow: 0 0 14px rgba(0, 128, 128, 0.6) !important; }
+        body.dark-mode .tab-menu button:nth-child(4).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--leg-strength) !important; box-shadow: 0 0 14px rgba(0, 128, 128, 0.6) !important; }
+        body.dark-mode .tab-menu button:nth-child(5).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--arm) !important; box-shadow: 0 0 14px rgba(76, 217, 100, 0.6) !important; }
         body.dark-mode .tab-menu button:nth-child(6).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--leg) !important; box-shadow: 0 0 14px rgba(0, 229, 255, 0.6) !important; }
         body.dark-mode .tab-menu button:nth-child(7).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--hiit) !important; box-shadow: 0 0 14px rgba(124, 77, 255, 0.6) !important; }
         
@@ -838,7 +838,7 @@
             <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
         </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>        
-        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練臂', this, '#008080')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練臂', this, '#4CD964')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>儲存到日曆</button>
     </div>
 
     <div class="card" id="card-abs" data-type="abs">
@@ -870,7 +870,7 @@
             <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
         </div>
         <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註（如：推得比較順）"></div>        
-        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練腿', this, '#4CD964')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>儲存到日曆</button>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory('練腿', this, '#008080')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>儲存到日曆</button>
     </div>
 
     <div class="card" id="card-leg" data-type="leg">
