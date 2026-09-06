@@ -1160,6 +1160,30 @@ let alarmAudioBuffer = null;
 let alarmAudioSource = null;
 const GYM_NOTIFICATION_WORKER_URL = 'https://subscription-notifications.yue830219.workers.dev';
 const FOOD_HUNTER_WORKER_URL = 'https://gym-food-hunter.yue830219.workers.dev';
+const GYM_WORKOUT_REMINDER_KEY = 'gym_workout_reminder_started_at';
+const GYM_WORKOUT_REMINDER_DAYS = [2, 3, 4, 5, 7];
+const GYM_WORKOUT_REMINDER_MESSAGES = [
+    '該運動啦，肥仔模式先暫停一下！',
+    '再不動，沙發都要把你列為永久住戶了。',
+    '別人都在努力，你的運動鞋還在等什麼？',
+    '今天流的汗，是明天少喘的本錢。',
+    '肌肉已讀不回，快用訓練把它叫醒。',
+    '再躺五分鐘，可能就會躺成五天。',
+    '你的脂肪正在開派對，該去散場了。',
+    '運動一下吧，身體不是只拿來滑手機的。',
+    '健身房不會自己來找你，但提醒會。',
+    '今天不練，明天爬樓梯繼續喘。',
+    '起來動一動，熱量不會自己下班。',
+    '你的核心正在休眠，該按下喚醒鍵了。',
+    '別讓啞鈴以為你把它封鎖了。',
+    '運動時間到，跟拖延症來一場正面對決。',
+    '再不動又要變胖了，現在出發還來得及。',
+    '休息夠久了，該讓心跳做點正事。',
+    '你的體能正在偷偷掉線，快連回來。',
+    '練一下不一定變超人，但不練一定還在原地。',
+    '今天的你，要不要贏過昨天那個懶洋洋的你？',
+    '別人都在努力，你在幹嘛？起來練啦！'
+];
 const GYM_NOTIFICATION_DEVICE_ID = (() => {
     const saved = localStorage.getItem('gym_notification_device_id');
     if (saved) return saved;
@@ -3175,26 +3199,54 @@ function base64UrlToUint8Array(value) {
     return Uint8Array.from(raw, char => char.charCodeAt(0));
 }
 
+function buildWorkoutReminderPushes() {
+    const startedAt = Number(localStorage.getItem(GYM_WORKOUT_REMINDER_KEY));
+    if (!Number.isFinite(startedAt) || startedAt <= 0) return [];
+    const dayMs = 24 * 60 * 60 * 1000;
+    return GYM_WORKOUT_REMINDER_DAYS.map(function(days, index) {
+        const messageIndex = (Math.floor(startedAt / 1000) + days + index) % GYM_WORKOUT_REMINDER_MESSAGES.length;
+        return {
+            id: `gym-workout-${startedAt}-${days}d`,
+            scheduledAt: startedAt + days * dayMs,
+            title: `${days} 天沒運動了`,
+            body: GYM_WORKOUT_REMINDER_MESSAGES[messageIndex],
+            tag: `gym-workout-reminder-${days}d`,
+            url: location.href
+        };
+    }).filter(function(reminder) {
+        return reminder.scheduledAt > Date.now();
+    });
+}
+
 async function syncGymTimerPush(endsAt) {
-    if (endsAt) {
+    const reminders = buildWorkoutReminderPushes();
+    if (endsAt && endsAt > Date.now()) {
+        reminders.push({
+            id: `gym-timer-${endsAt}`,
+            // 預留時間讓仍在前景執行的頁面於倒數結束時取消系統推播。
+            scheduledAt: endsAt + 3000,
+            title: '計時結束',
+            body: '時間到！開始下一組！',
+            tag: 'gym-timer-finished',
+            url: location.href
+        });
+    }
+    if (reminders.length > 0) {
         const subscription = await requestTimerNotificationPermission();
         if (!subscription) return;
     }
-    const reminders = endsAt ? [{
-        id: `gym-timer-${endsAt}`,
-        // 預留時間讓仍在前景執行的頁面於倒數結束時取消系統推播。
-        scheduledAt: endsAt + 3000,
-        title: '計時結束',
-        body: '時間到！開始下一組！',
-        tag: 'gym-timer-finished',
-        url: location.href
-    }] : [];
     const response = await fetch(`${GYM_NOTIFICATION_WORKER_URL}/device/${GYM_NOTIFICATION_DEVICE_ID}/sync`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reminders })
     });
     if (!response.ok) throw new Error('背景通知排程失敗');
+}
+
+function restartWorkoutReminderCountdown() {
+    const startedAt = Date.now();
+    localStorage.setItem(GYM_WORKOUT_REMINDER_KEY, String(startedAt));
+    return syncGymTimerPush(timerEndsAt);
 }
 
 function isIOSDevice() {
@@ -3592,6 +3644,9 @@ function saveToHistory(type, btnElement, color) {
         showNotice("訓練紀錄已儲存", "", false);
     }
     localStorage.setItem('gym_history', JSON.stringify(history));
+    restartWorkoutReminderCountdown().catch(function(error) {
+        console.warn('運動提醒排程失敗：', error);
+    });
 }
 
 // 點擊 Modal 視窗內的「刪除本筆紀錄」按鈕時的實作
