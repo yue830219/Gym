@@ -123,6 +123,8 @@
         .tab-menu { display:flex; flex-wrap:nowrap; gap:8px; margin-bottom:5px; padding:3px 0 4px; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; touch-action:pan-x; scroll-snap-type:x proximity; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
         .tab-menu::-webkit-scrollbar { display:none; }
         .tab-btn { flex:0 0 88px; min-width:88px; padding:12px 5px; border-radius:12px; border:none; font-size:0.9rem; font-weight:bold; color:white; opacity:0.4; transition:0.3s; margin-bottom:0; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; scroll-snap-align:start; }
+        .custom-training-tab { flex-direction:row; gap:4px; white-space:nowrap; }
+        .custom-training-tab span { white-space:nowrap; }
         .tab-btn.active { opacity: 1; transform: translateY(-2px); } /* 被選中的分頁會完全顯示並稍微往上浮動 */
         .custom-training-label-control { display:flex; align-items:center; gap:8px; margin:4px 0 10px; padding:9px 11px; border:1px solid rgba(124,110,230,.2); border-radius:12px; background:rgba(124,110,230,.07); color:#69627F; font-size:.78rem; }
         .custom-training-label-control input { min-width:0; width:100%; flex:1; padding:7px 8px; border:1px solid rgba(124,110,230,.22); border-radius:8px; background:#fff; color:#312E40; font-size:.84rem; }
@@ -799,7 +801,7 @@
         <button class="tab-btn" data-card-index="2" style="background:var(--arm)" onclick="switchTab(2)">💪 練臂</button>
         <button class="tab-btn" data-card-index="5" style="background:var(--leg)" onclick="switchTab(5)">🏃 有氧</button>
         <button class="tab-btn" data-card-index="6" style="background:var(--hiit)" onclick="switchTab(6)">⏱️ HIIT</button>
-        <button class="tab-btn custom-training-tab" data-card-index="7" style="background:#7C6EE6" onclick="switchTab(7)"><span id="custom-training-tab-label">自訂訓練</span></button>
+        <button class="tab-btn custom-training-tab" data-card-index="7" style="background:#7C6EE6" onclick="switchTab(7)">🏋️ <span id="custom-training-tab-label">自訂</span></button>
     </div>
 
     <div class="card active" id="card-chest" data-type="chest">
@@ -912,11 +914,11 @@
 
     <div class="card" id="card-custom-training" data-type="custom-training">
         <div class="card-header">
-            <h3 id="custom-training-card-title" style="color:#7C6EE6;margin:0;">自訂訓練</h3>
+            <h3 id="custom-training-card-title" style="color:#7C6EE6;margin:0;">自訂</h3>
             <button class="btn-manage-toggle" onclick="toggleManageMode(this)" aria-label="編輯自訂訓練動作"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14v-7"/><path d="m18.5 2.5 3 3L12 15l-4 1 1-4 10.5-10.5Z"/></svg></button>
             <input type="date" class="date-input" onchange="syncDate(this)">
         </div>
-        <div class="custom-training-label-control"><label for="custom-training-title-input">標籤</label><input id="custom-training-title-input" type="text" maxlength="20" value="自訂訓練" aria-label="自訂訓練標籤名稱"><button type="button" onclick="renameCustomTraining()">儲存</button></div>
+        <div class="custom-training-label-control"><label for="custom-training-title-input">標籤</label><input id="custom-training-title-input" type="text" maxlength="20" value="自訂" aria-label="自訂訓練標籤名稱"><button type="button" onclick="renameCustomTraining()">儲存</button></div>
         <div class="exercise-list"></div>
         <div class="bottom-manage-bar">
             <button class="btn-add-exercise" onclick="addExercise(this, 'custom-training')">➕ 新增動作</button>
@@ -2695,7 +2697,7 @@ function renderAllExerciseLists() {
 }
 
 function getCustomTrainingTitle() {
-    return String(localStorage.getItem('custom_training_title') || '自訂訓練').trim().slice(0, 20) || '自訂訓練';
+    return String(localStorage.getItem('custom_training_title') || '自訂').trim().slice(0, 20) || '自訂';
 }
 
 function updateCustomTrainingLabel() {
@@ -3797,7 +3799,7 @@ function exportHistoryToLocal() {
         appVersion: "1.1.0"
     };
 
-    if (backupData.gym_history.length === 0 && !backupData.custom_exercises && backupData.custom_training_title === '自訂訓練') {
+    if (backupData.gym_history.length === 0 && !backupData.custom_exercises && backupData.custom_training_title === '自訂') {
         showNotice("沒有資料", "目前沒有任何訓練紀錄或自訂動作可以匯出", false);
         return;
     }
