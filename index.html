@@ -124,6 +124,12 @@
         .tab-menu::-webkit-scrollbar { display:none; }
         .tab-btn { flex:0 0 88px; min-width:88px; padding:12px 5px; border-radius:12px; border:none; font-size:0.9rem; font-weight:bold; color:white; opacity:0.4; transition:0.3s; margin-bottom:0; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; scroll-snap-align:start; }
         .tab-btn.active { opacity: 1; transform: translateY(-2px); } /* 被選中的分頁會完全顯示並稍微往上浮動 */
+        .custom-training-label-control { display:flex; align-items:center; gap:8px; margin:4px 0 10px; padding:9px 11px; border:1px solid rgba(124,110,230,.2); border-radius:12px; background:rgba(124,110,230,.07); color:#69627F; font-size:.78rem; }
+        .custom-training-label-control input { min-width:0; width:100%; flex:1; padding:7px 8px; border:1px solid rgba(124,110,230,.22); border-radius:8px; background:#fff; color:#312E40; font-size:.84rem; }
+        .custom-training-label-control button { flex:0 0 auto; padding:7px 10px; border:0; border-radius:9px; background:#EAE7FF; color:#6254C7; font-size:.78rem; font-weight:750; cursor:pointer; }
+        body.dark-mode .custom-training-label-control { border-color:rgba(167,139,250,.25); background:rgba(124,110,230,.12); color:#C4BCEB; }
+        body.dark-mode .custom-training-label-control input { border-color:#4B426C; background:#1C1C1E; color:#fff; }
+        body.dark-mode .custom-training-label-control button { background:#332D50; color:#C4B5FD; }
         .training-title-row { display:flex; align-items:center; justify-content:flex-start; gap:10px; }
         .training-title-controls { display:flex; align-items:center; gap:7px; margin-left:0; }
         .training-title-edit { width:32px; height:32px; padding:0; border:0; border-radius:50%; background:transparent; color:#545456; cursor:pointer; }
@@ -555,6 +561,7 @@
         body.dark-mode .tab-menu button:nth-child(5).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--arm) !important; box-shadow: 0 0 14px rgba(76, 217, 100, 0.6) !important; }
         body.dark-mode .tab-menu button:nth-child(6).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--leg) !important; box-shadow: 0 0 14px rgba(0, 229, 255, 0.6) !important; }
         body.dark-mode .tab-menu button:nth-child(7).tab-btn.active { opacity: 1; color: #ffffff !important; border: 2px solid var(--hiit) !important; box-shadow: 0 0 14px rgba(124, 77, 255, 0.6) !important; }
+        body.dark-mode .tab-menu .custom-training-tab.active { opacity: 1; color: #ffffff !important; border: 2px solid #A78BFA !important; box-shadow: 0 0 14px rgba(167, 139, 250, 0.6) !important; }
         
         /* 操作按鈕霓虹特效 */
         body.dark-mode #btn-rest-timer { background: #1A2026 !important; color: #E5E5EA !important; border: 2px solid #007AFF !important; box-shadow: 0 0 12px rgba(0, 122, 255, 0.5) !important; opacity: 1 !important; transition: all 0.2s ease; }
@@ -792,6 +799,7 @@
         <button class="tab-btn" data-card-index="2" style="background:var(--arm)" onclick="switchTab(2)">💪 練臂</button>
         <button class="tab-btn" data-card-index="5" style="background:var(--leg)" onclick="switchTab(5)">🏃 有氧</button>
         <button class="tab-btn" data-card-index="6" style="background:var(--hiit)" onclick="switchTab(6)">⏱️ HIIT</button>
+        <button class="tab-btn custom-training-tab" data-card-index="7" style="background:#7C6EE6" onclick="switchTab(7)"><span id="custom-training-tab-label">自訂訓練</span></button>
     </div>
 
     <div class="card active" id="card-chest" data-type="chest">
@@ -900,6 +908,23 @@
             <div style="flex: 1; text-align: center;"><div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">預估燃燒</div><div id="display-hiit-calories" style="font-weight: 800; color: #5856D6; font-size: 1.2rem;">0 kcal</div></div>
         </div>
         <button class="btn-record btn-calendar-only" onclick="saveToHistory('HIIT', this, '#5856D6')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>儲存到日曆</button>
+    </div>
+
+    <div class="card" id="card-custom-training" data-type="custom-training">
+        <div class="card-header">
+            <h3 id="custom-training-card-title" style="color:#7C6EE6;margin:0;">自訂訓練</h3>
+            <button class="btn-manage-toggle" onclick="toggleManageMode(this)" aria-label="編輯自訂訓練動作"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14v-7"/><path d="m18.5 2.5 3 3L12 15l-4 1 1-4 10.5-10.5Z"/></svg></button>
+            <input type="date" class="date-input" onchange="syncDate(this)">
+        </div>
+        <div class="custom-training-label-control"><label for="custom-training-title-input">標籤</label><input id="custom-training-title-input" type="text" maxlength="20" value="自訂訓練" aria-label="自訂訓練標籤名稱"><button type="button" onclick="renameCustomTraining()">儲存</button></div>
+        <div class="exercise-list"></div>
+        <div class="bottom-manage-bar">
+            <button class="btn-add-exercise" onclick="addExercise(this, 'custom-training')">➕ 新增動作</button>
+            <button class="btn-bottom-cancel" onclick="cancelAllEditing()">✖️ 取消</button>
+            <button class="btn-bottom-save" onclick="toggleManageMode(this)">✔️ 儲存</button>
+        </div>
+        <div style="margin: 10px 0;"><input type="text" class="card-note" style="width:100%; box-sizing:border-box; height:38px; border-radius:10px; border:1px solid #ddd; padding:8px; font-size:0.95rem;" placeholder="輸入今日備註"></div>
+        <button class="btn-record btn-calendar-only" onclick="saveToHistory(getCustomTrainingTitle(), this, '#7C6EE6')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>儲存到日曆</button>
     </div>
 
     <div class="card" id="card-converter">
@@ -1148,7 +1173,8 @@ const defaultExercises = {
         id: "leg_str_3",
         name: "啞鈴硬舉",
         unit: "kg"
-    }]
+    }],
+    "custom-training": []
 };
 
 let calendar; // 存放訓練月曆的相容操作介面
@@ -1411,6 +1437,7 @@ function getGoogleSyncPayload() {
         sync_user_id: userId,
         gym_history: getStoredJson('gym_history', []),
         custom_exercises: getStoredJson('custom_exercises', null),
+        custom_training_title: getCustomTrainingTitle(),
         current_weights: getStoredJson('current_weights', {}),
         cfg_rest_min: localStorage.getItem('cfg_rest_min') || "2",
         cfg_switch_min: localStorage.getItem('cfg_switch_min') || "4",
@@ -1706,6 +1733,7 @@ function applyGymCloudData(data) {
     localStorage.setItem('has_seen_tour_v3', 'true');
     localStorage.setItem('gym_history', JSON.stringify(data.gym_history));
     if (data.custom_exercises) localStorage.setItem('custom_exercises', JSON.stringify(data.custom_exercises));
+    if (data.custom_training_title) localStorage.setItem('custom_training_title', String(data.custom_training_title).slice(0, 20));
     if (data.current_weights) localStorage.setItem('current_weights', JSON.stringify(data.current_weights));
     ['cfg_rest_min','cfg_switch_min','cfg_sound_enable','cfg_flash_enable','cfg_dark_enable','cfg_dark_auto','cfg_wake_enable'].forEach(key => {
         if (data[key] !== undefined && data[key] !== null) localStorage.setItem(key, String(data[key]));
@@ -1883,6 +1911,7 @@ async function loadRemoteHistoryFromGoogleSheet() {
         if (importedData.custom_exercises) {
             localStorage.setItem('custom_exercises', JSON.stringify(importedData.custom_exercises));
         }
+        if (importedData.custom_training_title) localStorage.setItem('custom_training_title', String(importedData.custom_training_title).slice(0, 20));
         if (importedData.current_weights) {
             localStorage.setItem('current_weights', JSON.stringify(importedData.current_weights));
         }
@@ -2648,6 +2677,8 @@ if (window.visualViewport) {
 // 將儲存在瀏覽器的客製化動作佈局取出，並逐項繪製到對應的卡片中
 function renderAllExerciseLists() {
     const savedExercises = getStoredJson('custom_exercises', null) || defaultExercises;
+    if (!Array.isArray(savedExercises['custom-training'])) savedExercises['custom-training'] = [];
+    updateCustomTrainingLabel();
     Object.keys(savedExercises).forEach(type => {
         const card = document.getElementById(`card-${type}`);
         if (!card) return;
@@ -2661,6 +2692,31 @@ function renderAllExerciseLists() {
             container.appendChild(item);
         });
     });
+}
+
+function getCustomTrainingTitle() {
+    return String(localStorage.getItem('custom_training_title') || '自訂訓練').trim().slice(0, 20) || '自訂訓練';
+}
+
+function updateCustomTrainingLabel() {
+    const title = getCustomTrainingTitle();
+    const tabLabel = document.getElementById('custom-training-tab-label');
+    const cardTitle = document.getElementById('custom-training-card-title');
+    const titleInput = document.getElementById('custom-training-title-input');
+    if (tabLabel) tabLabel.textContent = title;
+    if (cardTitle) cardTitle.textContent = title;
+    if (titleInput) titleInput.value = title;
+}
+
+function renameCustomTraining() {
+    const titleInput = document.getElementById('custom-training-title-input');
+    const title = String(titleInput?.value || '').trim().slice(0, 20);
+    if (!title) {
+        showNotice('名稱不能空白', '請輸入 1 至 20 個字的訓練標籤名稱。', false);
+        return;
+    }
+    localStorage.setItem('custom_training_title', title);
+    updateCustomTrainingLabel();
 }
 
 
@@ -2840,7 +2896,7 @@ function cancelAllEditing() {
     editingCards.forEach(card => {
         card.classList.remove('editing-mode');
         const type = card.dataset.type;
-        const originalList = savedExercises[type];
+        const originalList = savedExercises[type] || (type === 'custom-training' ? [] : null);
         if (!originalList) return;
         const container = card.querySelector('.exercise-list');
         if (container) {
@@ -3727,6 +3783,7 @@ function exportHistoryToLocal() {
     var backupData = {
         gym_history: getStoredJson('gym_history', []),
         custom_exercises: getStoredJson('custom_exercises', null),
+        custom_training_title: getCustomTrainingTitle(),
         current_weights: getStoredJson('current_weights', {}),
         cfg_rest_min: localStorage.getItem('cfg_rest_min') || "2",
         cfg_switch_min: localStorage.getItem('cfg_switch_min') || "4",
@@ -3740,7 +3797,7 @@ function exportHistoryToLocal() {
         appVersion: "1.1.0"
     };
 
-    if (backupData.gym_history.length === 0 && !backupData.custom_exercises) {
+    if (backupData.gym_history.length === 0 && !backupData.custom_exercises && backupData.custom_training_title === '自訂訓練') {
         showNotice("沒有資料", "目前沒有任何訓練紀錄或自訂動作可以匯出", false);
         return;
     }
@@ -3859,7 +3916,7 @@ async function importHistory() {
         if (!result || !result.gym_history) throw new Error('雲端回傳資料錯誤');
 
         const remoteHistory = Array.isArray(result.gym_history) ? result.gym_history : [];
-        const hasRemoteData = remoteHistory.length > 0 || (result.custom_exercises && Object.keys(result.custom_exercises).length > 0) || (result.current_weights && Object.keys(result.current_weights).length > 0);
+        const hasRemoteData = remoteHistory.length > 0 || (result.custom_exercises && Object.keys(result.custom_exercises).length > 0) || (result.current_weights && Object.keys(result.current_weights).length > 0) || Boolean(result.custom_training_title);
         const emailNotFound = result.found_user === false;
 
         if (emailNotFound || !hasRemoteData) {
@@ -3871,6 +3928,7 @@ async function importHistory() {
             localStorage.setItem('has_seen_tour_v3', 'true');
             localStorage.setItem('gym_history', JSON.stringify(remoteHistory));
             if (result.custom_exercises) localStorage.setItem('custom_exercises', JSON.stringify(result.custom_exercises));
+            if (result.custom_training_title) localStorage.setItem('custom_training_title', String(result.custom_training_title).slice(0, 20));
             if (result.current_weights) localStorage.setItem('current_weights', JSON.stringify(result.current_weights));
             if (result.cfg_rest_min) localStorage.setItem('cfg_rest_min', result.cfg_rest_min);
             if (result.cfg_switch_min) localStorage.setItem('cfg_switch_min', result.cfg_switch_min);
@@ -3934,6 +3992,7 @@ function importHistoryLocal(event) {
                     });
 
                     if (importedData.custom_exercises) localStorage.setItem('custom_exercises', JSON.stringify(importedData.custom_exercises));
+                    if (importedData.custom_training_title) localStorage.setItem('custom_training_title', String(importedData.custom_training_title).slice(0, 20));
                     if (importedData.current_weights) localStorage.setItem('current_weights', JSON.stringify(importedData.current_weights));
                     if (importedData.cfg_rest_min) localStorage.setItem('cfg_rest_min', importedData.cfg_rest_min);
                     if (importedData.cfg_switch_min) localStorage.setItem('cfg_switch_min', importedData.cfg_switch_min);
